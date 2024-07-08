@@ -1,4 +1,4 @@
-package com.vincent.status;
+package com.vincent.apiPayload.status;
 
 import com.vincent.apiPayload.code.BaseCode;
 import com.vincent.apiPayload.code.ReasonDto;
@@ -8,10 +8,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorStatus implements BaseCode {
+public enum SuccessStatus implements BaseCode {
 
-    _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 에러, 관리자에게 문의 바랍니다."),
-    _BAD_REQUEST(HttpStatus.BAD_REQUEST,"COMMON400","잘못된 요청입니다.");
+    _OK(HttpStatus.OK,"COMMON200","성공입니다");
 
     private final HttpStatus httpStatus;
     private final String code;
@@ -22,7 +21,7 @@ public enum ErrorStatus implements BaseCode {
         return ReasonDto.builder()
                 .message(message)
                 .code(code)
-                .isSuccess(false)
+                .isSuccess(true)
                 .build();
     }
 
@@ -30,7 +29,7 @@ public enum ErrorStatus implements BaseCode {
     public ReasonDto getReasonHttpStatus(){
         return ReasonDto.builder()
                 .httpStatus(httpStatus)
-                .isSuccess(false)
+                .isSuccess(true)
                 .message(message)
                 .code(code)
                 .build();

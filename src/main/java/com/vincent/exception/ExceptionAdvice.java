@@ -2,7 +2,7 @@ package com.vincent.exception;
 
 import com.vincent.apiPayload.ApiResponse;
 import com.vincent.apiPayload.code.ReasonDto;
-import com.vincent.status.ErrorStatus;
+import com.vincent.apiPayload.status.ErrorStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
