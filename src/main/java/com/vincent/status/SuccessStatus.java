@@ -1,4 +1,4 @@
-package com.vincent.apiPayload.code.status;
+package com.vincent.status;
 
 import com.vincent.apiPayload.code.BaseCode;
 import com.vincent.apiPayload.code.ReasonDto;
@@ -18,7 +18,7 @@ public enum SuccessStatus implements BaseCode {
 
     @Override
     public ReasonDto getReason(){
-        return com.vincent.apiPayload.code.ReasonDto.builder()
+        return ReasonDto.builder()
                 .message(message)
                 .code(code)
                 .isSuccess(true)
@@ -27,7 +27,7 @@ public enum SuccessStatus implements BaseCode {
 
     @Override
     public ReasonDto getReasonHttpStatus(){
-        return com.vincent.apiPayload.code.ReasonDto.builder()
+        return ReasonDto.builder()
                 .httpStatus(httpStatus)
                 .isSuccess(true)
                 .message(message)

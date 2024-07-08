@@ -1,4 +1,4 @@
-package com.vincent.apiPayload.exception;
+package com.vincent.exception;
 
 import com.vincent.apiPayload.code.BaseCode;
 import com.vincent.apiPayload.code.ReasonDto;

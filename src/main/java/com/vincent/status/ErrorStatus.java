@@ -1,4 +1,4 @@
-package com.vincent.apiPayload.code.status;
+package com.vincent.status;
 
 import com.vincent.apiPayload.code.BaseCode;
 import com.vincent.apiPayload.code.ReasonDto;
