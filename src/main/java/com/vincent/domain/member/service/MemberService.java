@@ -1,9 +1,9 @@
-package com.vincent.domain.building;
+package com.vincent.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class BuildingService {
+public class MemberService {
 }
