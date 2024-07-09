@@ -1,8 +1,13 @@
 package com.vincent.domain.building.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
-
+@Entity
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Building {
 
 
@@ -20,7 +25,8 @@ public class Building {
     @Column(columnDefinition = "TEXT")
     private String image;
 
-    private int x_coordinate;
-    private int y_coordinate;
+    private double x_coordinate;
+
+    private double y_coordinate;
 
 }

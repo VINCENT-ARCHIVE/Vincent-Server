@@ -2,7 +2,13 @@ package com.vincent.domain.socket.entity;
 
 import com.vincent.domain.building.entity.Building;
 import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Socket {
 
     @Id
@@ -16,9 +22,9 @@ public class Socket {
 
     private int holes;
 
-    private int x_coordinate;
+    private double x_coordinate;
 
-    private int y_coordinate;
+    private double y_coordinate;
 
     @Column(columnDefinition = "TEXT")
     private String image;

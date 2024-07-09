@@ -3,9 +3,15 @@ package com.vincent.domain.bookmark.entity;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.socket.entity.Socket;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Bookmark {
 
     @Id

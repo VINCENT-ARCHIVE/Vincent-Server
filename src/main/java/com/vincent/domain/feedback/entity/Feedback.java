@@ -2,9 +2,15 @@ package com.vincent.domain.feedback.entity;
 
 import com.vincent.domain.member.entity.Member;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Feedback {
 
     @Id
