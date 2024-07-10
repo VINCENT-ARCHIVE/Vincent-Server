@@ -3,6 +3,7 @@ package com.vincent.domain.member.entity;
 import com.vincent.domain.member.entity.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 
 @Entity
@@ -17,10 +18,10 @@ public class Member {
     @Column(name="member_id")
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String email;
 
-    @Column(nullable = false, length = 25)
+    @Column(length = 25)
     private String name;
 
     @Enumerated(EnumType.STRING)
@@ -29,9 +30,8 @@ public class Member {
 
     private int age;
 
+    @ColumnDefault("false")
     private boolean withdraw;
-
-
 
 
 }
