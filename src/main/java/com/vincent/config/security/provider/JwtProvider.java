@@ -8,19 +8,21 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.util.Date;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.util.Date;
 
 @Component
 public class JwtProvider implements InitializingBean {
+
     @Value("${jwt.token.secret}")
     private String secret;
     private static SecretKey secretKey;
     private static final Long expireMs = 1000L * 60; //30분
+
     @Override
     public void afterPropertiesSet() throws Exception {
         System.out.println(secret);
@@ -28,70 +30,70 @@ public class JwtProvider implements InitializingBean {
         secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public  String getMemberId(String token){
+    public String getMemberId(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("memberId", String.class);
+            .verifyWith(secretKey)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .get("memberId", String.class);
     }
 
-    public  String getEmail(String token){
+    public String getEmail(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("email", String.class);
+            .verifyWith(secretKey)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .get("email", String.class);
     }
 
-    public  String getRole(String token){
+    public String getRole(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("role", String.class);
+            .verifyWith(secretKey)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .get("role", String.class);
     }
 
-    public  Boolean isExpired(String token){
+    public Boolean isExpired(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration()
-                .before(new Date());
+            .verifyWith(secretKey)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .getExpiration()
+            .before(new Date());
     }
 
-    public  String createJwt(Long memberId, String email){
+    public String createJwt(Long memberId, String email) {
         return Jwts.builder()
-                .claim("memberId", memberId)
-                .claim("email", email)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+expireMs))
-                .signWith(secretKey)
-                .compact();
+            .claim("memberId", memberId)
+            .claim("email", email)
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + expireMs))
+            .signWith(secretKey)
+            .compact();
     }
 
-    public  String createJwt(String email){
+    public String createJwt(String email) {
         return Jwts.builder()
-                .claim("email", email)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+expireMs))
-                .signWith(secretKey)
-                .compact();
+            .claim("email", email)
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + expireMs))
+            .signWith(secretKey)
+            .compact();
     }
 
-    public  void validateAccessToken(String accessToken) {
+    public void validateAccessToken(String accessToken) {
         try {
             Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(accessToken)
-                    .getPayload()
-                    .getExpiration();
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(accessToken)
+                .getPayload()
+                .getExpiration();
         } catch (ExpiredJwtException e) {
             throw new JwtExpiredHandler("Expired Token Exception");
         } catch (UnsupportedJwtException | SecurityException | MalformedJwtException | NullPointerException e) {

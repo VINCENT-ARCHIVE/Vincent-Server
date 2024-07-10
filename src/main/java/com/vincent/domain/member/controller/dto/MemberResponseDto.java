@@ -1,11 +1,11 @@
 package com.vincent.domain.member.controller.dto;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
 public class MemberResponseDto {
 
@@ -13,7 +13,8 @@ public class MemberResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Login{
+    public static class Login {
+
         String accessToken;
         LocalDateTime accessExpireTime;
     }

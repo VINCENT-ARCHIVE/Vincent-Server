@@ -3,6 +3,7 @@ package com.vincent.exception.handler;
 import io.jsonwebtoken.JwtException;
 
 public class JwtExpiredHandler extends JwtException {
+
     public JwtExpiredHandler(String message) {
         super(message);
     }

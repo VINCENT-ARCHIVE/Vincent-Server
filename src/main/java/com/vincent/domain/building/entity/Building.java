@@ -1,7 +1,15 @@
 package com.vincent.domain.building.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -13,7 +21,7 @@ public class Building {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="building_id")
+    @Column(name = "building_id")
     private Long id;
 
     @Column(nullable = false, length = 25)
@@ -25,8 +33,8 @@ public class Building {
     @Column(columnDefinition = "TEXT")
     private String image;
 
-    private double x_coordinate;
+    private double xCoordinate;
 
-    private double y_coordinate;
+    private double yCoordinate;
 
 }
