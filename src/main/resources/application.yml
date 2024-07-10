@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: Vincent
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASS}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  jwt:
+    token:
+      secret: ${JWT_TOKEN_SECRET}
