@@ -1,7 +1,6 @@
 package com.vincent.domain.member.controller;
 
-import com.vincent.apiPayload.ApiResponse;
-import com.vincent.apiPayload.status.SuccessStatus;
+import com.vincent.apipayload.ApiResponse;
 import com.vincent.domain.member.controller.dto.MemberRequestDto;
 import com.vincent.domain.member.controller.dto.MemberResponseDto;
 import com.vincent.domain.member.converter.MemberConverter;
@@ -18,12 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RequestMapping("/v1")
 public class MemberController {
+
     private final MemberService memberService;
 
     @PostMapping("/login")
-    public ApiResponse<MemberResponseDto.Login> login(@RequestBody MemberRequestDto.Login request){
+    public ApiResponse<MemberResponseDto.Login> login(@RequestBody MemberRequestDto.Login request) {
         MemberService.LoginResult result = memberService.login(request.getEmail());
-        return ApiResponse.onSuccess(MemberConverter.toLoginResponse(result.getAccessToken(),result.getAccessExpireTime()));
+        return ApiResponse.onSuccess(
+            MemberConverter.toLoginResponse(result.getAccessToken(), result.getAccessExpireTime()));
     }
 
 }
