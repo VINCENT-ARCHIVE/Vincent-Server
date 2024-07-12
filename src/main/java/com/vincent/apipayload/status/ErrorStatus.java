@@ -1,7 +1,7 @@
-package com.vincent.apiPayload.status;
+package com.vincent.apipayload.status;
 
-import com.vincent.apiPayload.code.BaseCode;
-import com.vincent.apiPayload.code.ReasonDto;
+import com.vincent.apipayload.code.BaseCode;
+import com.vincent.apipayload.code.ReasonDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -33,21 +33,21 @@ public enum ErrorStatus implements BaseCode {
     private final String message;
 
     @Override
-    public ReasonDto getReason(){
+    public ReasonDto getReason() {
         return ReasonDto.builder()
-                .message(message)
-                .code(code)
-                .isSuccess(false)
-                .build();
+            .message(message)
+            .code(code)
+            .isSuccess(false)
+            .build();
     }
 
     @Override
-    public ReasonDto getReasonHttpStatus(){
+    public ReasonDto getReasonHttpStatus() {
         return ReasonDto.builder()
-                .httpStatus(httpStatus)
-                .isSuccess(false)
-                .message(message)
-                .code(code)
-                .build();
+            .httpStatus(httpStatus)
+            .isSuccess(false)
+            .message(message)
+            .code(code)
+            .build();
     }
 }

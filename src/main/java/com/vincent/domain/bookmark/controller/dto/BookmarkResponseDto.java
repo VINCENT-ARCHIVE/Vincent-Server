@@ -14,6 +14,5 @@ public class BookmarkResponseDto {
     @AllArgsConstructor
     public static class Addition{
         Long bookmarkId;
-        LocalDateTime createdAt;
     }
 }

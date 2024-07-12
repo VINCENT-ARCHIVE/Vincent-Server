@@ -1,6 +1,6 @@
 package com.vincent.domain.bookmark.service;
 
-import com.vincent.apiPayload.status.ErrorStatus;
+import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.bookmark.entity.Bookmark;
 import com.vincent.domain.bookmark.repository.BookmarkRepository;
 import com.vincent.domain.member.entity.Member;
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;

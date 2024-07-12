@@ -1,18 +1,15 @@
 package com.vincent.domain.member.service;
 
 import com.vincent.config.security.provider.JwtProvider;
-import com.vincent.domain.member.controller.dto.MemberRequestDto;
-import com.vincent.domain.member.controller.dto.MemberResponseDto;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.member.repository.MemberRepository;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +24,8 @@ public class MemberService {
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
         Member member = optionalMember.orElseGet(() -> {
             Member newMember = Member.builder()
-                    .email(email)
-                    .build();
+                .email(email)
+                .build();
             return memberRepository.save(newMember);
         });
 

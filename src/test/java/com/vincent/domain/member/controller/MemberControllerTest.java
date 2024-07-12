@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(MemberController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class MemberControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -33,7 +34,7 @@ class MemberControllerTest {
 
     @Test
     @DisplayName("로그인")
-    public void 로그인() throws Exception{
+    public void 로그인() throws Exception {
         MemberRequestDto.Login request = new MemberRequestDto.Login("test@gmail.com");
         LocalDateTime accessExpireTime = LocalDateTime.now().plusMinutes(30);
         MemberService.LoginResult result = new MemberService.LoginResult("accessToken", accessExpireTime);
@@ -41,17 +42,17 @@ class MemberControllerTest {
         when(memberService.login(request.getEmail())).thenReturn(result);
 
         ResultActions resultActions = mockMvc.perform(post("/v1/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
         String formattedExpireTime = accessExpireTime.format(formatter);
 
         resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("message").value("성공입니다"))
-                .andExpect(jsonPath("$.result.accessToken").value(result.getAccessToken()))
-                .andExpect(jsonPath("$.result.accessExpireTime").value(formattedExpireTime));
+            .andExpect(jsonPath("$.isSuccess").value(true))
+            .andExpect(jsonPath("$.code").value("COMMON200"))
+            .andExpect(jsonPath("message").value("성공입니다"))
+            .andExpect(jsonPath("$.result.accessToken").value(result.getAccessToken()))
+            .andExpect(jsonPath("$.result.accessExpireTime").value(formattedExpireTime));
     }
 }
