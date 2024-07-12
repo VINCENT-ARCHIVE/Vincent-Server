@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 
 public class MemberResponseDto {
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Login {
+  @Builder
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Login {
 
-        String accessToken;
-        LocalDateTime accessExpireTime;
-    }
+    String accessToken;
+    LocalDateTime accessExpireTime;
+  }
 }

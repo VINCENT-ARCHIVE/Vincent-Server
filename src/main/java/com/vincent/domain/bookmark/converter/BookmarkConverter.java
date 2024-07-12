@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 
 public class BookmarkConverter {
 
-    public static BookmarkResponseDto.Addition toAdditionResponse(Long bookmarkId){
-        return BookmarkResponseDto.Addition.builder()
-                .bookmarkId(bookmarkId)
-                .build();
-    }
+  public static BookmarkResponseDto.Addition toAdditionResponse(Long bookmarkId) {
+    return BookmarkResponseDto.Addition.builder()
+        .bookmarkId(bookmarkId)
+        .build();
+  }
 }

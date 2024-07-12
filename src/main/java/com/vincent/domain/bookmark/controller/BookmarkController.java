@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1")
 public class BookmarkController {
 
-    private final BookmarkService bookmarkService;
+  private final BookmarkService bookmarkService;
 
-    @PostMapping("/bookmark/{socketId}")
-    public ApiResponse<BookmarkResponseDto.Addition> login(@PathVariable("socketId")Long socketId,
-                                                            Authentication authentication){
+  @PostMapping("/bookmark/{socketId}")
+  public ApiResponse<BookmarkResponseDto.Addition> login(@PathVariable("socketId") Long socketId,
+      Authentication authentication) {
 
-        Long memberId = Long.parseLong(authentication.getName());
-        BookmarkService.AdditionResult result = bookmarkService.Addition(socketId, memberId);
-        return ApiResponse.onSuccess(BookmarkConverter.toAdditionResponse(result.getBookmarkId()));
-    }
+    Long memberId = Long.parseLong(authentication.getName());
+    BookmarkService.AdditionResult result = bookmarkService.Addition(socketId, memberId);
+    return ApiResponse.onSuccess(BookmarkConverter.toAdditionResponse(result.getBookmarkId()));
+  }
 
 
 }

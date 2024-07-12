@@ -19,56 +19,59 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class BookmarkService {
 
-    private final BookmarkRepository bookmarkRepository;
-    private final MemberRepository memberRepository;
-    private final SocketRepository socketRepository;
+  private final BookmarkRepository bookmarkRepository;
+  private final MemberRepository memberRepository;
+  private final SocketRepository socketRepository;
 
-    public AdditionResult Addition(Long socketId, Long memberId) {
+  public AdditionResult Addition(Long socketId, Long memberId) {
 
-        Member member = findMemberById(memberId);
-        Socket socket = findSocketById(socketId);
+    Member member = findMemberById(memberId);
+    Socket socket = findSocketById(socketId);
 
-        if (isBookmarkExists(socket, member)){
-            { throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_EXISTED);}
-        }
-        saveBookmark(member,socket);
-        Bookmark bookmark = findBookmarkBySocketAndMember(socketId, memberId);
-        Long bookmarkId = bookmark.getId();
-
-        return new AdditionResult(bookmarkId);
-
+    if (isBookmarkExists(socket, member)) {
+      {
+        throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_EXISTED);
+      }
     }
+    saveBookmark(member, socket);
+    Bookmark bookmark = findBookmarkBySocketAndMember(socketId, memberId);
+    Long bookmarkId = bookmark.getId();
 
-    @Getter
-    @AllArgsConstructor
-    public static class AdditionResult {
+    return new AdditionResult(bookmarkId);
 
-        private Long bookmarkId;
-    }
+  }
 
-    private void saveBookmark(Member member, Socket socket) {
-        bookmarkRepository.save(Bookmark.builder()
-                .member(member)
-                .socket(socket)
-                .build());
-    }
+  @Getter
+  @AllArgsConstructor
+  public static class AdditionResult {
 
-    private Boolean isBookmarkExists(Socket socket, Member member) {
-        return bookmarkRepository.existsBySocketAndMember(socket, member);
-    }
-    private Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow();
-    }
+    private Long bookmarkId;
+  }
 
-    private Socket findSocketById(Long socketId) {
+  private void saveBookmark(Member member, Socket socket) {
+    bookmarkRepository.save(Bookmark.builder()
+        .member(member)
+        .socket(socket)
+        .build());
+  }
 
-        return socketRepository.findById(socketId).orElseThrow();
-    }
+  private Boolean isBookmarkExists(Socket socket, Member member) {
+    return bookmarkRepository.existsBySocketAndMember(socket, member);
+  }
 
-    private Bookmark findBookmarkBySocketAndMember(Long socketId, Long memberId) {
+  private Member findMemberById(Long memberId) {
+    return memberRepository.findById(memberId).orElseThrow();
+  }
 
-        return bookmarkRepository.findBySocketIdAndMemberId(socketId, memberId).orElseThrow();
-    }
+  private Socket findSocketById(Long socketId) {
+
+    return socketRepository.findById(socketId).orElseThrow();
+  }
+
+  private Bookmark findBookmarkBySocketAndMember(Long socketId, Long memberId) {
+
+    return bookmarkRepository.findBySocketIdAndMemberId(socketId, memberId).orElseThrow();
+  }
 
 
 }

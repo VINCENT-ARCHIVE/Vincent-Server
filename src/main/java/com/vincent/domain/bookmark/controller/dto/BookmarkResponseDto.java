@@ -8,11 +8,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 public class BookmarkResponseDto {
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Addition{
-        Long bookmarkId;
-    }
+
+  @Builder
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Addition {
+
+    Long bookmarkId;
+  }
 }
