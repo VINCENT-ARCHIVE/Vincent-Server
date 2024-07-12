@@ -24,7 +24,7 @@ public class MemberController {
     public ApiResponse<MemberResponseDto.Login> login(@RequestBody MemberRequestDto.Login request) {
         MemberService.LoginResult result = memberService.login(request.getEmail());
         return ApiResponse.onSuccess(
-            MemberConverter.toLoginResponse(result.getAccessToken(), result.getAccessExpireTime()));
+            MemberConverter.toLoginResponse(result.getAccessToken(), result.getRefreshToken()));
     }
 
 }
