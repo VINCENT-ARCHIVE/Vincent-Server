@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 
 public class MemberConverter {
 
-    public static MemberResponseDto.Login toLoginResponse(String accessToken, LocalDateTime accessExpireTime) {
+    public static MemberResponseDto.Login toLoginResponse(String accessToken, String refreshToken) {
         return MemberResponseDto.Login.builder()
             .accessToken(accessToken)
-            .accessExpireTime(accessExpireTime)
+            .refreshToken(refreshToken)
             .build();
     }
 }

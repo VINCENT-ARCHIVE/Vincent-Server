@@ -21,7 +21,9 @@ public class JwtProvider implements InitializingBean {
     @Value("${jwt.token.secret}")
     private String secret;
     private static SecretKey secretKey;
-    private static final Long expireMs = 1000L * 60; //30분
+    private static final Long expireAccessMs = 1000L * 60 * 60; //30분
+
+    private static final Long expireRefreshMs = 1000L * 60 * 60 * 24 * 7;  //7일
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -67,21 +69,40 @@ public class JwtProvider implements InitializingBean {
             .before(new Date());
     }
 
-    public String createJwt(Long memberId, String email) {
+    public String createAccessToken(Long memberId, String email) {
         return Jwts.builder()
             .claim("memberId", memberId)
             .claim("email", email)
             .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expireMs))
+            .expiration(new Date(System.currentTimeMillis() + expireAccessMs))
             .signWith(secretKey)
             .compact();
     }
 
-    public String createJwt(String email) {
+    public String createAccessToken(String email) {
         return Jwts.builder()
             .claim("email", email)
             .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expireMs))
+            .expiration(new Date(System.currentTimeMillis() + expireAccessMs))
+            .signWith(secretKey)
+            .compact();
+    }
+
+    public String createRefreshToken(Long memberId, String email) {
+        return Jwts.builder()
+            .claim("memberId", memberId)
+            .claim("email", email)
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + expireRefreshMs))
+            .signWith(secretKey)
+            .compact();
+    }
+
+    public String createRefreshToken(String email) {
+        return Jwts.builder()
+            .claim("email", email)
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + expireRefreshMs))
             .signWith(secretKey)
             .compact();
     }

@@ -3,7 +3,8 @@ package com.vincent.domain.member.service;
 import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.member.repository.MemberRepository;
-import java.time.LocalDateTime;
+import com.vincent.redis.entity.RefreshToken;
+import com.vincent.redis.service.RedisService;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,8 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final RedisService redisService;
     private final JwtProvider jwtProvider;
 
+    /**
+     * 사용자 로그인
+     * AccessToken, refreshToken 반환
+     */
     @Transactional
     public LoginResult login(String email) {
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
@@ -29,17 +35,16 @@ public class MemberService {
             return memberRepository.save(newMember);
         });
 
-        String accessToken = jwtProvider.createJwt(member.getId(), member.getEmail());
-        LocalDateTime current = LocalDateTime.now();
-        LocalDateTime accessExpireTime = current.plusMinutes(30);
-        return new LoginResult(accessToken, accessExpireTime);
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getEmail());
+        RefreshToken refreshToken = redisService.generateRefreshToken(member);
+
+        return new LoginResult(accessToken, refreshToken.getRefreshToken());
     }
 
     @Getter
     @AllArgsConstructor
     public static class LoginResult {
-
         private String accessToken;
-        private LocalDateTime accessExpireTime;
+        private String refreshToken;
     }
 }

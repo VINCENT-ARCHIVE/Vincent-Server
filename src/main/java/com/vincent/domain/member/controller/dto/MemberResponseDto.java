@@ -16,6 +16,6 @@ public class MemberResponseDto {
     public static class Login {
 
         String accessToken;
-        LocalDateTime accessExpireTime;
+        String refreshToken;
     }
 }
