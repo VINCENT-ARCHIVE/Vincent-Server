@@ -14,10 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Book;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -37,9 +33,9 @@ public class BookmarkService {
         }
         saveBookmark(member,socket);
         Bookmark bookmark = findBookmarkBySocketAndMember(socketId, memberId);
-        Long v = bookmark.getId();
+        Long bookmarkId = bookmark.getId();
 
-        return new AdditionResult(v);
+        return new AdditionResult(bookmarkId);
 
     }
 
@@ -63,11 +59,14 @@ public class BookmarkService {
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow();
     }
+
     private Socket findSocketById(Long socketId) {
+
         return socketRepository.findById(socketId).orElseThrow();
     }
 
     private Bookmark findBookmarkBySocketAndMember(Long socketId, Long memberId) {
+
         return bookmarkRepository.findBySocketIdAndMemberId(socketId, memberId).orElseThrow();
     }
 
