@@ -13,7 +13,7 @@ public class BookmarkResponseDto {
   @Getter
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class Addition {
+  public static class Bookmark {
 
     Long bookmarkId;
   }

@@ -19,12 +19,12 @@ public class BookmarkController {
   private final BookmarkService bookmarkService;
 
   @PostMapping("/bookmark/{socketId}")
-  public ApiResponse<BookmarkResponseDto.Addition> login(@PathVariable("socketId") Long socketId,
+  public ApiResponse<BookmarkResponseDto.Bookmark> Bookmark(@PathVariable("socketId") Long socketId,
       Authentication authentication) {
 
     Long memberId = Long.parseLong(authentication.getName());
-    BookmarkService.AdditionResult result = bookmarkService.Addition(socketId, memberId);
-    return ApiResponse.onSuccess(BookmarkConverter.toAdditionResponse(result.getBookmarkId()));
+    BookmarkService.BookmarkResult result = bookmarkService.Bookmark(socketId, memberId);
+    return ApiResponse.onSuccess(BookmarkConverter.toBookmarkResponse(result.getBookmarkId()));
   }
 
 
