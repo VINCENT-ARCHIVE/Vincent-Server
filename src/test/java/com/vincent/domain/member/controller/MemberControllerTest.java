@@ -35,24 +35,22 @@ class MemberControllerTest {
     @Test
     @DisplayName("로그인")
     public void 로그인() throws Exception {
+        //given
         MemberRequestDto.Login request = new MemberRequestDto.Login("test@gmail.com");
-        LocalDateTime accessExpireTime = LocalDateTime.now().plusMinutes(30);
-        MemberService.LoginResult result = new MemberService.LoginResult("accessToken", accessExpireTime);
+        MemberService.LoginResult result = new MemberService.LoginResult("accessToken", "refreshToken");
 
+        //when
         when(memberService.login(request.getEmail())).thenReturn(result);
-
         ResultActions resultActions = mockMvc.perform(post("/v1/login")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
-        String formattedExpireTime = accessExpireTime.format(formatter);
-
+        //then
         resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.isSuccess").value(true))
             .andExpect(jsonPath("$.code").value("COMMON200"))
             .andExpect(jsonPath("message").value("성공입니다"))
-            .andExpect(jsonPath("$.result.accessToken").value(result.getAccessToken()))
-            .andExpect(jsonPath("$.result.accessExpireTime").value(formattedExpireTime));
+            .andExpect(jsonPath("$.result.accessToken").value("accessToken"))
+            .andExpect(jsonPath("$.result.refreshToken").value("refreshToken"));
     }
 }

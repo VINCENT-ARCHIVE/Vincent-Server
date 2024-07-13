@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1")
 public class MemberController {
 
-  private final MemberService memberService;
+    private final MemberService memberService;
 
-  @PostMapping("/login")
-  public ApiResponse<MemberResponseDto.Login> login(@RequestBody MemberRequestDto.Login request) {
-    MemberService.LoginResult result = memberService.login(request.getEmail());
-    return ApiResponse.onSuccess(
-        MemberConverter.toLoginResponse(result.getAccessToken(), result.getAccessExpireTime()));
-  }
+    @PostMapping("/login")
+    public ApiResponse<MemberResponseDto.Login> login(@RequestBody MemberRequestDto.Login request) {
+        MemberService.LoginResult result = memberService.login(request.getEmail());
+        return ApiResponse.onSuccess(
+            MemberConverter.toLoginResponse(result.getAccessToken(), result.getRefreshToken()));
+    }
 
 }
