@@ -2,7 +2,7 @@ package com.vincent.domain.bookmark.service;
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.bookmark.entity.Bookmark;
 import com.vincent.domain.bookmark.repository.BookmarkRepository;
-import com.vincent.domain.bookmark.service.BookmarkService.AdditionResult;
+import com.vincent.domain.bookmark.service.BookmarkService.BookmarkResult;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.member.repository.MemberRepository;
 import com.vincent.domain.socket.entity.Socket;
@@ -49,26 +49,25 @@ public class BookmarkServiceTest {
     }
 
     @Test
-    public void testAddition_Success() {
+    public void 북마크성공() {
         Long socketId = 1L;
         Long memberId = 1L;
 
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.of(member));
         when(socketRepository.findById(socketId)).thenReturn(java.util.Optional.of(socket));
         when(bookmarkRepository.existsBySocketAndMember(socket, member)).thenReturn(false);
-        when(bookmarkRepository.findBySocketIdAndMemberId(socketId, memberId)).thenReturn(java.util.Optional.of(bookmark));
+        when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
         when(bookmark.getId()).thenReturn(1L);
 
-        AdditionResult result = bookmarkService.Addition(socketId, memberId);
+        BookmarkService.BookmarkResult result = bookmarkService.Bookmark(socketId, memberId);
 
         assertNotNull(result);
         assertEquals(1L, result.getBookmarkId());
         verify(bookmarkRepository, times(1)).save(any(Bookmark.class));
     }
 
-    //실패
     @Test
-    public void testAddition_BookmarkAlreadyExists() {
+    public void 북마크실패_이미북마크존재() {
         Long socketId = 1L;
         Long memberId = 1L;
 
@@ -77,54 +76,55 @@ public class BookmarkServiceTest {
         when(bookmarkRepository.existsBySocketAndMember(socket, member)).thenReturn(true);
 
         ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
-            bookmarkService.Addition(socketId, memberId);
+            bookmarkService.Bookmark(socketId, memberId);
         });
 
-        assertEquals(ErrorStatus.BOOKMARK_ALREADY_EXISTED, thrown.getErrorReason());
+        assertEquals(ErrorStatus.BOOKMARK_ALREADY_EXIST, thrown.getCode());
         verify(bookmarkRepository, never()).save(any(Bookmark.class));
     }
 
     @Test
-    public void testAddition_MemberNotFound() {
+    public void 북마크실패_멤버없음() {
         Long socketId = 1L;
         Long memberId = 1L;
 
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> {
-            bookmarkService.Addition(socketId, memberId);
+        ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
+            bookmarkService.Bookmark(socketId, memberId);
         });
 
+        assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
         verify(bookmarkRepository, never()).save(any(Bookmark.class));
     }
 
     @Test
-    public void testAddition_SocketNotFound() {
+    public void 북마크실패_소켓없음() {
         Long socketId = 1L;
         Long memberId = 1L;
 
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.of(member));
         when(socketRepository.findById(socketId)).thenReturn(java.util.Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> {
-            bookmarkService.Addition(socketId, memberId);
+        ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
+            bookmarkService.Bookmark(socketId, memberId);
         });
 
+        assertEquals(ErrorStatus.SOCKET_NOT_FOUND, thrown.getCode());
         verify(bookmarkRepository, never()).save(any(Bookmark.class));
     }
 
     @Test
-    public void testAddition_BookmarkNotFound() {
+    public void 북마크실패_북마크없음() {
         Long socketId = 1L;
         Long memberId = 1L;
 
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.of(member));
         when(socketRepository.findById(socketId)).thenReturn(java.util.Optional.of(socket));
         when(bookmarkRepository.existsBySocketAndMember(socket, member)).thenReturn(false);
-        when(bookmarkRepository.findBySocketIdAndMemberId(socketId, memberId)).thenReturn(java.util.Optional.empty());
 
         assertThrows(RuntimeException.class, () -> {
-            bookmarkService.Addition(socketId, memberId);
+            bookmarkService.Bookmark(socketId, memberId);
         });
 
         verify(bookmarkRepository, times(1)).save(any(Bookmark.class));
