@@ -8,13 +8,13 @@ import org.springframework.http.HttpStatus;
 @Builder
 public class ReasonDto {
 
-    private HttpStatus httpStatus;
+  private HttpStatus httpStatus;
 
-    private final boolean isSuccess;
-    private final String code;
-    private final String message;
+  private final boolean isSuccess;
+  private final String code;
+  private final String message;
 
-    public boolean getIsSuccess() {
-        return isSuccess;
-    }
+  public boolean getIsSuccess() {
+    return isSuccess;
+  }
 }
