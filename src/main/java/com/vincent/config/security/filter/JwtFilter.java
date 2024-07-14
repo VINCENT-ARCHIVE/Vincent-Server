@@ -25,51 +25,53 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+  private final JwtProvider jwtProvider;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
-        String accessToken = request.getHeader("Authorization");
-        if (accessToken == null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        try {
-            jwtProvider.validateAccessToken(accessToken);
-            Long memberId = Long.valueOf(jwtProvider.getMemberId(accessToken));
-            String email = jwtProvider.getEmail(accessToken);
-
-            Member member = Member.builder()
-                .id(memberId)
-                .email(email)
-                .build();
-
-            PrincipalDetails principalDetails = new PrincipalDetails(member);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null,
-                principalDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (JwtExpiredHandler e) {
-            response.setContentType("application/json");
-            ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(
-                ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED.getCode(),
-                ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED.getMessage(),
-                null
-            );
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(response.getOutputStream(), baseResponseDto);
-            return;
-        } catch (JwtInvalidHandler e) {
-            response.setContentType("application/json");
-            ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(
-                ErrorStatus.JWT_UNSUPPORTED_TOKEN.getCode(),
-                ErrorStatus.JWT_UNSUPPORTED_TOKEN.getMessage(),
-                null
-            );
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(response.getOutputStream(), baseResponseDto);
-            return;
-        }
-        filterChain.doFilter(request, response);
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain)
+      throws ServletException, IOException {
+    String accessToken = request.getHeader("Authorization");
+    if (accessToken == null) {
+      filterChain.doFilter(request, response);
+      return;
     }
+    try {
+      jwtProvider.validateAccessToken(accessToken);
+      Long memberId = Long.valueOf(jwtProvider.getMemberId(accessToken));
+      String email = jwtProvider.getEmail(accessToken);
+
+      Member member = Member.builder()
+          .id(memberId)
+          .email(email)
+          .build();
+
+      PrincipalDetails principalDetails = new PrincipalDetails(member);
+      Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails,
+          null,
+          principalDetails.getAuthorities());
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+    } catch (JwtExpiredHandler e) {
+      response.setContentType("application/json");
+      ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(
+          ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED.getCode(),
+          ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED.getMessage(),
+          null
+      );
+      ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.writeValue(response.getOutputStream(), baseResponseDto);
+      return;
+    } catch (JwtInvalidHandler e) {
+      response.setContentType("application/json");
+      ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(
+          ErrorStatus.JWT_UNSUPPORTED_TOKEN.getCode(),
+          ErrorStatus.JWT_UNSUPPORTED_TOKEN.getMessage(),
+          null
+      );
+      ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.writeValue(response.getOutputStream(), baseResponseDto);
+      return;
+    }
+    filterChain.doFilter(request, response);
+  }
 }
