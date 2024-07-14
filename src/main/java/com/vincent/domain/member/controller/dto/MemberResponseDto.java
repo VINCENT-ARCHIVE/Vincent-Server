@@ -18,4 +18,14 @@ public class MemberResponseDto {
         String accessToken;
         String refreshToken;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Reissue {
+
+        String accessToken;
+        String refreshToken;
+    }
 }

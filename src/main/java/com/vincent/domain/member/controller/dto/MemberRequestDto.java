@@ -13,4 +13,12 @@ public class MemberRequestDto {
 
         private String email;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Reissue {
+
+        private String refreshToken;
+    }
 }

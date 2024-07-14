@@ -11,4 +11,12 @@ public class MemberConverter {
             .refreshToken(refreshToken)
             .build();
     }
+
+    public static MemberResponseDto.Reissue toReissueResponse(String accessToken,
+        String refreshToken) {
+        return MemberResponseDto.Reissue.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+    }
 }
