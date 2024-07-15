@@ -27,5 +27,14 @@ public class BookmarkController {
     return ApiResponse.onSuccess(BookmarkConverter.toBookmarkResponse(result.getBookmarkId()));
   }
 
+  @DeleteMapping("/bookmark/{socketId}")
+  public ApiResponse<?> bookmarkDelete(@PathVariable("socketId") Long socketId,
+      Authentication authentication) {
+
+    Long memberId = Long.parseLong(authentication.getName());
+    bookmarkService.deleteBookmark(socketId, memberId);
+    return ApiResponse.onSuccess(null);
+  }
+
 
 }
