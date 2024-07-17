@@ -17,17 +17,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-  @Override
-  public void commence(HttpServletRequest request, HttpServletResponse response,
-      AuthenticationException authException) throws IOException, ServletException {
-    log.error("JwtAuthenticationEntryPoint 실행");
-    response.setContentType("application/json");
-    ApiResponse<Object> baseResponseDto =
-        ApiResponse.onFailure(
-            ErrorStatus.JWT_TOKEN_NOT_FOUND.getCode(),
-            ErrorStatus.JWT_TOKEN_NOT_FOUND.getMessage(),
-            null);
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.writeValue(response.getOutputStream(), baseResponseDto);
-  }
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+        AuthenticationException authException) throws IOException, ServletException {
+        log.error("JwtAuthenticationEntryPoint 실행");
+        response.setContentType("application/json");
+        ApiResponse<Object> baseResponseDto =
+            ApiResponse.onFailure(
+                ErrorStatus.JWT_TOKEN_NOT_FOUND.getCode(),
+                ErrorStatus.JWT_TOKEN_NOT_FOUND.getMessage(),
+                null);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.writeValue(response.getOutputStream(), baseResponseDto);
+    }
 }
