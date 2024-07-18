@@ -8,7 +8,6 @@ import com.vincent.domain.member.repository.MemberRepository;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.repository.SocketRepository;
 import com.vincent.exception.handler.ErrorHandler;
-import java.awt.print.Book;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,6 +42,22 @@ public class BookmarkService {
     }
 
   @Transactional
+  public void deleteBookmark(Long socketId, Long memberId) {
+
+    Member member = findMemberById(memberId);
+    Socket socket = findSocketById(socketId);
+
+    if (!isBookmarkExists(socket, member)) {
+      {
+        throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
+      }
+    }
+
+    delete(member, socket);
+
+  }
+
+  @Transactional
   public Page<Bookmark> findBookmarkList(Long memberId, Integer page) {
 
     Member member = findMemberById(memberId);
@@ -51,23 +66,29 @@ public class BookmarkService {
 
   }
 
-
-  @Getter
+    @Getter
     @AllArgsConstructor
     public static class BookmarkResult {
 
-        private Long bookmarkId;
-    }
-
+    private Long bookmarkId;
+  }
 
 
   @Transactional
   public Bookmark saveBookmark(Member member, Socket socket) {
-    return bookmarkRepository.save(Bookmark.builder()
+      return bookmarkRepository.save(Bookmark.builder().member(member).socket(socket).build());
+    }
+
+
+
+
+  public void delete(Member member, Socket socket) {
+    bookmarkRepository.delete(Bookmark.builder()
         .member(member)
         .socket(socket)
         .build());
   }
+
 
 
 

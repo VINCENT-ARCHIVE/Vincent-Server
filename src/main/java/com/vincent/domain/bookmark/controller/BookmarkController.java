@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +36,15 @@ public class BookmarkController {
         BookmarkService.BookmarkResult result = bookmarkService.bookmark(socketId, memberId);
         return ApiResponse.onSuccess(BookmarkConverter.toBookmarkResponse(result.getBookmarkId()));
     }
+
+   @DeleteMapping("/bookmark/{socketId}")
+   public ApiResponse<?> deleteBookmark(@PathVariable("socketId") Long socketId,
+      Authentication authentication) {
+
+      Long memberId = Long.parseLong(authentication.getName());
+      bookmarkService.deleteBookmark(socketId, memberId);
+      return ApiResponse.onSuccess(null);
+   }
 
   @GetMapping("/bookmark")
   public ApiResponse<BookmarkResponseDto.BookmarkListDto> bookmarkList(@RequestParam(name = "page") Integer page, Authentication authentication) {
