@@ -61,7 +61,7 @@ public class BookmarkServiceTest {
         when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
         when(bookmark.getId()).thenReturn(1L);
 
-        BookmarkService.BookmarkResult result = bookmarkService.Bookmark(socketId, memberId);
+        BookmarkService.BookmarkResult result = bookmarkService.bookmark(socketId, memberId);
 
         assertNotNull(result);
         assertEquals(1L, result.getBookmarkId());
@@ -76,7 +76,7 @@ public class BookmarkServiceTest {
         when(bookmarkRepository.existsBySocketAndMember(socket, member)).thenReturn(true);
 
         ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
-            bookmarkService.Bookmark(socketId, memberId);
+            bookmarkService.bookmark(socketId, memberId);
         });
 
         assertEquals(ErrorStatus.BOOKMARK_ALREADY_EXIST, thrown.getCode());
@@ -89,7 +89,7 @@ public class BookmarkServiceTest {
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.empty());
 
         ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
-            bookmarkService.Bookmark(socketId, memberId);
+            bookmarkService.bookmark(socketId, memberId);
         });
 
         assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
@@ -103,7 +103,7 @@ public class BookmarkServiceTest {
         when(socketRepository.findById(socketId)).thenReturn(java.util.Optional.empty());
 
         ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
-            bookmarkService.Bookmark(socketId, memberId);
+            bookmarkService.bookmark(socketId, memberId);
         });
 
         assertEquals(ErrorStatus.SOCKET_NOT_FOUND, thrown.getCode());
@@ -119,7 +119,7 @@ public class BookmarkServiceTest {
         when(bookmarkRepository.existsBySocketAndMember(socket, member)).thenReturn(false);
 
         assertThrows(RuntimeException.class, () -> {
-            bookmarkService.Bookmark(socketId, memberId);
+            bookmarkService.bookmark(socketId, memberId);
         });
 
         verify(bookmarkRepository, times(1)).save(any(Bookmark.class));
