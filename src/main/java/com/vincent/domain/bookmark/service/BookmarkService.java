@@ -73,7 +73,7 @@ public class BookmarkService {
         .build());
   }
 
-  @Transactional
+
   public void delete(Member member, Socket socket) {
     bookmarkRepository.delete(Bookmark.builder()
         .member(member)

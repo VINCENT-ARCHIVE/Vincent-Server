@@ -28,7 +28,7 @@ public class BookmarkController {
   }
 
   @DeleteMapping("/bookmark/{socketId}")
-  public ApiResponse<?> bookmarkDelete(@PathVariable("socketId") Long socketId,
+  public ApiResponse<?> deleteBookmark(@PathVariable("socketId") Long socketId,
       Authentication authentication) {
 
     Long memberId = Long.parseLong(authentication.getName());
