@@ -23,23 +23,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Socket {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "socket_id")
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "socket_id")
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "building_id", nullable = false)
-  private Building building;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "building_id", nullable = false)
+    private Building building;
 
-  private int holes;
+    private int holes;
 
-  private double xCoordinate;
+    private double xCoordinate;
 
-  private double yCoordinate;
+    private double yCoordinate;
 
-  @Column(columnDefinition = "TEXT")
-  private String image;
+    @Column(columnDefinition = "TEXT")
+    private String image;
 
   @Column(nullable = false, length = 20)
   private String name;

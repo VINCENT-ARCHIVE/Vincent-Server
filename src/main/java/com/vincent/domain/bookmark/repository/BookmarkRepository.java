@@ -10,12 +10,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
-
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
 
-  Boolean existsBySocketAndMember(Socket socket, Member member);
+    Boolean existsBySocketAndMember(Socket socket, Member member);
 
   Page<Bookmark> findAllByMember(Member member, PageRequest pageRequest);
 

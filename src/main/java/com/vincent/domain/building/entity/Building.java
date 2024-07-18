@@ -19,22 +19,22 @@ import lombok.NoArgsConstructor;
 public class Building {
 
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "building_id")
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "building_id")
+    private Long id;
 
-  @Column(nullable = false, length = 25)
-  private String name;
+    @Column(nullable = false, length = 25)
+    private String name;
 
-  @Column(nullable = false, length = 100)
-  private String address;
+    @Column(nullable = false, length = 100)
+    private String address;
 
-  @Column(columnDefinition = "TEXT")
-  private String image;
+    @Column(columnDefinition = "TEXT")
+    private String image;
 
-  private double xCoordinate;
+    private double xCoordinate;
 
-  private double yCoordinate;
+    private double yCoordinate;
 
 }

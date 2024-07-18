@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -19,16 +22,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1")
 public class BookmarkController {
 
-  private final BookmarkService bookmarkService;
+    private final BookmarkService bookmarkService;
 
-  @PostMapping("/bookmark/{socketId}")
-  public ApiResponse<BookmarkResponseDto.Bookmark> Bookmark(@PathVariable("socketId") Long socketId,
-      Authentication authentication) {
+    @PostMapping("/bookmark/{socketId}")
+    public ApiResponse<BookmarkResponseDto.Bookmark> bookmark(
+        @PathVariable("socketId") Long socketId,
+        Authentication authentication) {
 
-    Long memberId = Long.parseLong(authentication.getName());
-    BookmarkService.BookmarkResult result = bookmarkService.Bookmark(socketId, memberId);
-    return ApiResponse.onSuccess(BookmarkConverter.toBookmarkResponse(result.getBookmarkId()));
-  }
+        Long memberId = Long.parseLong(authentication.getName());
+        BookmarkService.BookmarkResult result = bookmarkService.bookmark(socketId, memberId);
+        return ApiResponse.onSuccess(BookmarkConverter.toBookmarkResponse(result.getBookmarkId()));
+    }
 
   @GetMapping("/bookmark")
   public ApiResponse<BookmarkResponseDto.BookmarkListDto> bookmarkList(@RequestParam(name = "page") Integer page, Authentication authentication) {

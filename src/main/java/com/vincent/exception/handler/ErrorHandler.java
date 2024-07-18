@@ -5,7 +5,7 @@ import com.vincent.exception.GeneralException;
 
 public class ErrorHandler extends GeneralException {
 
-  public ErrorHandler(BaseCode baseCode) {
-    super(baseCode);
-  }
+    public ErrorHandler(BaseCode baseCode) {
+        super(baseCode);
+    }
 }
