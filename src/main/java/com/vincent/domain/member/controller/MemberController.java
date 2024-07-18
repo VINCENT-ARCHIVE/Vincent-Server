@@ -5,6 +5,8 @@ import com.vincent.domain.member.controller.dto.MemberRequestDto;
 import com.vincent.domain.member.controller.dto.MemberResponseDto;
 import com.vincent.domain.member.converter.MemberConverter;
 import com.vincent.domain.member.service.MemberService;
+import com.vincent.domain.member.service.MemberService.LoginResult;
+import com.vincent.domain.member.service.MemberService.ReissueResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,9 +24,17 @@ public class MemberController {
 
     @PostMapping("/login")
     public ApiResponse<MemberResponseDto.Login> login(@RequestBody MemberRequestDto.Login request) {
-        MemberService.LoginResult result = memberService.login(request.getEmail());
+        LoginResult result = memberService.login(request.getEmail());
         return ApiResponse.onSuccess(
             MemberConverter.toLoginResponse(result.getAccessToken(), result.getRefreshToken()));
+    }
+
+    @PostMapping("/reissue")
+    public ApiResponse<MemberResponseDto.Reissue> reissue(
+        @RequestBody MemberRequestDto.Reissue request) {
+        ReissueResult result = memberService.reissue(request.getRefreshToken());
+        return ApiResponse.onSuccess(
+            MemberConverter.toReissueResponse(result.getAccessToken(), result.getRefreshToken()));
     }
 
 }

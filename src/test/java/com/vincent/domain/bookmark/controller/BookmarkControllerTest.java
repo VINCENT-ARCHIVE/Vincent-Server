@@ -43,7 +43,7 @@ public class BookmarkControllerTest {
         BookmarkService.BookmarkResult result = new BookmarkService.BookmarkResult(socketId);
 
         // Mocking 서비스 응답
-        when(bookmarkService.Bookmark(eq(socketId), eq(memberId))).thenReturn(result);
+        when(bookmarkService.bookmark(eq(socketId), eq(memberId))).thenReturn(result);
 
         // 요청 실행
         ResultActions resultActions = mockMvc.perform(post("/v1/bookmark/1")
@@ -68,7 +68,7 @@ public class BookmarkControllerTest {
         Long memberId = 1L; // 인증된 사용자 ID
 
         // Mocking 서비스 응답
-        when(bookmarkService.Bookmark(eq(socketId), eq(memberId)))
+        when(bookmarkService.bookmark(eq(socketId), eq(memberId)))
             .thenThrow(new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_EXIST));
 
         // 요청 실행
@@ -91,7 +91,7 @@ public class BookmarkControllerTest {
         Long memberId = 1L; // 인증된 사용자 ID
 
         // Mocking 서비스 응답
-        when(bookmarkService.Bookmark(eq(socketId), eq(memberId)))
+        when(bookmarkService.bookmark(eq(socketId), eq(memberId)))
             .thenThrow(new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 요청 실행
@@ -114,7 +114,7 @@ public class BookmarkControllerTest {
         Long memberId = 1L; // 인증된 사용자 ID
 
         // Mocking 서비스 응답
-        when(bookmarkService.Bookmark(eq(socketId), eq(memberId)))
+        when(bookmarkService.bookmark(eq(socketId), eq(memberId)))
             .thenThrow(new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
 
         // 요청 실행

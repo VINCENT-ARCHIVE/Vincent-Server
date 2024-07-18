@@ -23,17 +23,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Feedback {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "feedback_id")
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "feedback_id")
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "member_id", nullable = false)
-  private Member member;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
-  @Column(nullable = false, length = 300)
-  private String content;
+    @Column(nullable = false, length = 300)
+    private String content;
 
-  private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 }
