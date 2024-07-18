@@ -1,5 +1,6 @@
 package com.vincent.domain.bookmark.controller.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,5 +17,34 @@ public class BookmarkResponseDto {
   public static class Bookmark {
 
     Long bookmarkId;
+  }
+
+  @Builder
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class BookmarkListDto {
+
+    List<BookmarkDto> bookmarks;
+    Integer listSize;
+    Integer totalPage;
+    Long totalElements;
+    Boolean isFirst;
+    Boolean isLast;
+
+  }
+
+  @Builder
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class BookmarkDto {
+
+    Long bookmarkId;
+    Long socketId;
+    String socketName;
+    String socketImage;
+    String buildingName;
+
   }
 }
