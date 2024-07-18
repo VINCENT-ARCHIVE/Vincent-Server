@@ -6,11 +6,19 @@ import lombok.NoArgsConstructor;
 
 public class MemberRequestDto {
 
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class Login {
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Login {
 
-    private String email;
-  }
+        private String email;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Reissue {
+
+        private String refreshToken;
+    }
 }

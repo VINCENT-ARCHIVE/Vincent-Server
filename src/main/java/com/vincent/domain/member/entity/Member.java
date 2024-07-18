@@ -23,24 +23,24 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 public class Member {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "member_id")
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
+    private Long id;
 
-  @Column(length = 50)
-  private String email;
+    @Column(length = 50)
+    private String email;
 
-  @Column(length = 25)
-  private String name;
+    @Column(length = 25)
+    private String name;
 
-  @Enumerated(EnumType.STRING)
-  @Column(columnDefinition = "VARCHAR(10)")
-  private Gender gender;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(10)")
+    private Gender gender;
 
-  private int age;
+    private int age;
 
-  @ColumnDefault("false")
-  private boolean withdraw;
+    @ColumnDefault("false")
+    private boolean withdraw;
 
 }

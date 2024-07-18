@@ -19,58 +19,52 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class BookmarkService {
 
-  private final BookmarkRepository bookmarkRepository;
-  private final MemberRepository memberRepository;
-  private final SocketRepository socketRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final MemberRepository memberRepository;
+    private final SocketRepository socketRepository;
 
-  @Transactional
-  public BookmarkResult Bookmark(Long socketId, Long memberId) {
+    @Transactional
+    public BookmarkResult bookmark(Long socketId, Long memberId) {
 
-    Member member = findMemberById(memberId);
-    Socket socket = findSocketById(socketId);
+        Member member = findMemberById(memberId);
+        Socket socket = findSocketById(socketId);
 
-    if (isBookmarkExists(socket, member)) {
-      {
-        throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_EXIST);
-      }
+        if (isBookmarkExists(socket, member)) {
+            throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_EXIST);
+        }
+
+        Bookmark bookmark = saveBookmark(member, socket);
+
+        return new BookmarkResult(bookmark.getId());
     }
 
-    Bookmark bookmark = saveBookmark(member, socket);
+    @Getter
+    @AllArgsConstructor
+    public static class BookmarkResult {
 
-    return new BookmarkResult(bookmark.getId());
-  }
-
-  @Getter
-  @AllArgsConstructor
-  public static class BookmarkResult {
-
-    private Long bookmarkId;
-  }
+        private Long bookmarkId;
+    }
 
 
-
-  @Transactional
-  public Bookmark saveBookmark(Member member, Socket socket) {
-    return bookmarkRepository.save(Bookmark.builder()
-        .member(member)
-        .socket(socket)
-        .build());
-  }
+    @Transactional
+    public Bookmark saveBookmark(Member member, Socket socket) {
+        return bookmarkRepository.save(Bookmark.builder().member(member).socket(socket).build());
+    }
 
 
+    private Boolean isBookmarkExists(Socket socket, Member member) {
+        return bookmarkRepository.existsBySocketAndMember(socket, member);
+    }
 
-  private Boolean isBookmarkExists(Socket socket, Member member) {
-    return bookmarkRepository.existsBySocketAndMember(socket, member);
-  }
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+    }
 
-  private Member findMemberById(Long memberId) {
-    return memberRepository.findById(memberId).orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
-  }
-
-  private Socket findSocketById(Long socketId) {
-    return socketRepository.findById(socketId).orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
-  }
-
+    private Socket findSocketById(Long socketId) {
+        return socketRepository.findById(socketId)
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
+    }
 
 
 }
