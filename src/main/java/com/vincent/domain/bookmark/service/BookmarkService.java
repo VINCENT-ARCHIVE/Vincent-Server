@@ -38,18 +38,46 @@ public class BookmarkService {
         return new BookmarkResult(bookmark.getId());
     }
 
-    @Getter
-    @AllArgsConstructor
-    public static class BookmarkResult {
+  @Transactional
+  public void deleteBookmark(Long socketId, Long memberId) {
 
-        private Long bookmarkId;
+    Member member = findMemberById(memberId);
+    Socket socket = findSocketById(socketId);
+
+    if (!isBookmarkExists(socket, member)) {
+      {
+        throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
+      }
+    }
+
+    delete(member, socket);
+
+  }
+
+  @Getter
+  @AllArgsConstructor
+  public static class BookmarkResult {
+
+    private Long bookmarkId;
+  }
+
+
+  @Transactional
+  public Bookmark saveBookmark(Member member, Socket socket) {
+      return bookmarkRepository.save(Bookmark.builder().member(member).socket(socket).build());
     }
 
 
-    @Transactional
-    public Bookmark saveBookmark(Member member, Socket socket) {
-        return bookmarkRepository.save(Bookmark.builder().member(member).socket(socket).build());
-    }
+
+
+  public void delete(Member member, Socket socket) {
+    bookmarkRepository.delete(Bookmark.builder()
+        .member(member)
+        .socket(socket)
+        .build());
+  }
+
+
 
 
     private Boolean isBookmarkExists(Socket socket, Member member) {
