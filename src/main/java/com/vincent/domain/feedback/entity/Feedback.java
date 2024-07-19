@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @Getter
@@ -35,5 +36,7 @@ public class Feedback {
     @Column(nullable = false, length = 300)
     private String content;
 
+    @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 }
