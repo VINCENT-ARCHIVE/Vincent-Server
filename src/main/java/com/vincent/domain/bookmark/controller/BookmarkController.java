@@ -47,11 +47,11 @@ public class BookmarkController {
    }
 
   @GetMapping("/bookmark")
-  public ApiResponse<BookmarkResponseDto.BookmarkListDto> bookmarkList(@RequestParam(name = "page") Integer page, Authentication authentication) {
+  public ApiResponse<BookmarkResponseDto.BookmarkList> bookmarkList(@RequestParam(name = "page") Integer page, Authentication authentication) {
 
     Long memberId = Long.parseLong(authentication.getName());
     Page<Bookmark> bookmarkList = bookmarkService.findBookmarkList(memberId, page);
-    return ApiResponse.onSuccess(BookmarkConverter.bookmarkListDto(bookmarkList));
+    return ApiResponse.onSuccess(BookmarkConverter.toBookmarkListResponse(bookmarkList));
   }
 
 

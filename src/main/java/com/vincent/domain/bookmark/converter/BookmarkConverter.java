@@ -14,8 +14,8 @@ public class BookmarkConverter {
         .build();
   }
 
-  public static BookmarkResponseDto.BookmarkDto bookmarkDto(Bookmark bookmark){
-    return BookmarkResponseDto.BookmarkDto.builder()
+  public static BookmarkResponseDto.BookmarkDetail toBookmarkDetailResponse(Bookmark bookmark){
+    return BookmarkResponseDto.BookmarkDetail.builder()
         .bookmarkId(bookmark.getId())
         .socketId(bookmark.getSocket().getId())
         .socketName(bookmark.getSocket().getName())
@@ -23,18 +23,18 @@ public class BookmarkConverter {
         .buildingName(bookmark.getSocket().getBuilding().getName())
         .build();
   }
-  public static BookmarkResponseDto.BookmarkListDto bookmarkListDto(Page<Bookmark> bookmarkList){
+  public static BookmarkResponseDto.BookmarkList toBookmarkListResponse(Page<Bookmark> bookmarkList){
 
-    List<BookmarkResponseDto.BookmarkDto> bookmarkDtoList = bookmarkList.stream()
-        .map(BookmarkConverter::bookmarkDto).collect(Collectors.toList());
+    List<BookmarkResponseDto.BookmarkDetail> bookmarkDetailList = bookmarkList.stream()
+        .map(BookmarkConverter::toBookmarkDetailResponse).collect(Collectors.toList());
 
-    return BookmarkResponseDto.BookmarkListDto.builder()
+    return BookmarkResponseDto.BookmarkList.builder()
         .isLast(bookmarkList.isLast())
         .isFirst(bookmarkList.isFirst())
         .totalPage(bookmarkList.getTotalPages())
         .totalElements(bookmarkList.getTotalElements())
-        .listSize(bookmarkDtoList.size())
-        .bookmarks(bookmarkDtoList)
+        .listSize(bookmarkDetailList.size())
+        .bookmarkDetails(bookmarkDetailList)
         .build();
   }
 }

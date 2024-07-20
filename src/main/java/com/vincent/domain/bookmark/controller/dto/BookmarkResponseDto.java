@@ -21,9 +21,9 @@ public class BookmarkResponseDto {
   @Getter
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class BookmarkListDto {
+  public static class BookmarkList {
 
-    List<BookmarkDto> bookmarks;
+    List<BookmarkDetail> bookmarkDetails;
     Integer listSize;
     Integer totalPage;
     Long totalElements;
@@ -36,7 +36,7 @@ public class BookmarkResponseDto {
   @Getter
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class BookmarkDto {
+  public static class BookmarkDetail {
 
     Long bookmarkId;
     Long socketId;

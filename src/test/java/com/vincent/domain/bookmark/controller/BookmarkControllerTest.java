@@ -236,13 +236,13 @@ public class BookmarkControllerTest {
         when(bookmark.getSocket().getBuilding().getName()).thenReturn("buildingName");
 
         Page<Bookmark> bookmarkPage = new PageImpl<>(Collections.singletonList(bookmark), PageRequest.of(page, 10), 1);
-        BookmarkResponseDto.BookmarkListDto bookmarkListDto = new BookmarkResponseDto.BookmarkListDto(
-            Collections.singletonList(new BookmarkResponseDto.BookmarkDto(1L, 1L, "socketName", "socketImage", "buildingName")),
+        BookmarkResponseDto.BookmarkList bookmarkListDto = new BookmarkResponseDto.BookmarkList(
+            Collections.singletonList(new BookmarkResponseDto.BookmarkDetail(1L, 1L, "socketName", "socketImage", "buildingName")),
             1, 1, 1L, true, true
         );
 
         when(bookmarkService.findBookmarkList(eq(memberId), eq(page))).thenReturn(bookmarkPage);
-        when(BookmarkConverter.bookmarkListDto(eq(bookmarkPage))).thenReturn(bookmarkListDto);
+        when(BookmarkConverter.toBookmarkListResponse(eq(bookmarkPage))).thenReturn(bookmarkListDto);
 
         ResultActions resultActions = mockMvc.perform(get("/v1/bookmark")
             .param("page", String.valueOf(page))
