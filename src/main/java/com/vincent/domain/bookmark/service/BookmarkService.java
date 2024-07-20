@@ -57,7 +57,6 @@ public class BookmarkService {
 
   }
 
-  @Transactional
   public Page<Bookmark> findBookmarkList(Long memberId, Integer page) {
 
     Member member = findMemberById(memberId);
