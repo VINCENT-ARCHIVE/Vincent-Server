@@ -9,11 +9,16 @@ import com.vincent.domain.socket.entity.Socket;
 
 import com.vincent.domain.socket.repository.SocketRepository;
 import com.vincent.exception.handler.ErrorHandler;
+import java.util.Collections;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,8 +53,10 @@ public class BookmarkServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+
     Long socketId = 1L;
     Long memberId = 1L;
+    Integer page = 0;
 
 
     @Test
@@ -70,6 +77,7 @@ public class BookmarkServiceTest {
 
     @Test
     public void 북마크실패_이미북마크존재() {
+
 
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.of(member));
         when(socketRepository.findById(socketId)).thenReturn(java.util.Optional.of(socket));
@@ -98,6 +106,7 @@ public class BookmarkServiceTest {
 
     @Test
     public void 북마크실패_소켓없음() {
+
 
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.of(member));
         when(socketRepository.findById(socketId)).thenReturn(java.util.Optional.empty());
@@ -178,4 +187,33 @@ public class BookmarkServiceTest {
         assertEquals(ErrorStatus.SOCKET_NOT_FOUND, thrown.getCode());
         verify(bookmarkRepository, never()).delete(any(Bookmark.class));
     }
+
+    @Test
+    public void 북마크리스트조회성공() {
+
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        Page<Bookmark> bookmarkPage = new PageImpl<>(Collections.singletonList(bookmark), PageRequest.of(page, 10), 1);
+        when(bookmarkRepository.findAllByMember(any(Member.class), any(PageRequest.class))).thenReturn(bookmarkPage);
+
+        Page<Bookmark> result = bookmarkService.findBookmarkList(memberId, page);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(bookmark, result.getContent().get(0));
+    }
+
+    @Test
+    public void 북마크리스트조회실패_멤버없음() {
+
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+        ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
+            bookmarkService.findBookmarkList(memberId, page);
+        });
+
+        assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
+    }
 }
+

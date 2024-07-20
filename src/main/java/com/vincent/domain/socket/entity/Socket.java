@@ -41,5 +41,9 @@ public class Socket {
     @Column(columnDefinition = "TEXT")
     private String image;
 
+  @Column(nullable = false, length = 20)
+  private String name;
+
+
 
 }

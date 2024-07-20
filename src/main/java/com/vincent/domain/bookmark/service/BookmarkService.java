@@ -8,9 +8,12 @@ import com.vincent.domain.member.repository.MemberRepository;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.repository.SocketRepository;
 import com.vincent.exception.handler.ErrorHandler;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,9 +57,17 @@ public class BookmarkService {
 
   }
 
-  @Getter
-  @AllArgsConstructor
-  public static class BookmarkResult {
+  public Page<Bookmark> findBookmarkList(Long memberId, Integer page) {
+
+    Member member = findMemberById(memberId);
+
+    return bookmarkRepository.findAllByMember(member, PageRequest.of(page, 10));
+
+  }
+
+    @Getter
+    @AllArgsConstructor
+    public static class BookmarkResult {
 
     private Long bookmarkId;
   }
