@@ -25,6 +25,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -46,8 +47,8 @@ public class BookmarkControllerTest {
     @MockBean
     private BookmarkService bookmarkService;
 
-    @MockBean
-    private BookmarkConverter bookmarkConverter;
+    //@MockBean
+    //private BookmarkConverter bookmarkConverter;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -227,22 +228,31 @@ public class BookmarkControllerTest {
         int page = 0;
 
         Bookmark bookmark = Mockito.mock(Bookmark.class);
+
+        Socket socket = Mockito.mock(Socket.class);
+        when(socket.getId()).thenReturn(1L);
+        when(socket.getName()).thenReturn("socketName");
+        when(socket.getImage()).thenReturn("socketImage");
+
+        Building building = Mockito.mock(Building.class);
+        when(building.getName()).thenReturn("buildingName");
+
         when(bookmark.getId()).thenReturn(1L);
-        when(bookmark.getSocket()).thenReturn(Mockito.mock(Socket.class));
-        when(bookmark.getSocket().getId()).thenReturn(1L);
-        when(bookmark.getSocket().getName()).thenReturn("socketName");
-        when(bookmark.getSocket().getImage()).thenReturn("socketImage");
-        when(bookmark.getSocket().getBuilding()).thenReturn(Mockito.mock(Building.class));
-        when(bookmark.getSocket().getBuilding().getName()).thenReturn("buildingName");
+        when(bookmark.getSocket()).thenReturn(socket);
+        when(socket.getBuilding()).thenReturn(building);
 
         Page<Bookmark> bookmarkPage = new PageImpl<>(Collections.singletonList(bookmark), PageRequest.of(page, 10), 1);
+
+        BookmarkResponseDto.BookmarkDetail bookmarkDetail = new BookmarkResponseDto.BookmarkDetail(
+            1L, 1L, "socketName", "socketImage", "buildingName"
+        );
         BookmarkResponseDto.BookmarkList bookmarkListDto = new BookmarkResponseDto.BookmarkList(
-            Collections.singletonList(new BookmarkResponseDto.BookmarkDetail(1L, 1L, "socketName", "socketImage", "buildingName")),
+            Collections.singletonList(bookmarkDetail),
             1, 1, 1L, true, true
         );
 
         when(bookmarkService.findBookmarkList(eq(memberId), eq(page))).thenReturn(bookmarkPage);
-        when(BookmarkConverter.toBookmarkListResponse(eq(bookmarkPage))).thenReturn(bookmarkListDto);
+        when(BookmarkConverter.toBookmarkListResponse(any(Page.class))).thenReturn(bookmarkListDto);
 
         ResultActions resultActions = mockMvc.perform(get("/v1/bookmark")
             .param("page", String.valueOf(page))
