@@ -15,6 +15,7 @@ public class MemberResponseDto {
     @AllArgsConstructor
     public static class Login {
 
+        String grantType;
         String accessToken;
         String refreshToken;
     }

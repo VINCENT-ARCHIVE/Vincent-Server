@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
@@ -217,6 +218,27 @@ class MemberServiceTest {
             memberService.reissue(token);
         });
         Assertions.assertEquals(ErrorStatus.JWT_REFRESH_TOKEN_EXPIRED, thrown.getCode());
+    }
+
+    @Test
+    @DisplayName("로그아웃 - 성공")
+    public void 로그아웃(){
+        //given
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
+        RefreshToken refresh = RefreshToken.builder()
+            .memberId(1L)
+            .refreshToken("refreshToken")
+            .build();
+
+        //when
+        when(jwtProvider.getMemberId(refreshToken)).thenReturn(1L);
+        when(redisService.findRefreshToken(1L)).thenReturn(Optional.of(refresh));
+        doNothing().when(redisService).delete(refresh);
+        doNothing().when(redisService).blacklist(accessToken);
+
+        //then
+        memberService.logout(accessToken, refreshToken);
     }
 
 }

@@ -7,11 +7,12 @@ import com.vincent.domain.member.repository.MemberRepository;
 import com.vincent.exception.handler.ErrorHandler;
 import com.vincent.redis.entity.RefreshToken;
 import com.vincent.redis.service.RedisService;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +68,19 @@ public class MemberService {
             .getRefreshToken();
 
         return new ReissueResult(newAccessToken, newRefreshToken);
+    }
+
+    @Transactional
+    public void logout(String accessToken, String refreshToken) {
+        Long memberIdFromRefresh = jwtProvider.getMemberId(refreshToken);
+
+        //리프레시 토큰 삭제
+        Optional<RefreshToken> optionalRefreshToken = redisService.findRefreshToken(
+            memberIdFromRefresh);
+        optionalRefreshToken.ifPresent(redisService::delete);
+
+        //AccessToken의 유효시간을 가져와서 블랙리스트 생성
+        redisService.blacklist(accessToken);
     }
 
 
