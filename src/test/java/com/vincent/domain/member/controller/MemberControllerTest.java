@@ -2,6 +2,7 @@ package com.vincent.domain.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincent.apipayload.status.ErrorStatus;
+import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.controller.dto.MemberRequestDto;
 import com.vincent.domain.member.controller.dto.MemberResponseDto;
 import com.vincent.domain.member.controller.dto.MemberResponseDto.Reissue;
@@ -10,6 +11,7 @@ import com.vincent.domain.member.service.MemberService.ReissueResult;
 import com.vincent.exception.handler.ErrorHandler;
 import com.vincent.exception.handler.JwtExpiredHandler;
 import com.vincent.exception.handler.JwtInvalidHandler;
+import com.vincent.redis.service.RedisService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -191,5 +196,24 @@ class MemberControllerTest {
             .andExpect(jsonPath("$.isSuccess").value(false))
             .andExpect(jsonPath("$.code").value("JWT4003"))
             .andExpect(jsonPath("message").value("리프레시 토큰이 만료되었습니다. 다시 로그인하시기 바랍니다."));
+    }
+
+    @Test
+    @DisplayName("로그아웃")
+    public void 로그아웃() throws Exception {
+        //given
+        MemberRequestDto.Logout request = new MemberRequestDto.Logout("accessToken",
+            "refreshToken");
+
+        //when
+        doNothing().when(memberService).logout(request.getAccessToken(), request.getRefreshToken());
+
+        //then
+        mockMvc.perform(post("/v1/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk());
+
+        verify(memberService, times(1)).logout(request.getAccessToken(), request.getRefreshToken());
     }
 }

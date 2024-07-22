@@ -7,6 +7,7 @@ public class MemberConverter {
 
     public static MemberResponseDto.Login toLoginResponse(String accessToken, String refreshToken) {
         return MemberResponseDto.Login.builder()
+            .grantType("Bearer")
             .accessToken(accessToken)
             .refreshToken(refreshToken)
             .build();
