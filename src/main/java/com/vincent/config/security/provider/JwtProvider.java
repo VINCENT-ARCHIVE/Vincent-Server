@@ -3,11 +3,13 @@ package com.vincent.config.security.provider;
 import com.vincent.exception.handler.JwtExpiredHandler;
 import com.vincent.exception.handler.JwtInvalidHandler;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,6 +54,12 @@ public class JwtProvider implements InitializingBean {
             .getExpiration().before(new Date());
     }
 
+    public Long getExpireAccessMs(String accessToken) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken)
+            .getPayload()
+            .getExpiration().getTime();
+    }
+
     public String createAccessToken(Long memberId, String email) {
         return Jwts.builder().claim("memberId", memberId).claim("email", email)
             .issuedAt(new Date(System.currentTimeMillis()))
@@ -88,6 +96,14 @@ public class JwtProvider implements InitializingBean {
                  | NullPointerException e) {
             throw new JwtInvalidHandler("Invalid Token Exception");
         }
+    }
+
+    public String resolveToken(HttpServletRequest httpServletRequest) {
+        String bearerToken = httpServletRequest.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
 }

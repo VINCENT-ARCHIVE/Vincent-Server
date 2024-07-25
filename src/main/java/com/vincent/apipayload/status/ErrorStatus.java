@@ -25,6 +25,7 @@ public enum ErrorStatus implements BaseCode {
         "리프레시 토큰이 만료되었습니다. 다시 로그인하시기 바랍니다."),
     JWT_UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED, "JWT4004", "지원하지 않는 JWT 토큰입니다."),
     JWT_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "JWT4005", "유효한 JWT 토큰이 없습니다."),
+    JWT_TOKEN_LOGOUT(HttpStatus.BAD_REQUEST, "JWT4006", "로그아웃 처리된 토큰입니다."),
 
 
   // 북마크

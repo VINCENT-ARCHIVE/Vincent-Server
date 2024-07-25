@@ -8,6 +8,7 @@ import com.vincent.domain.member.service.MemberService;
 import com.vincent.domain.member.service.MemberService.LoginResult;
 import com.vincent.domain.member.service.MemberService.ReissueResult;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +36,12 @@ public class MemberController {
         ReissueResult result = memberService.reissue(request.getRefreshToken());
         return ApiResponse.onSuccess(
             MemberConverter.toReissueResponse(result.getAccessToken(), result.getRefreshToken()));
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<?> logout(@RequestBody MemberRequestDto.Logout request) {
+        memberService.logout(request.getAccessToken(), request.getRefreshToken());
+        return ApiResponse.onSuccess(null);
     }
 
 }
