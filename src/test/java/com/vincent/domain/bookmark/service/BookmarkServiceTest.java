@@ -215,5 +215,50 @@ public class BookmarkServiceTest {
 
         assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
     }
+
+    @Test
+    public void 북마크여부조회성공() {
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(socketRepository.findById(socketId)).thenReturn(Optional.of(socket));
+        when(bookmarkRepository.existsBySocketAndMember(socket, member)).thenReturn(true);
+
+        Boolean result = bookmarkService.getBookmarkExist(socketId, memberId);
+
+        assertTrue(result);
+        verify(memberRepository).findById(memberId);
+        verify(socketRepository).findById(socketId);
+        verify(bookmarkRepository).existsBySocketAndMember(socket, member);
+    }
+
+    @Test
+    public void 북마크여부조회실패_멤버없음() {
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+        when(socketRepository.findById(socketId)).thenReturn(Optional.of(socket));
+
+        ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
+            bookmarkService.getBookmarkExist(socketId, memberId);
+        });
+
+        assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
+        verify(bookmarkRepository, never()).existsBySocketAndMember(any(Socket.class), any(Member.class));
+    }
+
+    @Test
+    public void 북마크여부조회실패_소켓없음() {
+
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(socketRepository.findById(socketId)).thenReturn(Optional.empty());
+
+        ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
+            bookmarkService.getBookmarkExist(socketId, memberId);
+        });
+
+        assertEquals(ErrorStatus.SOCKET_NOT_FOUND, thrown.getCode());
+        verify(bookmarkRepository, never()).existsBySocketAndMember(any(Socket.class), any(Member.class));
+    }
+
 }
 

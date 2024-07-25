@@ -288,4 +288,57 @@ public class BookmarkControllerTest {
             .andExpect(jsonPath("$.code").value(ErrorStatus.MEMBER_NOT_FOUND.getReason().getCode()))
             .andExpect(jsonPath("$.message").value(ErrorStatus.MEMBER_NOT_FOUND.getReason().getMessage()));
     }
+
+    @Test
+    @WithMockUser(username = "1")
+    public void 북마크여부조회성공() throws Exception {
+
+        Boolean result = true;
+
+        when(bookmarkService.getBookmarkExist(socketId, memberId)).thenReturn(result);
+
+        ResultActions resultActions = mockMvc.perform(get("/v1/bookmark/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(SecurityMockMvcRequestPostProcessors.csrf()));
+
+        resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$.isSuccess").value(true))
+            .andExpect(jsonPath("$.code").value("COMMON200"))
+            .andExpect(jsonPath("$.message").value("성공입니다"))
+            .andExpect(jsonPath("$.result.isBookmarkExist").value(result));
+    }
+
+    @Test
+    @WithMockUser(username = "1")
+    public void 북마크여부조회실패_멤버없음() throws Exception {
+
+        when(bookmarkService.getBookmarkExist(eq(socketId), eq(memberId)))
+            .thenThrow(new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        ResultActions resultActions = mockMvc.perform(get("/v1/bookmark/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(SecurityMockMvcRequestPostProcessors.csrf()));
+
+        resultActions.andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.isSuccess").value(false))
+            .andExpect(jsonPath("$.code").value(ErrorStatus.MEMBER_NOT_FOUND.getReason().getCode()))
+            .andExpect(jsonPath("$.message").value(ErrorStatus.MEMBER_NOT_FOUND.getReason().getMessage()));
+    }
+
+    @Test
+    @WithMockUser(username = "1")
+    public void 북마크여부조회실패_소켓없음() throws Exception {
+
+        when(bookmarkService.getBookmarkExist(eq(socketId), eq(memberId)))
+            .thenThrow(new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
+
+        ResultActions resultActions = mockMvc.perform(get("/v1/bookmark/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(SecurityMockMvcRequestPostProcessors.csrf()));
+
+        resultActions.andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.isSuccess").value(false))
+            .andExpect(jsonPath("$.code").value(ErrorStatus.SOCKET_NOT_FOUND.getReason().getCode()))
+            .andExpect(jsonPath("$.message").value(ErrorStatus.SOCKET_NOT_FOUND.getReason().getMessage()));
+    }
 }
