@@ -37,4 +37,10 @@ public class BookmarkConverter {
         .bookmarkDetails(bookmarkDetailList)
         .build();
   }
+
+  public static BookmarkResponseDto.BookmarkExistence toBookmarkExistenceResponse(Boolean result) {
+    return BookmarkResponseDto.BookmarkExistence.builder()
+        .isBookmarkExist(result)
+        .build();
+  }
 }

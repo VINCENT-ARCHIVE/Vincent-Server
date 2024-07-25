@@ -65,6 +65,14 @@ public class BookmarkService {
 
   }
 
+  public Boolean getBookmarkExist(Long socketId, Long memberId) {
+
+    Socket socket = findSocketById(socketId);
+    Member member = findMemberById(memberId);
+
+    return isBookmarkExists(socket, member);
+  }
+
     @Getter
     @AllArgsConstructor
     public static class BookmarkResult {
