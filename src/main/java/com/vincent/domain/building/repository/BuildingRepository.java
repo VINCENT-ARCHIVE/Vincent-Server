@@ -1,5 +1,8 @@
 package com.vincent.domain.building.repository;
 
-public class BuildingRepository {
+import com.vincent.domain.building.entity.Building;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BuildingRepository extends JpaRepository<Building, Long> {
 
 }
