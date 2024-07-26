@@ -45,4 +45,13 @@ public class BookmarkResponseDto {
     String buildingName;
 
   }
+
+  @Builder
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class BookmarkExistence {
+
+    Boolean isBookmarkExist;
+  }
 }
