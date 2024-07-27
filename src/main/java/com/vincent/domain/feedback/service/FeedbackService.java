@@ -6,7 +6,6 @@ import com.vincent.domain.feedback.repository.FeedbackRepository;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.member.repository.MemberRepository;
 import com.vincent.exception.handler.ErrorHandler;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,22 +14,22 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FeedbackService {
 
-  FeedbackRepository feedbackRepository;
+    FeedbackRepository feedbackRepository;
 
-  MemberRepository memberRepository;
+    MemberRepository memberRepository;
 
-  @Transactional
-  public void addFeedback(String contents, Long memberId) {
+    @Transactional
+    public void addFeedback(String contents, Long memberId) {
 
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-    Feedback feedback = Feedback.builder()
-        .content(contents)
-        .member(member)
-        .build();
+        Feedback feedback = Feedback.builder()
+                .content(contents)
+                .member(member)
+                .build();
 
-    feedbackRepository.save(feedback);
-  }
+        feedbackRepository.save(feedback);
+    }
 
 }

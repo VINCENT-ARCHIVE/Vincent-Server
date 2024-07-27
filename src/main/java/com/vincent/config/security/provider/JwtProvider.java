@@ -36,60 +36,64 @@ public class JwtProvider implements InitializingBean {
 
     public Long getMemberId(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
-            .get("memberId", Long.class);
+                .get("memberId", Long.class);
     }
 
     public String getEmail(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
-            .get("email", String.class);
+                .get("email", String.class);
     }
 
     public String getRole(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
-            .get("role", String.class);
+                .get("role", String.class);
     }
 
     public Boolean isExpired(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
-            .getExpiration().before(new Date());
+                .getExpiration().before(new Date());
     }
 
     public Long getExpireAccessMs(String accessToken) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken)
-            .getPayload()
-            .getExpiration().getTime();
+                .getPayload()
+                .getExpiration().getTime();
     }
 
     public String createAccessToken(Long memberId, String email) {
         return Jwts.builder().claim("memberId", memberId).claim("email", email)
-            .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expireAccessMs)).signWith(secretKey)
-            .compact();
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expireAccessMs))
+                .signWith(secretKey)
+                .compact();
     }
 
     public String createAccessToken(String email) {
         return Jwts.builder().claim("email", email).issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expireAccessMs)).signWith(secretKey)
-            .compact();
+                .expiration(new Date(System.currentTimeMillis() + expireAccessMs))
+                .signWith(secretKey)
+                .compact();
     }
 
     public String createRefreshToken(Long memberId, String email) {
         return Jwts.builder().claim("memberId", memberId).claim("email", email)
-            .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expireRefreshMs)).signWith(secretKey)
-            .compact();
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expireRefreshMs))
+                .signWith(secretKey)
+                .compact();
     }
 
     public String createRefreshToken(String email) {
         return Jwts.builder().claim("email", email).issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expireRefreshMs)).signWith(secretKey)
-            .compact();
+                .expiration(new Date(System.currentTimeMillis() + expireRefreshMs))
+                .signWith(secretKey)
+                .compact();
     }
 
     public void validateToken(String token) {
         try {
             Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
-                .getExpiration();
+                    .getExpiration();
         } catch (ExpiredJwtException e) {
             throw new JwtExpiredHandler("Expired Token Exception");
         } catch (UnsupportedJwtException | SecurityException | MalformedJwtException

@@ -27,15 +27,16 @@ public class MemberController {
     public ApiResponse<MemberResponseDto.Login> login(@RequestBody MemberRequestDto.Login request) {
         LoginResult result = memberService.login(request.getEmail());
         return ApiResponse.onSuccess(
-            MemberConverter.toLoginResponse(result.getAccessToken(), result.getRefreshToken()));
+                MemberConverter.toLoginResponse(result.getAccessToken(), result.getRefreshToken()));
     }
 
     @PostMapping("/reissue")
     public ApiResponse<MemberResponseDto.Reissue> reissue(
-        @RequestBody MemberRequestDto.Reissue request) {
+            @RequestBody MemberRequestDto.Reissue request) {
         ReissueResult result = memberService.reissue(request.getRefreshToken());
         return ApiResponse.onSuccess(
-            MemberConverter.toReissueResponse(result.getAccessToken(), result.getRefreshToken()));
+                MemberConverter.toReissueResponse(result.getAccessToken(),
+                        result.getRefreshToken()));
     }
 
     @PostMapping("/logout")

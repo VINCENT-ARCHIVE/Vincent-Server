@@ -33,8 +33,8 @@ public class MemberService {
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
         Member member = optionalMember.orElseGet(() -> {
             Member newMember = Member.builder()
-                .email(email)
-                .build();
+                    .email(email)
+                    .build();
             return memberRepository.save(newMember);
         });
 
@@ -51,7 +51,7 @@ public class MemberService {
 
         //memberId로 Redis에서 리프레시 토큰 조회
         RefreshToken refreshToken = redisService.findRefreshToken(memberId)
-            .orElseThrow(() -> new ErrorHandler(ErrorStatus.JWT_REFRESH_TOKEN_EXPIRED));
+                .orElseThrow(() -> new ErrorHandler(ErrorStatus.JWT_REFRESH_TOKEN_EXPIRED));
 
         //탈취 검증
         //만약 사용자가 보낸 토큰이랑 Redis에서 조회한 토큰이 다르다면 토큰이 탈취되었을 가능성이 있다
@@ -61,11 +61,11 @@ public class MemberService {
         }
 
         Member member = memberRepository.findById(refreshToken.getMemberId())
-            .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         String newAccessToken = jwtProvider.createAccessToken(member.getId(), member.getEmail());
         String newRefreshToken = redisService.reGenerateRefreshToken(member, refreshToken)
-            .getRefreshToken();
+                .getRefreshToken();
 
         return new ReissueResult(newAccessToken, newRefreshToken);
     }
@@ -76,7 +76,7 @@ public class MemberService {
 
         //리프레시 토큰 삭제
         Optional<RefreshToken> optionalRefreshToken = redisService.findRefreshToken(
-            memberIdFromRefresh);
+                memberIdFromRefresh);
         optionalRefreshToken.ifPresent(redisService::delete);
 
         //AccessToken의 유효시간을 가져와서 블랙리스트 생성

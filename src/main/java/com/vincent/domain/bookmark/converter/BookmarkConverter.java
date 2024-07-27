@@ -8,39 +8,42 @@ import org.springframework.data.domain.Page;
 
 public class BookmarkConverter {
 
-  public static BookmarkResponseDto.Bookmark toBookmarkResponse(Long bookmarkId) {
-    return BookmarkResponseDto.Bookmark.builder()
-        .bookmarkId(bookmarkId)
-        .build();
-  }
+    public static BookmarkResponseDto.Bookmark toBookmarkResponse(Long bookmarkId) {
+        return BookmarkResponseDto.Bookmark.builder()
+                .bookmarkId(bookmarkId)
+                .build();
+    }
 
-  public static BookmarkResponseDto.BookmarkDetail toBookmarkDetailResponse(Bookmark bookmark){
-    return BookmarkResponseDto.BookmarkDetail.builder()
-        .bookmarkId(bookmark.getId())
-        .socketId(bookmark.getSocket().getId())
-        .socketName(bookmark.getSocket().getName())
-        .socketImage(bookmark.getSocket().getImage())
-        .buildingName(bookmark.getSocket().getBuilding().getName())
-        .build();
-  }
-  public static BookmarkResponseDto.BookmarkList toBookmarkListResponse(Page<Bookmark> bookmarkList){
+    public static BookmarkResponseDto.BookmarkDetail toBookmarkDetailResponse(Bookmark bookmark) {
+        return BookmarkResponseDto.BookmarkDetail.builder()
+                .bookmarkId(bookmark.getId())
+                .socketId(bookmark.getSocket().getId())
+                .socketName(bookmark.getSocket().getName())
+                .socketImage(bookmark.getSocket().getImage())
+                .buildingName(bookmark.getSocket().getBuilding().getName())
+                .build();
+    }
 
-    List<BookmarkResponseDto.BookmarkDetail> bookmarkDetailList = bookmarkList.stream()
-        .map(BookmarkConverter::toBookmarkDetailResponse).collect(Collectors.toList());
+    public static BookmarkResponseDto.BookmarkList toBookmarkListResponse(
+            Page<Bookmark> bookmarkList) {
 
-    return BookmarkResponseDto.BookmarkList.builder()
-        .isLast(bookmarkList.isLast())
-        .isFirst(bookmarkList.isFirst())
-        .totalPage(bookmarkList.getTotalPages())
-        .totalElements(bookmarkList.getTotalElements())
-        .listSize(bookmarkDetailList.size())
-        .bookmarkDetails(bookmarkDetailList)
-        .build();
-  }
+        List<BookmarkResponseDto.BookmarkDetail> bookmarkDetailList = bookmarkList.stream()
+                .map(BookmarkConverter::toBookmarkDetailResponse).collect(Collectors.toList());
 
-  public static BookmarkResponseDto.BookmarkExistence toBookmarkExistenceResponse(Boolean result) {
-    return BookmarkResponseDto.BookmarkExistence.builder()
-        .isBookmarkExist(result)
-        .build();
-  }
+        return BookmarkResponseDto.BookmarkList.builder()
+                .isLast(bookmarkList.isLast())
+                .isFirst(bookmarkList.isFirst())
+                .totalPage(bookmarkList.getTotalPages())
+                .totalElements(bookmarkList.getTotalElements())
+                .listSize(bookmarkDetailList.size())
+                .bookmarkDetails(bookmarkDetailList)
+                .build();
+    }
+
+    public static BookmarkResponseDto.BookmarkExistence toBookmarkExistenceResponse(
+            Boolean result) {
+        return BookmarkResponseDto.BookmarkExistence.builder()
+                .isBookmarkExist(result)
+                .build();
+    }
 }

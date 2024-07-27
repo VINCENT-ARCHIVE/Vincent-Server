@@ -18,12 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1")
 public class BuildingController {
 
-  private final BuildingService buildingService;
+    private final BuildingService buildingService;
 
-  @GetMapping("/building/{buildingId}")
-  public ApiResponse<BuildingResponseDto.BuildingInfo> buildingInfo(@PathVariable("buildingId") Long buildingId) {
-    Building result = buildingService.getBuildingInfo(buildingId);
-    return ApiResponse.onSuccess(BuildingConverter.toBuildingInfoResponse(result));
-  }
+    @GetMapping("/building/{buildingId}")
+    public ApiResponse<BuildingResponseDto.BuildingInfo> buildingInfo(
+            @PathVariable("buildingId") Long buildingId) {
+        Building result = buildingService.getBuildingInfo(buildingId);
+        return ApiResponse.onSuccess(BuildingConverter.toBuildingInfoResponse(result));
+    }
 
 }

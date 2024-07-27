@@ -21,7 +21,7 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> onSuccess(T result) {
         return new ApiResponse<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(),
-            result);
+                result);
     }
 
     public static <T> ApiResponse<T> onFailure(String code, String message, T data) {

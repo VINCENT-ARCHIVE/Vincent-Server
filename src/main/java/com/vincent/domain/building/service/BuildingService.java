@@ -13,15 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class BuildingService {
 
-  private final BuildingRepository buildingRepository;
+    private final BuildingRepository buildingRepository;
 
-  public Building getBuildingInfo(Long buildingId) {
+    public Building getBuildingInfo(Long buildingId) {
 
-    return buildingRepository.findById(buildingId)
-        .orElseThrow(() -> new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND));
-  }
-
-
+        return buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND));
+    }
 
 
 }
