@@ -1,6 +1,7 @@
 package com.vincent.domain.bookmark.controller;
 
 import com.vincent.apipayload.ApiResponse;
+import com.vincent.config.security.principal.PrincipalDetails;
 import com.vincent.domain.bookmark.controller.dto.BookmarkResponseDto;
 import com.vincent.domain.bookmark.converter.BookmarkConverter;
 import com.vincent.domain.bookmark.entity.Bookmark;
@@ -40,30 +41,32 @@ public class BookmarkController {
         return ApiResponse.onSuccess(BookmarkConverter.toBookmarkResponse(result.getBookmarkId()));
     }
 
-   @DeleteMapping("/bookmark/{socketId}")
-   public ApiResponse<?> deleteBookmark(@PathVariable("socketId") Long socketId,
-      Authentication authentication) {
+    @DeleteMapping("/bookmark/{socketId}")
+    public ApiResponse<?> deleteBookmark(@PathVariable("socketId") Long socketId,
+        Authentication authentication) {
 
-      Long memberId = Long.parseLong(authentication.getName());
-      bookmarkService.deleteBookmark(socketId, memberId);
-      return ApiResponse.onSuccess(null);
-   }
+        Long memberId = Long.parseLong(authentication.getName());
+        bookmarkService.deleteBookmark(socketId, memberId);
+        return ApiResponse.onSuccess(null);
+    }
 
-  @GetMapping("/bookmark")
-  public ApiResponse<BookmarkResponseDto.BookmarkList> bookmarkList(@RequestParam(name = "page") Integer page, Authentication authentication) {
+    @GetMapping("/bookmark")
+    public ApiResponse<BookmarkResponseDto.BookmarkList> bookmarkList(
+        @RequestParam(name = "page") Integer page, Authentication authentication) {
 
-    Long memberId = Long.parseLong(authentication.getName());
-    Page<Bookmark> bookmarkList = bookmarkService.findBookmarkList(memberId, page);
-    return ApiResponse.onSuccess(BookmarkConverter.toBookmarkListResponse(bookmarkList));
-  }
+        Long memberId = Long.parseLong(authentication.getName());
+        Page<Bookmark> bookmarkList = bookmarkService.findBookmarkList(memberId, page);
+        return ApiResponse.onSuccess(BookmarkConverter.toBookmarkListResponse(bookmarkList));
+    }
 
-  @GetMapping("/bookmark/{socketId}")
-  public ApiResponse<BookmarkResponseDto.BookmarkExistence> getBookmarkExist(@PathVariable("socketId") Long socketId,
-      Authentication authentication) {
-    Long memberId = Long.parseLong(authentication.getName());
-    Boolean result = bookmarkService.getBookmarkExist(socketId, memberId);
-    return ApiResponse.onSuccess(BookmarkConverter.toBookmarkExistenceResponse(result));
-  }
+    @GetMapping("/bookmark/{socketId}")
+    public ApiResponse<BookmarkResponseDto.BookmarkExistence> getBookmarkExist(
+        @PathVariable("socketId") Long socketId,
+        Authentication authentication) {
+        Long memberId = Long.parseLong(authentication.getName());
+        Boolean result = bookmarkService.getBookmarkExist(socketId, memberId);
+        return ApiResponse.onSuccess(BookmarkConverter.toBookmarkExistenceResponse(result));
+    }
 
 
 }
