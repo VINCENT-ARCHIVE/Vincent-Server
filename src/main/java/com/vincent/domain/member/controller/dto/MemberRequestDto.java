@@ -26,6 +26,7 @@ public class MemberRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Logout {
+
         private String accessToken;
         private String refreshToken;
     }
