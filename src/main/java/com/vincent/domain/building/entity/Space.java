@@ -1,7 +1,5 @@
-package com.vincent.domain.socket.entity;
+package com.vincent.domain.building.entity;
 
-import com.vincent.domain.building.entity.Building;
-import com.vincent.domain.building.entity.Space;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,38 +14,26 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Entity
-@Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class Socket {
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@Getter
+public class Space {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "socket_id")
+    @Column(name = "space_id")
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "building_id", nullable = false)
-//    private Building building;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "space_id", nullable = false)
-    private Space space;
-
-    private int holes;
+    @JoinColumn(name = "floor_id", nullable = false)
+    private Floor floor;
 
     private double xCoordinate;
 
     private double yCoordinate;
 
-    @Column(columnDefinition = "TEXT")
-    private String image;
-
-    @Column(nullable = false, length = 20)
     private String name;
-
 
 }

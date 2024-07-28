@@ -26,13 +26,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1")
 public class FeedbackController {
 
-  private final FeedbackService feedbackService;
+    private final FeedbackService feedbackService;
 
-  @PostMapping("/feedback")
-  public ApiResponse<?> addFeedback(@RequestBody @Valid FeedbackRequestDto.addFeedbackDto request, Authentication authentication) {
-    Long memberId = Long.parseLong(authentication.getName());
-    feedbackService.addFeedback(request.getContents(), memberId);
-    return ApiResponse.onSuccess(null);
-  }
+    @PostMapping("/feedback")
+    public ApiResponse<?> addFeedback(@RequestBody @Valid FeedbackRequestDto.addFeedbackDto request,
+        Authentication authentication) {
+        Long memberId = Long.parseLong(authentication.getName());
+        feedbackService.addFeedback(request.getContents(), memberId);
+        return ApiResponse.onSuccess(null);
+    }
 
 }

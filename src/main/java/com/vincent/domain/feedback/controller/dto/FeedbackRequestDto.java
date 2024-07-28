@@ -10,16 +10,16 @@ import lombok.Setter;
 
 public class FeedbackRequestDto {
 
-  @Getter
-  @Setter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  @Builder
-  public static class addFeedbackDto {
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class addFeedbackDto {
 
-    @NotNull
-    @Size(max = 300)
-    String contents;
-  }
+        @NotNull
+        @Size(max = 300)
+        String contents;
+    }
 
 }

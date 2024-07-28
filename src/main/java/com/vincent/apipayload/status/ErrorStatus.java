@@ -28,9 +28,9 @@ public enum ErrorStatus implements BaseCode {
     JWT_TOKEN_LOGOUT(HttpStatus.BAD_REQUEST, "JWT4006", "로그아웃 처리된 토큰입니다."),
 
 
-  // 북마크
-  BOOKMARK_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "이미 북마크에 추가된 콘센트입니다."),
-  BOOKMARK_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "이미 북마크에서 삭제된 콘센트입니다."),
+    // 북마크
+    BOOKMARK_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "이미 북마크에 추가된 콘센트입니다."),
+    BOOKMARK_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "이미 북마크에서 삭제된 콘센트입니다."),
 
     // 멤버
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER4001", "회원 정보를 찾을 수 없습니다."),

@@ -15,22 +15,22 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FeedbackService {
 
-  FeedbackRepository feedbackRepository;
+    FeedbackRepository feedbackRepository;
 
-  MemberRepository memberRepository;
+    MemberRepository memberRepository;
 
-  @Transactional
-  public void addFeedback(String contents, Long memberId) {
+    @Transactional
+    public void addFeedback(String contents, Long memberId) {
 
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-    Feedback feedback = Feedback.builder()
-        .content(contents)
-        .member(member)
-        .build();
+        Feedback feedback = Feedback.builder()
+            .content(contents)
+            .member(member)
+            .build();
 
-    feedbackRepository.save(feedback);
-  }
+        feedbackRepository.save(feedback);
+    }
 
 }
