@@ -239,7 +239,7 @@ public class BookmarkControllerTest {
 
         when(bookmark.getId()).thenReturn(1L);
         when(bookmark.getSocket()).thenReturn(socket);
-        when(socket.getBuilding()).thenReturn(building);
+//        when(socket.getBuilding()).thenReturn(building);
 
         Page<Bookmark> bookmarkPage = new PageImpl<>(Collections.singletonList(bookmark), PageRequest.of(page, 10), 1);
 

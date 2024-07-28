@@ -8,50 +8,50 @@ import lombok.NoArgsConstructor;
 
 public class BookmarkResponseDto {
 
-  @Builder
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class Bookmark {
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Bookmark {
 
-    Long bookmarkId;
-  }
+        Long bookmarkId;
+    }
 
-  @Builder
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class BookmarkList {
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BookmarkList {
 
-    List<BookmarkDetail> bookmarkDetails;
-    Integer listSize;
-    Integer totalPage;
-    Long totalElements;
-    Boolean isFirst;
-    Boolean isLast;
+        List<BookmarkDetail> bookmarkDetails;
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
 
-  }
+    }
 
-  @Builder
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class BookmarkDetail {
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BookmarkDetail {
 
-    Long bookmarkId;
-    Long socketId;
-    String socketName;
-    String socketImage;
-    String buildingName;
+        Long bookmarkId;
+        Long socketId;
+        String socketName;
+        String socketImage;
+        String buildingName;
 
-  }
+    }
 
-  @Builder
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class BookmarkExistence {
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BookmarkExistence {
 
-    Boolean isBookmarkExist;
-  }
+        Boolean isBookmarkExist;
+    }
 }

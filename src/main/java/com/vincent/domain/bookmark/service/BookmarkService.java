@@ -41,62 +41,58 @@ public class BookmarkService {
         return new BookmarkResult(bookmark.getId());
     }
 
-  @Transactional
-  public void deleteBookmark(Long socketId, Long memberId) {
+    @Transactional
+    public void deleteBookmark(Long socketId, Long memberId) {
 
-    Member member = findMemberById(memberId);
-    Socket socket = findSocketById(socketId);
+        Member member = findMemberById(memberId);
+        Socket socket = findSocketById(socketId);
 
-    if (!isBookmarkExists(socket, member)) {
-      {
-        throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
-      }
+        if (!isBookmarkExists(socket, member)) {
+            {
+                throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
+            }
+        }
+
+        delete(member, socket);
+
     }
 
-    delete(member, socket);
+    public Page<Bookmark> findBookmarkList(Long memberId, Integer page) {
 
-  }
+        Member member = findMemberById(memberId);
 
-  public Page<Bookmark> findBookmarkList(Long memberId, Integer page) {
+        return bookmarkRepository.findAllByMember(member, PageRequest.of(page, 10));
 
-    Member member = findMemberById(memberId);
+    }
 
-    return bookmarkRepository.findAllByMember(member, PageRequest.of(page, 10));
+    public Boolean getBookmarkExist(Long socketId, Long memberId) {
 
-  }
+        Socket socket = findSocketById(socketId);
+        Member member = findMemberById(memberId);
 
-  public Boolean getBookmarkExist(Long socketId, Long memberId) {
-
-    Socket socket = findSocketById(socketId);
-    Member member = findMemberById(memberId);
-
-    return isBookmarkExists(socket, member);
-  }
+        return isBookmarkExists(socket, member);
+    }
 
     @Getter
     @AllArgsConstructor
     public static class BookmarkResult {
 
-    private Long bookmarkId;
-  }
-
-
-  @Transactional
-  public Bookmark saveBookmark(Member member, Socket socket) {
-      return bookmarkRepository.save(Bookmark.builder().member(member).socket(socket).build());
+        private Long bookmarkId;
     }
 
 
+    @Transactional
+    public Bookmark saveBookmark(Member member, Socket socket) {
+        return bookmarkRepository.save(Bookmark.builder().member(member).socket(socket).build());
+    }
 
 
-  public void delete(Member member, Socket socket) {
-    bookmarkRepository.delete(Bookmark.builder()
-        .member(member)
-        .socket(socket)
-        .build());
-  }
-
-
+    public void delete(Member member, Socket socket) {
+        bookmarkRepository.delete(Bookmark.builder()
+            .member(member)
+            .socket(socket)
+            .build());
+    }
 
 
     private Boolean isBookmarkExists(Socket socket, Member member) {
