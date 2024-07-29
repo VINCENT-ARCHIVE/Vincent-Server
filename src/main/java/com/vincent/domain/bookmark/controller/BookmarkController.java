@@ -1,6 +1,7 @@
 package com.vincent.domain.bookmark.controller;
 
 import com.vincent.apipayload.ApiResponse;
+import com.vincent.config.security.principal.PrincipalDetails;
 import com.vincent.domain.bookmark.controller.dto.BookmarkResponseDto;
 import com.vincent.domain.bookmark.converter.BookmarkConverter;
 import com.vincent.domain.bookmark.entity.Bookmark;

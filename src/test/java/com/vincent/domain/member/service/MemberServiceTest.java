@@ -11,6 +11,7 @@ import com.vincent.exception.handler.JwtExpiredHandler;
 import com.vincent.exception.handler.JwtInvalidHandler;
 import com.vincent.redis.entity.RefreshToken;
 import com.vincent.redis.service.RedisService;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -241,4 +242,37 @@ class MemberServiceTest {
         memberService.logout(accessToken, refreshToken);
     }
 
+    @Test
+    @DisplayName("회원탈퇴 - 성공")
+    public void 회원탈퇴(){
+        //given
+        Long memberId = 1L;
+        Member member = Member.builder()
+            .id(1L)
+            .email("test@gmail.com")
+            .build();
+        //when
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        memberService.withdraw(memberId);
+
+        //then
+        Assertions.assertTrue(member.isWithdraw());
+    }
+
+    @Test
+    @DisplayName("회원탈퇴 - 실패")
+    public void 회원탈퇴실패(){
+        //given
+        Long memberId = 1L;
+
+        //when
+        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class, () -> {
+            memberService.withdraw(memberId);
+        });
+
+        //then
+        Assertions.assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
+
+    }
 }

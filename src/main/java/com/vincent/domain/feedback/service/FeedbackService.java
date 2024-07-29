@@ -15,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FeedbackService {
 
-    FeedbackRepository feedbackRepository;
+    private final FeedbackRepository feedbackRepository;
 
-    MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void addFeedback(String contents, Long memberId) {
