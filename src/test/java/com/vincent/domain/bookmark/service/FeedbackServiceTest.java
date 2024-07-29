@@ -25,52 +25,51 @@ import org.mockito.MockitoAnnotations;
 
 public class FeedbackServiceTest {
 
-  @InjectMocks
-  private FeedbackService feedbackService;
+    @InjectMocks
+    private FeedbackService feedbackService;
 
-  @Mock
-  private MemberRepository memberRepository;
+    @Mock
+    private MemberRepository memberRepository;
 
-  @Mock
-  private FeedbackRepository feedbackRepository;
+    @Mock
+    private FeedbackRepository feedbackRepository;
 
-  @Mock
-  private Member member;
+    @Mock
+    private Member member;
 
-  @Mock
-  private Feedback feedback;
+    @Mock
+    private Feedback feedback;
 
-  @BeforeEach
-  public void setUp() {
-    MockitoAnnotations.openMocks(this);
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
 
-  }
+    }
 
-  Long memberId = 1L;
-  String contents = "test contents";
+    Long memberId = 1L;
+    String contents = "test contents";
 
-  @Test
-  public void 피드백생성성공() {
+    @Test
+    public void 피드백생성성공() {
 
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 
-    when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        feedbackService.addFeedback(contents, memberId);
 
-    feedbackService.addFeedback(contents, memberId);
+        verify(feedbackRepository, times(1)).save(any(Feedback.class));
+    }
 
-    verify(feedbackRepository, times(1)).save(any(Feedback.class));
-  }
+    @Test
+    public void 피드백생성실패_멤버없음() {
 
-  @Test
-  public void 피드백생성실패_멤버없음() {
+        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
 
-    when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+        ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
+            feedbackService.addFeedback(contents, memberId);
+        });
 
-    ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
-      feedbackService.addFeedback(contents, memberId);
-    });
-
-    assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
-    verify(feedbackRepository, never()).save(any(Feedback.class));
-  }
+        assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
+        verify(feedbackRepository, never()).save(any(Feedback.class));
+    }
 
 }
