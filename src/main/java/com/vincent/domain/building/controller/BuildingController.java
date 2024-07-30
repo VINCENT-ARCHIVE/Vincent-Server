@@ -31,8 +31,8 @@ public class BuildingController {
 
     @GetMapping("/building")
     public ApiResponse<BuildingResponseDto.BuildingList> buildingList(
-            @RequestParam("contents") String contents,
-            @RequestParam("page") Integer page) {
+        @RequestParam("contents") String contents,
+        @RequestParam("page") Integer page) {
         Page<Building> buildingPage = buildingService.getBuildingSearch(contents, page);
         return ApiResponse.onSuccess(BuildingConverter.toBuildingListResponse(buildingPage));
     }

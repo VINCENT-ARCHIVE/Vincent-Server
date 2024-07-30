@@ -22,17 +22,19 @@ public class BuildingConverter {
     }
 
     public static BuildingResponseDto.BuildingList toBuildingListResponse(
-            Page<Building> result) {
+        Page<Building> result) {
+
         List<BuildingResponseDto.BuildingInfo> buildingInfoList = result.stream()
                 .map(BuildingConverter::toBuildingInfoResponse).collect(Collectors.toList());
+
         return BuildingResponseDto.BuildingList.builder()
-                .isFirst(result.isFirst())
-                .isLast(result.isLast())
-                .totalPage(result.getTotalPages())
-                .totalElements(result.getTotalElements())
-                .listSize(buildingInfoList.size())
-                .buildingInfos(buildingInfoList)
-                .build();
+            .isFirst(result.isFirst())
+            .isLast(result.isLast())
+            .totalPage(result.getTotalPages())
+            .totalElements(result.getTotalElements())
+            .listSize(buildingInfoList.size())
+            .buildingInfos(buildingInfoList)
+            .build();
     }
 
 }
