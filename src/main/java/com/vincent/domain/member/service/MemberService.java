@@ -83,6 +83,13 @@ public class MemberService {
         redisService.blacklist(accessToken);
     }
 
+    @Transactional
+    public void withdraw(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        member.delete();
+    }
+
 
     @Getter
     @AllArgsConstructor

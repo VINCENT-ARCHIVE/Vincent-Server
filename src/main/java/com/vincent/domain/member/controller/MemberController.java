@@ -1,6 +1,7 @@
 package com.vincent.domain.member.controller;
 
 import com.vincent.apipayload.ApiResponse;
+import com.vincent.config.security.principal.PrincipalDetails;
 import com.vincent.domain.member.controller.dto.MemberRequestDto;
 import com.vincent.domain.member.controller.dto.MemberResponseDto;
 import com.vincent.domain.member.converter.MemberConverter;
@@ -10,6 +11,7 @@ import com.vincent.domain.member.service.MemberService.ReissueResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +44,14 @@ public class MemberController {
     @PostMapping("/logout")
     public ApiResponse<?> logout(@RequestBody MemberRequestDto.Logout request) {
         memberService.logout(request.getAccessToken(), request.getRefreshToken());
+        return ApiResponse.onSuccess(null);
+    }
+
+    @DeleteMapping("/withdraw")
+    public ApiResponse<?> withdraw(Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Long memberId = principal.getMemberId();
+        memberService.withdraw(memberId);
         return ApiResponse.onSuccess(null);
     }
 

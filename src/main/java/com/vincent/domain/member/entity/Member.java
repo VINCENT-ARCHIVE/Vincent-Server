@@ -8,12 +8,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Where;
 
 
 @Entity
@@ -21,6 +23,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Where(clause = "withdraw = false")
 public class Member {
 
     @Id
@@ -43,4 +46,10 @@ public class Member {
     @ColumnDefault("false")
     private boolean withdraw;
 
+    private LocalDateTime deletedAt;
+
+    public void delete() {
+        this.withdraw = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 }

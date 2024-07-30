@@ -2,36 +2,43 @@ package com.vincent.domain.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincent.apipayload.status.ErrorStatus;
-import com.vincent.config.security.provider.JwtProvider;
+import com.vincent.config.security.principal.PrincipalDetails;
 import com.vincent.domain.member.controller.dto.MemberRequestDto;
-import com.vincent.domain.member.controller.dto.MemberResponseDto;
-import com.vincent.domain.member.controller.dto.MemberResponseDto.Reissue;
+import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.member.service.MemberService;
 import com.vincent.domain.member.service.MemberService.ReissueResult;
 import com.vincent.exception.handler.ErrorHandler;
 import com.vincent.exception.handler.JwtExpiredHandler;
 import com.vincent.exception.handler.JwtInvalidHandler;
-import com.vincent.redis.service.RedisService;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.securityContext;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.testSecurityContext;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -47,7 +54,6 @@ class MemberControllerTest {
     private MemberService memberService;
     @Autowired
     private ObjectMapper objectMapper;
-
     @Test
     @DisplayName("로그인")
     public void 로그인() throws Exception {
@@ -216,4 +222,26 @@ class MemberControllerTest {
 
         verify(memberService, times(1)).logout(request.getAccessToken(), request.getRefreshToken());
     }
+
+//    @Test
+//    @DisplayName("회원탈퇴 - 성공")
+//    @WithMockUser(username = "1")
+//    public void 회원탈퇴() throws Exception {
+//        // given
+//        Long memberId = 1L;
+//
+//        doNothing().when(memberService).withdraw(memberId);
+//
+//        // when & then
+//        ResultActions resultActions = mockMvc.perform(delete("/v1/withdraw")
+//                .contentType(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isOk());
+//
+//        resultActions.andExpect(status().isOk())
+//            .andExpect(jsonPath("$.isSuccess").value(true))
+//            .andExpect(jsonPath("$.code").value("COMMON200"))
+//            .andExpect(jsonPath("$.message").value("성공입니다"));
+//    }
+
+
 }
