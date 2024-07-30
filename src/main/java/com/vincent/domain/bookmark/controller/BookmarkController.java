@@ -28,8 +28,8 @@ public class BookmarkController {
 
     @PostMapping("/bookmark/{socketId}")
     public ApiResponse<BookmarkResponseDto.Bookmark> bookmark(
-            @PathVariable("socketId") Long socketId,
-            Authentication authentication) {
+        @PathVariable("socketId") Long socketId,
+        Authentication authentication) {
 
         Long memberId = Long.parseLong(authentication.getName());
         BookmarkService.BookmarkResult result = bookmarkService.bookmark(socketId, memberId);
@@ -38,7 +38,7 @@ public class BookmarkController {
 
     @DeleteMapping("/bookmark/{socketId}")
     public ApiResponse<?> deleteBookmark(@PathVariable("socketId") Long socketId,
-            Authentication authentication) {
+        Authentication authentication) {
 
         Long memberId = Long.parseLong(authentication.getName());
         bookmarkService.deleteBookmark(socketId, memberId);
@@ -47,7 +47,7 @@ public class BookmarkController {
 
     @GetMapping("/bookmark")
     public ApiResponse<BookmarkResponseDto.BookmarkList> bookmarkList(
-            @RequestParam(name = "page") Integer page, Authentication authentication) {
+        @RequestParam(name = "page") Integer page, Authentication authentication) {
 
         Long memberId = Long.parseLong(authentication.getName());
         Page<Bookmark> bookmarkList = bookmarkService.findBookmarkList(memberId, page);
@@ -56,8 +56,8 @@ public class BookmarkController {
 
     @GetMapping("/bookmark/{socketId}")
     public ApiResponse<BookmarkResponseDto.BookmarkExistence> getBookmarkExist(
-            @PathVariable("socketId") Long socketId,
-            Authentication authentication) {
+        @PathVariable("socketId") Long socketId,
+        Authentication authentication) {
         Long memberId = Long.parseLong(authentication.getName());
         Boolean result = bookmarkService.getBookmarkExist(socketId, memberId);
         return ApiResponse.onSuccess(BookmarkConverter.toBookmarkExistenceResponse(result));

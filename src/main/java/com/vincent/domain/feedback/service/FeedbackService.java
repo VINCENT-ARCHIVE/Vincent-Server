@@ -22,12 +22,12 @@ public class FeedbackService {
     public void addFeedback(String contents, Long memberId) {
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         Feedback feedback = Feedback.builder()
-                .content(contents)
-                .member(member)
-                .build();
+            .content(contents)
+            .member(member)
+            .build();
 
         feedbackRepository.save(feedback);
     }

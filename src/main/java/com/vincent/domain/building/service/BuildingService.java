@@ -20,7 +20,7 @@ public class BuildingService {
     public Building getBuildingInfo(Long buildingId) {
 
         return buildingRepository.findById(buildingId)
-                .orElseThrow(() -> new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND));
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND));
     }
 
     public Page<Building> getBuildingSearch(String contents, Integer page) {

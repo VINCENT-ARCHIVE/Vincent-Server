@@ -22,7 +22,7 @@ public class FeedbackController {
 
     @PostMapping("/feedback")
     public ApiResponse<?> addFeedback(@RequestBody @Valid FeedbackRequestDto.addFeedbackDto request,
-            Authentication authentication) {
+        Authentication authentication) {
         Long memberId = Long.parseLong(authentication.getName());
         feedbackService.addFeedback(request.getContents(), memberId);
         return ApiResponse.onSuccess(null);

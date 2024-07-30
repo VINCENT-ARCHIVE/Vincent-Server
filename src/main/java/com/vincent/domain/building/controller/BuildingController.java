@@ -24,7 +24,7 @@ public class BuildingController {
 
     @GetMapping("/building/{buildingId}")
     public ApiResponse<BuildingResponseDto.BuildingInfo> buildingInfo(
-            @PathVariable("buildingId") Long buildingId) {
+        @PathVariable("buildingId") Long buildingId) {
         Building result = buildingService.getBuildingInfo(buildingId);
         return ApiResponse.onSuccess(BuildingConverter.toBuildingInfoResponse(result));
     }

@@ -48,9 +48,9 @@ public class BookmarkService {
         Socket socket = findSocketById(socketId);
 
         if (!isBookmarkExists(socket, member)) {
-                {
-                    throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
-                }
+            {
+                throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
+            }
         }
 
         delete(member, socket);
@@ -89,9 +89,9 @@ public class BookmarkService {
 
     public void delete(Member member, Socket socket) {
         bookmarkRepository.delete(Bookmark.builder()
-                .member(member)
-                .socket(socket)
-                .build());
+            .member(member)
+            .socket(socket)
+            .build());
     }
 
 
@@ -101,12 +101,12 @@ public class BookmarkService {
 
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
 
     private Socket findSocketById(Long socketId) {
         return socketRepository.findById(socketId)
-                .orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
     }
 
 
