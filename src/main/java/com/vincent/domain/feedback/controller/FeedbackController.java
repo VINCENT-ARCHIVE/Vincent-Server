@@ -1,6 +1,7 @@
 package com.vincent.domain.feedback.controller;
 
 import com.vincent.apipayload.ApiResponse;
+import com.vincent.config.security.principal.PrincipalDetails;
 import com.vincent.domain.feedback.controller.dto.FeedbackRequestDto;
 import com.vincent.domain.feedback.service.FeedbackService;
 import com.vincent.domain.member.controller.dto.MemberRequestDto;
@@ -31,7 +32,9 @@ public class FeedbackController {
     @PostMapping("/feedback")
     public ApiResponse<?> addFeedback(@RequestBody @Valid FeedbackRequestDto.addFeedbackDto request,
         Authentication authentication) {
-        Long memberId = Long.parseLong(authentication.getName());
+
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        Long memberId = principalDetails.getMemberId();
         feedbackService.addFeedback(request.getContents(), memberId);
         return ApiResponse.onSuccess(null);
     }

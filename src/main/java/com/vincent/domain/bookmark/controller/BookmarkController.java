@@ -36,7 +36,8 @@ public class BookmarkController {
         @PathVariable("socketId") Long socketId,
         Authentication authentication) {
 
-        Long memberId = Long.parseLong(authentication.getName());
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        Long memberId = principalDetails.getMemberId();
         BookmarkService.BookmarkResult result = bookmarkService.bookmark(socketId, memberId);
         return ApiResponse.onSuccess(BookmarkConverter.toBookmarkResponse(result.getBookmarkId()));
     }
@@ -45,7 +46,8 @@ public class BookmarkController {
     public ApiResponse<?> deleteBookmark(@PathVariable("socketId") Long socketId,
         Authentication authentication) {
 
-        Long memberId = Long.parseLong(authentication.getName());
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        Long memberId = principalDetails.getMemberId();
         bookmarkService.deleteBookmark(socketId, memberId);
         return ApiResponse.onSuccess(null);
     }
@@ -54,7 +56,8 @@ public class BookmarkController {
     public ApiResponse<BookmarkResponseDto.BookmarkList> bookmarkList(
         @RequestParam(name = "page") Integer page, Authentication authentication) {
 
-        Long memberId = Long.parseLong(authentication.getName());
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        Long memberId = principalDetails.getMemberId();
         Page<Bookmark> bookmarkList = bookmarkService.findBookmarkList(memberId, page);
         return ApiResponse.onSuccess(BookmarkConverter.toBookmarkListResponse(bookmarkList));
     }
@@ -63,7 +66,9 @@ public class BookmarkController {
     public ApiResponse<BookmarkResponseDto.BookmarkExistence> getBookmarkExist(
         @PathVariable("socketId") Long socketId,
         Authentication authentication) {
-        Long memberId = Long.parseLong(authentication.getName());
+
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        Long memberId = principalDetails.getMemberId();
         Boolean result = bookmarkService.getBookmarkExist(socketId, memberId);
         return ApiResponse.onSuccess(BookmarkConverter.toBookmarkExistenceResponse(result));
     }
