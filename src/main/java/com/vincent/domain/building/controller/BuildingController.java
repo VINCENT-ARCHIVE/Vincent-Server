@@ -29,11 +29,11 @@ public class BuildingController {
         return ApiResponse.onSuccess(BuildingConverter.toBuildingInfoResponse(result));
     }
 
-    @GetMapping("/building")
+    @GetMapping("/building/search")
     public ApiResponse<BuildingResponseDto.BuildingList> buildingList(
-        @RequestParam("contents") String contents,
+        @RequestParam("keyword") String keyword,
         @RequestParam("page") Integer page) {
-        Page<Building> buildingPage = buildingService.getBuildingSearch(contents, page);
+        Page<Building> buildingPage = buildingService.getBuildingSearch(keyword, page);
         return ApiResponse.onSuccess(BuildingConverter.toBuildingListResponse(buildingPage));
     }
 

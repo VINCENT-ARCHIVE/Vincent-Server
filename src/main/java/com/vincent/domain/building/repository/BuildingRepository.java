@@ -11,16 +11,16 @@ import org.springframework.data.repository.query.Param;
 public interface BuildingRepository extends JpaRepository<Building, Long> {
 
     @SuppressWarnings("checkstyle:OperatorWrap")
-    @Query(value = "SELECT * FROM Building b WHERE b.name LIKE CONCAT('%', :contents, '%') " +
+    @Query(value = "SELECT * FROM Building b WHERE b.name LIKE CONCAT('%', :keyword, '%') " +
             "ORDER BY CASE " +
-            "WHEN b.name = :contents THEN 0 " +
-            "WHEN b.name LIKE CONCAT(:contents, '%') THEN 1 " +
-            "WHEN b.name LIKE CONCAT('%', :contents, '%') THEN 2 " +
-            "WHEN b.name LIKE CONCAT('%', :contents) THEN 3 " +
+            "WHEN b.name = :keyword THEN 0 " +
+            "WHEN b.name LIKE CONCAT(:keyword, '%') THEN 1 " +
+            "WHEN b.name LIKE CONCAT('%', :keyword, '%') THEN 2 " +
+            "WHEN b.name LIKE CONCAT('%', :keyword) THEN 3 " +
             "ELSE 4 END",
-            countQuery = "SELECT count(*) FROM Building b WHERE b.name LIKE CONCAT('%', :contents, '%')",
+            countQuery = "SELECT count(*) FROM Building b WHERE b.name LIKE CONCAT('%', :keyword, '%')",
             nativeQuery = true)
-    Page<Building> findByNameContainingOrderBySimilarity(@Param("contents") String contents,
+    Page<Building> findByNameContainingOrderBySimilarity(@Param("keyword") String keyword,
             PageRequest pageRequest);
 
 }

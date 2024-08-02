@@ -23,9 +23,9 @@ public class BuildingService {
             .orElseThrow(() -> new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND));
     }
 
-    public Page<Building> getBuildingSearch(String contents, Integer page) {
+    public Page<Building> getBuildingSearch(String keyword, Integer page) {
 
-        return buildingRepository.findByNameContainingOrderBySimilarity(contents,
+        return buildingRepository.findByNameContainingOrderBySimilarity(keyword,
                 PageRequest.of(page, 10));
     }
 

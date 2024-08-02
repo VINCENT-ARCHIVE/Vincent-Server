@@ -95,7 +95,7 @@ public class BuildingControllerTest {
     @WithMockUser
     public void 빌딩검색성공() throws Exception {
 
-        String contents = "test";
+        String keyword = "test";
         int page = 0;
         Building building1 = Mockito.mock(Building.class);
         when(building1.getId()).thenReturn(1L);
@@ -113,10 +113,10 @@ public class BuildingControllerTest {
         Pageable pageable = PageRequest.of(page, 10);
         Page<Building> buildingPage = new PageImpl<>(buildings, pageable, buildings.size());
 
-        when(buildingService.getBuildingSearch(contents, page)).thenReturn(buildingPage);
+        when(buildingService.getBuildingSearch(keyword, page)).thenReturn(buildingPage);
 
-        ResultActions resultActions = mockMvc.perform(get("/v1/building")
-                .param("contents", contents)
+        ResultActions resultActions = mockMvc.perform(get("/v1/building/search")
+                .param("keyword", keyword)
                 .param("page", String.valueOf(page))
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));

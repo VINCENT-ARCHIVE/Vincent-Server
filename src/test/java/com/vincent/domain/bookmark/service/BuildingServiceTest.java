@@ -72,7 +72,7 @@ public class BuildingServiceTest {
     @Test
     public void 빌딩검색성공() {
 
-        String contents = "test";
+        String keyword = "test";
         int page = 0;
 
         Building building1 = Mockito.mock(Building.class);
@@ -91,10 +91,10 @@ public class BuildingServiceTest {
         Pageable pageable = PageRequest.of(page, 10);
         Page<Building> buildingPage = new PageImpl<>(buildings, pageable, buildings.size());
 
-        when(buildingRepository.findByNameContainingOrderBySimilarity(contents,
+        when(buildingRepository.findByNameContainingOrderBySimilarity(keyword,
                 PageRequest.of(page, 10))).thenReturn(buildingPage);
 
-        Page<Building> result = buildingService.getBuildingSearch(contents, page);
+        Page<Building> result = buildingService.getBuildingSearch(keyword, page);
 
         assertEquals(buildingPage, result);
         assertEquals(2, result.getTotalElements());
