@@ -1,4 +1,5 @@
 package com.vincent.domain.bookmark.service;
+
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.bookmark.entity.Bookmark;
 import com.vincent.domain.bookmark.repository.BookmarkRepository;
@@ -78,7 +79,6 @@ public class BookmarkServiceTest {
     @Test
     public void 북마크실패_이미북마크존재() {
 
-
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.of(member));
         when(socketRepository.findById(socketId)).thenReturn(java.util.Optional.of(socket));
         when(bookmarkRepository.existsBySocketAndMember(socket, member)).thenReturn(true);
@@ -107,7 +107,6 @@ public class BookmarkServiceTest {
     @Test
     public void 북마크실패_소켓없음() {
 
-
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.of(member));
         when(socketRepository.findById(socketId)).thenReturn(java.util.Optional.empty());
 
@@ -121,7 +120,6 @@ public class BookmarkServiceTest {
 
     @Test
     public void 북마크실패_북마크없음() {
-
 
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.of(member));
         when(socketRepository.findById(socketId)).thenReturn(java.util.Optional.of(socket));
@@ -191,10 +189,11 @@ public class BookmarkServiceTest {
     @Test
     public void 북마크리스트조회성공() {
 
-
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
-        Page<Bookmark> bookmarkPage = new PageImpl<>(Collections.singletonList(bookmark), PageRequest.of(page, 10), 1);
-        when(bookmarkRepository.findAllByMember(any(Member.class), any(PageRequest.class))).thenReturn(bookmarkPage);
+        Page<Bookmark> bookmarkPage = new PageImpl<>(Collections.singletonList(bookmark),
+                PageRequest.of(page, 10), 1);
+        when(bookmarkRepository.findAllByMember(any(Member.class),
+                any(PageRequest.class))).thenReturn(bookmarkPage);
 
         Page<Bookmark> result = bookmarkService.findBookmarkList(memberId, page);
 
@@ -205,7 +204,6 @@ public class BookmarkServiceTest {
 
     @Test
     public void 북마크리스트조회실패_멤버없음() {
-
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
 
@@ -242,12 +240,12 @@ public class BookmarkServiceTest {
         });
 
         assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
-        verify(bookmarkRepository, never()).existsBySocketAndMember(any(Socket.class), any(Member.class));
+        verify(bookmarkRepository, never()).existsBySocketAndMember(any(Socket.class),
+                any(Member.class));
     }
 
     @Test
     public void 북마크여부조회실패_소켓없음() {
-
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(socketRepository.findById(socketId)).thenReturn(Optional.empty());
@@ -257,7 +255,8 @@ public class BookmarkServiceTest {
         });
 
         assertEquals(ErrorStatus.SOCKET_NOT_FOUND, thrown.getCode());
-        verify(bookmarkRepository, never()).existsBySocketAndMember(any(Socket.class), any(Member.class));
+        verify(bookmarkRepository, never()).existsBySocketAndMember(any(Socket.class),
+                any(Member.class));
     }
 
 }

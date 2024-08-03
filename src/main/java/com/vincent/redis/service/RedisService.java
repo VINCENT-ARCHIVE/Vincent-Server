@@ -25,10 +25,10 @@ public class RedisService {
     public RefreshToken generateRefreshToken(Member member) {
         String refreshToken = jwtProvider.createRefreshToken(member.getId(), member.getEmail());
         return refreshTokenRepository.save(
-            RefreshToken.builder()
-                .memberId(member.getId())
-                .refreshToken(refreshToken)
-                .build()
+                RefreshToken.builder()
+                        .memberId(member.getId())
+                        .refreshToken(refreshToken)
+                        .build()
         );
     }
 
@@ -46,10 +46,10 @@ public class RedisService {
         refreshTokenRepository.delete(refreshToken);
         String newRefreshToken = jwtProvider.createRefreshToken(member.getId(), member.getEmail());
         return refreshTokenRepository.save(
-            RefreshToken.builder()
-                .memberId(member.getId())
-                .refreshToken(newRefreshToken)
-                .build()
+                RefreshToken.builder()
+                        .memberId(member.getId())
+                        .refreshToken(newRefreshToken)
+                        .build()
         );
     }
 
@@ -66,7 +66,7 @@ public class RedisService {
     public void blacklist(String accessToken) {
         Long expireAccessMs = jwtProvider.getExpireAccessMs(accessToken);
         redisTemplate.opsForValue()
-            .set(accessToken, "logout", expireAccessMs, TimeUnit.MILLISECONDS);
+                .set(accessToken, "logout", expireAccessMs, TimeUnit.MILLISECONDS);
     }
 
     /**

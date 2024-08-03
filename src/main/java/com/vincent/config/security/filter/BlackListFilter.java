@@ -22,7 +22,7 @@ public class BlackListFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-        FilterChain filterChain) throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
 
         String accessToken = jwtProvider.resolveToken(request);
         if (accessToken == null) {
@@ -32,9 +32,9 @@ public class BlackListFilter extends OncePerRequestFilter {
         if (redisService.isBlacklisted(accessToken)) {
             response.setContentType("application/json");
             ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(
-                ErrorStatus.JWT_TOKEN_LOGOUT.getCode(),
-                ErrorStatus.JWT_TOKEN_LOGOUT.getMessage(),
-                null
+                    ErrorStatus.JWT_TOKEN_LOGOUT.getCode(),
+                    ErrorStatus.JWT_TOKEN_LOGOUT.getMessage(),
+                    null
             );
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writeValue(response.getOutputStream(), baseResponseDto);

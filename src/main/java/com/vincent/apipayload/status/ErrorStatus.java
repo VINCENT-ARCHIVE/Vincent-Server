@@ -22,7 +22,7 @@ public enum ErrorStatus implements BaseCode {
     JWT_BAD_REQUEST(HttpStatus.UNAUTHORIZED, "JWT4001", "잘못된 JWT 서명입니다."),
     JWT_ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT4002", "액세스 토큰이 만료되었습니다."),
     JWT_REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT4003",
-        "리프레시 토큰이 만료되었습니다. 다시 로그인하시기 바랍니다."),
+            "리프레시 토큰이 만료되었습니다. 다시 로그인하시기 바랍니다."),
     JWT_UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED, "JWT4004", "지원하지 않는 JWT 토큰입니다."),
     JWT_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "JWT4005", "유효한 JWT 토큰이 없습니다."),
     JWT_TOKEN_LOGOUT(HttpStatus.BAD_REQUEST, "JWT4006", "로그아웃 처리된 토큰입니다."),
@@ -49,19 +49,19 @@ public enum ErrorStatus implements BaseCode {
     @Override
     public ReasonDto getReason() {
         return ReasonDto.builder()
-            .message(message)
-            .code(code)
-            .isSuccess(false)
-            .build();
+                .message(message)
+                .code(code)
+                .isSuccess(false)
+                .build();
     }
 
     @Override
     public ReasonDto getReasonHttpStatus() {
         return ReasonDto.builder()
-            .httpStatus(httpStatus)
-            .isSuccess(false)
-            .message(message)
-            .code(code)
-            .build();
+                .httpStatus(httpStatus)
+                .isSuccess(false)
+                .message(message)
+                .code(code)
+                .build();
     }
 }

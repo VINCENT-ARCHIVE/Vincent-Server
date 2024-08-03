@@ -29,8 +29,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-        FilterChain filterChain)
-        throws ServletException, IOException {
+            FilterChain filterChain)
+            throws ServletException, IOException {
 
         String accessToken = jwtProvider.resolveToken(request);
         if (accessToken == null) {
@@ -43,22 +43,22 @@ public class JwtFilter extends OncePerRequestFilter {
             String email = jwtProvider.getEmail(accessToken);
 
             Member member = Member.builder()
-                .id(memberId)
-                .email(email)
-                .build();
+                    .id(memberId)
+                    .email(email)
+                    .build();
 
             PrincipalDetails principalDetails = new PrincipalDetails(member);
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                principalDetails,
-                null,
-                principalDetails.getAuthorities());
+                    principalDetails,
+                    null,
+                    principalDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (JwtExpiredHandler e) {
             response.setContentType("application/json");
             ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(
-                ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED.getCode(),
-                ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED.getMessage(),
-                null
+                    ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED.getCode(),
+                    ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED.getMessage(),
+                    null
             );
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writeValue(response.getOutputStream(), baseResponseDto);
@@ -66,9 +66,9 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (JwtInvalidHandler e) {
             response.setContentType("application/json");
             ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(
-                ErrorStatus.JWT_UNSUPPORTED_TOKEN.getCode(),
-                ErrorStatus.JWT_UNSUPPORTED_TOKEN.getMessage(),
-                null
+                    ErrorStatus.JWT_UNSUPPORTED_TOKEN.getCode(),
+                    ErrorStatus.JWT_UNSUPPORTED_TOKEN.getMessage(),
+                    null
             );
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writeValue(response.getOutputStream(), baseResponseDto);

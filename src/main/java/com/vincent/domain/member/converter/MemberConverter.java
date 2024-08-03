@@ -7,17 +7,17 @@ public class MemberConverter {
 
     public static MemberResponseDto.Login toLoginResponse(String accessToken, String refreshToken) {
         return MemberResponseDto.Login.builder()
-            .grantType("Bearer")
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .build();
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     public static MemberResponseDto.Reissue toReissueResponse(String accessToken,
-        String refreshToken) {
+            String refreshToken) {
         return MemberResponseDto.Reissue.builder()
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .build();
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 }

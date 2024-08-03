@@ -6,7 +6,6 @@ import com.vincent.domain.feedback.repository.FeedbackRepository;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.member.repository.MemberRepository;
 import com.vincent.exception.handler.ErrorHandler;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
