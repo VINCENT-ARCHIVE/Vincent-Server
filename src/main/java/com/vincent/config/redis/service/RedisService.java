@@ -1,15 +1,14 @@
-package com.vincent.redis.service;
+package com.vincent.config.redis.service;
 
+import com.vincent.config.redis.repository.RefreshTokenRepository;
 import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
-import com.vincent.redis.entity.RefreshToken;
-import com.vincent.redis.repository.RefreshTokenRepository;
+import com.vincent.config.redis.entity.RefreshToken;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

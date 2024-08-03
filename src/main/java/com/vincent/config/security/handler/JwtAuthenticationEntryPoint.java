@@ -20,8 +20,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
-        log.error("JwtAuthenticationEntryPoint 실행");
+        log.error("JwtAuthenticationEntryPoint 실행: {}", authException.getMessage(), authException);
         response.setContentType("application/json");
+
         ApiResponse<Object> baseResponseDto =
                 ApiResponse.onFailure(
                         ErrorStatus.JWT_TOKEN_NOT_FOUND.getCode(),

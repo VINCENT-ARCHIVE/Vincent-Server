@@ -5,7 +5,8 @@ import com.vincent.config.security.filter.JwtFilter;
 import com.vincent.config.security.handler.JwtAccessDeniedHandler;
 import com.vincent.config.security.handler.JwtAuthenticationEntryPoint;
 import com.vincent.config.security.provider.JwtProvider;
-import com.vincent.redis.service.RedisService;
+import com.vincent.config.redis.service.RedisService;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
@@ -34,48 +35,47 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(
-                "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.index.html",
-                "/webjars/**",
-                "/swagger-resources/**"
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.index.html",
+            "/webjars/**",
+            "/swagger-resources/**"
         );
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration configuration = new CorsConfiguration();
-                        configuration.setAllowedOrigins(Collections.singletonList("*"));
-                        configuration.setAllowedMethods(Collections.singletonList("*"));
-                        configuration.setAllowCredentials(true);
-                        configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setMaxAge(3600L);
-                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-                        return configuration;
-                    }
-                }))
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
+                @Override
+                public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                    CorsConfiguration configuration = new CorsConfiguration();
+                    configuration.setAllowedOrigins(Collections.singletonList("*"));
+                    configuration.setAllowedMethods(Collections.singletonList("*"));
+                    configuration.setAllowCredentials(true);
+                    configuration.setAllowedHeaders(Collections.singletonList("*"));
+                    configuration.setMaxAge(3600L);
+                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                    return configuration;
+                }
+            }))
+            .csrf(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
 
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement((session) -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .exceptionHandling((exception) -> exception
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                        .accessDeniedHandler(jwtAccessDeniedHandler))
-
-                .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/v1/login", "/v1/reissue").permitAll()
-                        .anyRequest().authenticated())
-                .addFilterBefore(new JwtFilter(jwtProvider),
-                        UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new BlackListFilter(redisService, jwtProvider),
-                        UsernamePasswordAuthenticationFilter.class);
+            .exceptionHandling((exception) -> exception
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler))
+            .authorizeHttpRequests((request) -> request
+                .requestMatchers("/v1/login", "/v1/reissue").permitAll()
+                .anyRequest().authenticated())
+            .addFilterBefore(new JwtFilter(jwtProvider),
+                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new BlackListFilter(redisService, jwtProvider),
+                UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
