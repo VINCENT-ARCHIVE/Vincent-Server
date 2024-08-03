@@ -5,14 +5,12 @@ import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.member.repository.MemberRepository;
 import com.vincent.exception.handler.ErrorHandler;
-import com.vincent.redis.entity.RefreshToken;
-import com.vincent.redis.service.RedisService;
+import com.vincent.config.redis.entity.RefreshToken;
+import com.vincent.config.redis.service.RedisService;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

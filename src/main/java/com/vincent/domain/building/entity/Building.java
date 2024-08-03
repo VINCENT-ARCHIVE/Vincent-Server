@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -30,11 +31,12 @@ public class Building {
     @Column(nullable = false, length = 100)
     private String address;
 
+    @Setter
     @Column(columnDefinition = "TEXT")
     private String image;
 
-    private double xCoordinate;
+    private double longitude;
 
-    private double yCoordinate;
+    private double latitude;
 
 }

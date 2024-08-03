@@ -1,4 +1,4 @@
-package com.vincent.redis.entity;
+package com.vincent.config.redis.entity;
 
 import lombok.Getter;
 import org.springframework.data.redis.core.RedisHash;
