@@ -25,7 +25,7 @@ public class BuildingConverter {
         Page<Building> result) {
 
         List<BuildingResponseDto.BuildingInfo> buildingInfoList = result.stream()
-                .map(BuildingConverter::toBuildingInfoResponse).collect(Collectors.toList());
+            .map(BuildingConverter::toBuildingInfoResponse).collect(Collectors.toList());
 
         return BuildingResponseDto.BuildingList.builder()
             .isFirst(result.isFirst())
@@ -36,5 +36,24 @@ public class BuildingConverter {
             .buildingInfos(buildingInfoList)
             .build();
     }
+
+    public static BuildingResponseDto.BuildingLocation toBuildingLocationResponse(
+        Building result) {
+        return BuildingResponseDto.BuildingLocation.builder()
+            .buildingId(result.getId())
+            .xCoordinate(result.getXCoordinate())
+            .yCoordinate(result.getYCoordinate())
+            .build();
+    }
+
+    public static BuildingResponseDto.BuildingLocationList toBuildingLocationListResponse(
+        List<Building> result) {
+        List<BuildingResponseDto.BuildingLocation> b = result.stream()
+            .map(BuildingConverter::toBuildingLocationResponse).collect(Collectors.toList());
+        return BuildingResponseDto.BuildingLocationList.builder()
+            .buildingLocations(b)
+            .build();
+    }
+
 
 }

@@ -5,6 +5,7 @@ import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.service.BuildingService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
@@ -35,6 +36,15 @@ public class BuildingController {
         @RequestParam("page") Integer page) {
         Page<Building> buildingPage = buildingService.getBuildingSearch(keyword, page);
         return ApiResponse.onSuccess(BuildingConverter.toBuildingListResponse(buildingPage));
+    }
+
+    @GetMapping("/building/location")
+    public ApiResponse<BuildingResponseDto.BuildingLocationList> buildingLocation(
+        @RequestParam("longitude") Double longitude,
+        @RequestParam("latitude") Double latitude) {
+        List<Building> buildingList = buildingService.getBuildingLocation(longitude, latitude);
+        return ApiResponse.onSuccess(
+            BuildingConverter.toBuildingLocationListResponse(buildingList));
     }
 
 }
