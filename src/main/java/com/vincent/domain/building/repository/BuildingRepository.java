@@ -25,11 +25,16 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
 
 
     @Query(
-        value = "SELECT * FROM Building b "
-            + "WHERE (b.x_coordinate > :x-0.001 AND b.x_coordinate < :x+0.001) "
-            + "AND (b.y_coordinate > :y-0.003 AND b.y_coordinate < :y+0.003)",
+        value = "SELECT * FROM Building "
+            + "WHERE longitude BETWEEN :longitudeLower AND :longitudeUpper "
+            + "AND latitude BETWEEN :latitudeLower AND :latitudeUpper",
         nativeQuery = true
     )
-    List<Building> findAllByLocation(@Param("x") Double x, @Param("y") Double y);
+    List<Building> findAllByLocation(
+        @Param("longitudeLower") Double longitudeLower,
+        @Param("longitudeUpper") Double longitudeUpper,
+        @Param("latitudeLower") Double latitudeLower,
+        @Param("latitudeUpper") Double latitudeUpper
+    );
 
 }

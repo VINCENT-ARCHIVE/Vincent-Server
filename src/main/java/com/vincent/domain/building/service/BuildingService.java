@@ -42,7 +42,13 @@ public class BuildingService {
     }
 
     public List<Building> getBuildingLocation(Double longitude, Double latitude) {
-        return buildingRepository.findAllByLocation(longitude, latitude);
+        double longitudeRange = 3.1; //임의의 범위
+        double latitudeRange = 6.1; //임의의 범위
+        double longitudeLower = longitude - longitudeRange;
+        double longitudeUpper = longitude + longitudeRange;
+        double latitudeLower = latitude - latitudeRange;
+        double latitudeUpper = latitude + latitudeRange;
+        return buildingRepository.findAllByLocation(longitudeLower, longitudeUpper, latitudeLower, latitudeUpper);
 
     }
 

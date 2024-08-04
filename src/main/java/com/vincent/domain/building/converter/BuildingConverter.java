@@ -51,8 +51,8 @@ public class BuildingConverter {
         Building result) {
         return BuildingResponseDto.BuildingLocation.builder()
             .buildingId(result.getId())
-            .xCoordinate(result.getLongitude())
-            .yCoordinate(result.getLatitude())
+            .latitude(result.getLatitude())
+            .longitude(result.getLongitude())
             .build();
     }
 

@@ -42,8 +42,8 @@ public class BuildingResponseDto {
     public static class BuildingLocation {
 
         Long buildingId;
-        Double xCoordinate;
-        Double yCoordinate;
+        Double latitude;
+        Double longitude;
 
     }
 
