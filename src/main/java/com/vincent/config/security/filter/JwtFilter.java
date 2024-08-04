@@ -41,7 +41,6 @@ public class JwtFilter extends OncePerRequestFilter {
             jwtProvider.validateToken(accessToken);
             Long memberId = jwtProvider.getMemberId(accessToken);
             String email = jwtProvider.getEmail(accessToken);
-
             Member member = Member.builder()
                     .id(memberId)
                     .email(email)

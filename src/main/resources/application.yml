@@ -17,9 +17,24 @@ spring:
     redis:
       host: localhost
       port: 6379
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
 
 jwt:
   token:
     secret: ${JWT_TOKEN_SECRET}
 
 
+cloud:
+  aws:
+    s3:
+      bucket: ${BUCKET_NAME}
+    credentials:
+      accessKey: ${BUCKET_ACCESS_KEY}
+      secretKey: ${BUCKET_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false

@@ -3,6 +3,7 @@ package com.vincent.domain.building.converter;
 import com.vincent.domain.bookmark.controller.dto.BookmarkResponseDto;
 import com.vincent.domain.bookmark.controller.dto.BookmarkResponseDto.BookmarkDetail;
 import com.vincent.domain.bookmark.converter.BookmarkConverter;
+import com.vincent.domain.building.controller.dto.BuildingRequestDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingInfo;
 import com.vincent.domain.building.entity.Building;
@@ -37,12 +38,21 @@ public class BuildingConverter {
             .build();
     }
 
+    public static Building toBuilding(BuildingRequestDto.Create create) {
+        return Building.builder()
+            .name(create.getName())
+            .address(create.getAddress())
+            .longitude(create.getLongitude())
+            .latitude(create.getLatitude())
+            .build();
+    }
+
     public static BuildingResponseDto.BuildingLocation toBuildingLocationResponse(
         Building result) {
         return BuildingResponseDto.BuildingLocation.builder()
             .buildingId(result.getId())
-            .xCoordinate(result.getXCoordinate())
-            .yCoordinate(result.getYCoordinate())
+            .xCoordinate(result.getLongitude())
+            .yCoordinate(result.getLatitude())
             .build();
     }
 

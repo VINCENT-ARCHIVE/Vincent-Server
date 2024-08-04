@@ -1,6 +1,5 @@
 package com.vincent.domain.member.service;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
@@ -9,9 +8,8 @@ import com.vincent.domain.member.service.MemberService.ReissueResult;
 import com.vincent.exception.handler.ErrorHandler;
 import com.vincent.exception.handler.JwtExpiredHandler;
 import com.vincent.exception.handler.JwtInvalidHandler;
-import com.vincent.redis.entity.RefreshToken;
-import com.vincent.redis.service.RedisService;
-import java.time.LocalDateTime;
+import com.vincent.config.redis.entity.RefreshToken;
+import com.vincent.config.redis.service.RedisService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
-package com.vincent.redis.repository;
+package com.vincent.config.redis.repository;
 
-import com.vincent.redis.entity.RefreshToken;
+import com.vincent.config.redis.entity.RefreshToken;
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 

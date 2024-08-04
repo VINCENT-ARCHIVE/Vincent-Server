@@ -1,4 +1,4 @@
-package com.vincent.redis.entity;
+package com.vincent.config.redis.entity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

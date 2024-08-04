@@ -5,6 +5,7 @@ import com.vincent.apipayload.code.ReasonDto;
 import com.vincent.apipayload.status.ErrorStatus;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -23,11 +24,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice(annotations = {RestController.class})
 public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
-    @org.springframework.web.bind.annotation.ExceptionHandler
+    @ExceptionHandler(value = ConstraintViolationException.class)
     public ResponseEntity<Object> validation(ConstraintViolationException e, WebRequest request) {
         log.error("validation");
         String errorMessage = e.getConstraintViolations().stream()
-            .map(constraintViolation -> constraintViolation.getMessage())
+            .map(ConstraintViolation::getMessage)
             .findFirst()
             .orElseThrow(() -> new RuntimeException("ConstraintViolationException 추출 도중 에러 발생"));
 
