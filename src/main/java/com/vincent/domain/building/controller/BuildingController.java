@@ -54,4 +54,14 @@ public class BuildingController {
         return ApiResponse.onSuccess(null);
     }
 
+    @PostMapping("/building/{buildingId}/floors")
+    public ApiResponse<?> createFloor(
+        @PathVariable("buildingId") Long buildingId,
+        @RequestPart MultipartFile image,
+        @RequestPart int level)
+        throws IOException {
+        buildingService.createFloor(buildingId, level, image);
+        return ApiResponse.onSuccess(null);
+    }
+
 }
