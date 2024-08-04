@@ -14,12 +14,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincent.apipayload.ApiResponse;
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.building.controller.BuildingController;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.service.BuildingService;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.exception.handler.ErrorHandler;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -127,5 +129,40 @@ public class BuildingControllerTest {
                         ApiResponse.onSuccess(
                                 BuildingConverter.toBuildingListResponse(buildingPage))
                 )));
+    }
+
+    @Test
+    @WithMockUser
+    public void 주변건물조회_성공() throws Exception {
+
+        BuildingResponseDto.BuildingLocation location = BuildingResponseDto.BuildingLocation.builder()
+            .buildingId(1L)
+            .longitude(36.1)
+            .latitude(120.1)
+            .build();
+
+        BuildingResponseDto.BuildingLocationList locationList = BuildingResponseDto.BuildingLocationList.builder()
+            .buildingLocations(Collections.singletonList(location))
+            .build();
+
+        given(buildingService.getBuildingLocation(36.0, 120.0)).willReturn(Collections.singletonList(
+            Building.builder()
+                .id(1L)
+                .longitude(36.1)
+                .latitude(120.1)
+                .build()
+        ));
+
+        ResultActions resultActions = mockMvc.perform(get("/v1/building/location")
+                .param("longitude", "36.0")
+                .param("latitude", "120.0")
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.csrf()));
+
+
+            resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$.result.buildingLocations[0].buildingId").value(1))
+            .andExpect(jsonPath("$.result.buildingLocations[0].longitude").value(36.1))
+            .andExpect(jsonPath("$.result.buildingLocations[0].latitude").value(120.1));
     }
 }

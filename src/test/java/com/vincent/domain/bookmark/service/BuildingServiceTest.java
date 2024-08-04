@@ -17,6 +17,7 @@ import com.vincent.domain.building.service.BuildingService;
 import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class BuildingServiceTest {
 
@@ -124,6 +126,26 @@ public class BuildingServiceTest {
         verify(s3Service, times(1)).upload(eq(image));
         verify(buildingRepository, times(1)).save(eq(building));
         assertEquals(mockUrl, building.getImage());
+    }
+
+    @Test
+    public void 주변건물조회_성공() {
+
+        Building building = Building.builder()
+            .id(1L)
+            .longitude(36.1)
+            .latitude(120.1)
+            .build();
+
+        given(buildingRepository.findAllByLocation(32.900, 39.100, 113.900, 126.100))
+            .willReturn(Collections.singletonList(building));
+
+        List<Building> result = buildingService.getBuildingLocation(36.0, 120.0);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(0).getLongitude()).isEqualTo(36.1);
+        assertThat(result.get(0).getLatitude()).isEqualTo(120.1);
     }
 
 }
