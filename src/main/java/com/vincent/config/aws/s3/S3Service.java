@@ -24,14 +24,17 @@ public class S3Service {
     public String bucket;  // S3 버킷
 
     public String BUILDING_IMG_DIR = "building";
+    public String FLOOR_IMG_DIR = "floor";
 
     // S3 파일 업로드
-    public String upload(MultipartFile multipartFile) throws IOException {
+    public String upload(MultipartFile multipartFile, String type) throws IOException {
         File convertFile = convert(multipartFile)
             .orElseThrow(
                 () -> new IllegalArgumentException("file convert error")); // 파일을 변환할 수 없으면 에러
 
-        String fileName = BUILDING_IMG_DIR + "/"  + UUID.randomUUID() + "_" + convertFile.getName();
+        String baseDir = type.equals("Floor") ? FLOOR_IMG_DIR : BUILDING_IMG_DIR;
+
+        String fileName = baseDir + "/" + UUID.randomUUID() + "_" + convertFile.getName();
 
         amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, convertFile));
 
