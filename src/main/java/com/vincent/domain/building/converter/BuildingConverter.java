@@ -47,4 +47,23 @@ public class BuildingConverter {
             .build();
     }
 
+    public static BuildingResponseDto.BuildingLocation toBuildingLocationResponse(
+        Building result) {
+        return BuildingResponseDto.BuildingLocation.builder()
+            .buildingId(result.getId())
+            .latitude(result.getLatitude())
+            .longitude(result.getLongitude())
+            .build();
+    }
+
+    public static BuildingResponseDto.BuildingLocationList toBuildingLocationListResponse(
+        List<Building> result) {
+        List<BuildingResponseDto.BuildingLocation> b = result.stream()
+            .map(BuildingConverter::toBuildingLocationResponse).collect(Collectors.toList());
+        return BuildingResponseDto.BuildingLocationList.builder()
+            .buildingLocations(b)
+            .build();
+    }
+
+
 }

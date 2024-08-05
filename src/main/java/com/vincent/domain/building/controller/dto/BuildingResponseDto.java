@@ -35,4 +35,26 @@ public class BuildingResponseDto {
 
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BuildingLocation {
+
+        Long buildingId;
+        Double latitude;
+        Double longitude;
+
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BuildingLocationList {
+
+        List<BuildingLocation> buildingLocations;
+
+    }
+
 }

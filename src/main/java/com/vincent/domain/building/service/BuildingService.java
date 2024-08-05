@@ -8,6 +8,7 @@ import com.vincent.domain.building.repository.BuildingRepository;
 import com.vincent.domain.building.repository.FloorRepository;
 import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,5 +58,17 @@ public class BuildingService {
 
         floorRepository.save(floor);
     }
+
+    public List<Building> getBuildingLocation(Double longitude, Double latitude) {
+        double longitudeRange = 3.1; //임의의 범위
+        double latitudeRange = 6.1; //임의의 범위
+        double longitudeLower = longitude - longitudeRange;
+        double longitudeUpper = longitude + longitudeRange;
+        double latitudeLower = latitude - latitudeRange;
+        double latitudeUpper = latitude + latitudeRange;
+        return buildingRepository.findAllByLocation(longitudeLower, longitudeUpper, latitudeLower, latitudeUpper);
+
+    }
+
 
 }
