@@ -2,15 +2,19 @@ package com.vincent.domain.building.controller.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 public class BuildingRequestDto {
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Create {
+
         private String name;
         private String address;
 
@@ -22,4 +26,5 @@ public class BuildingRequestDto {
         @Max(value = 90, message = "유효한 위도를 입력해 주세요.")
         private Double latitude;
     }
+
 }

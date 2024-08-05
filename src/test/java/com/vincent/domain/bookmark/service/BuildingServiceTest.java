@@ -12,7 +12,9 @@ import static org.mockito.Mockito.when;
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.aws.s3.S3Service;
 import com.vincent.domain.building.entity.Building;
+import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.repository.BuildingRepository;
+import com.vincent.domain.building.repository.FloorRepository;
 import com.vincent.domain.building.service.BuildingService;
 import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
@@ -20,8 +22,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -37,6 +41,9 @@ public class BuildingServiceTest {
 
     @Mock
     private BuildingRepository buildingRepository;
+
+    @Mock
+    private FloorRepository floorRepository;
 
     @Mock
     private S3Service s3Service;
@@ -101,7 +108,7 @@ public class BuildingServiceTest {
         Page<Building> buildingPage = new PageImpl<>(buildings, pageable, buildings.size());
 
         when(buildingRepository.findByNameContainingOrderBySimilarity(keyword,
-                PageRequest.of(page, 10))).thenReturn(buildingPage);
+            PageRequest.of(page, 10))).thenReturn(buildingPage);
 
         Page<Building> result = buildingService.getBuildingSearch(keyword, page);
 
@@ -119,13 +126,58 @@ public class BuildingServiceTest {
         String mockUrl = "test.com";
 
         //when
-        when(s3Service.upload(image)).thenReturn(mockUrl);
+        when(s3Service.upload(image, "Building")).thenReturn(mockUrl);
 
         //then
         buildingService.createBuilding(building, image);
-        verify(s3Service, times(1)).upload(eq(image));
+        verify(s3Service, times(1)).upload(eq(image), eq("Building"));
         verify(buildingRepository, times(1)).save(eq(building));
         assertEquals(mockUrl, building.getImage());
+    }
+
+    @Test
+    public void 층_등록_성공() throws IOException {
+        //given
+        MultipartFile image = mock(MultipartFile.class);
+        Long buildId = 1L;
+        Building building = Building.builder().build();
+        Floor floor = Floor.builder().build();
+        int level = 1;
+        String mockUrl = "test.com";
+
+        //when
+        when(s3Service.upload(image, "Floor")).thenReturn(mockUrl);
+        when(buildingRepository.findById(buildId)).thenReturn(Optional.of(building));
+
+        //then
+        buildingService.createFloor(buildId, level, image);
+        ArgumentCaptor<Floor> floorCaptor = ArgumentCaptor.forClass(Floor.class);
+        verify(floorRepository).save(floorCaptor.capture());
+
+        Floor savedFloor = floorCaptor.getValue();
+
+        assertEquals(mockUrl, savedFloor.getImage());
+        assertEquals(building, savedFloor.getBuilding());
+        assertEquals(level, savedFloor.getLevel());
+        verify(s3Service, times(1)).upload(eq(image), eq("Floor"));
+    }
+
+    @Test
+    public void 층_등록_실패() throws IOException {
+        //given
+        MultipartFile image = mock(MultipartFile.class);
+        Long buildId = 1L;
+        int level = 1;
+        String mockUrl = "test.com";
+
+        //when
+        when(s3Service.upload(image, "Floor")).thenReturn(mockUrl);
+        when(buildingRepository.findById(buildId)).thenReturn(Optional.empty());
+
+        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class, () -> {
+            buildingService.createFloor(buildingId, level, image);
+        });
+        Assertions.assertEquals(ErrorStatus.BUILDING_NOT_FOUND, thrown.getCode());
     }
 
     @Test
