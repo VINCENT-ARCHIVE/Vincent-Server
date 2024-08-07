@@ -43,6 +43,7 @@ public class BookmarkResponseDto {
         String socketName;
         String socketImage;
         String buildingName;
+        String spaceName;
 
     }
 

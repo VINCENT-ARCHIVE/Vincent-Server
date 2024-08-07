@@ -7,6 +7,8 @@ import com.vincent.domain.bookmark.converter.BookmarkConverter;
 import com.vincent.domain.bookmark.entity.Bookmark;
 import com.vincent.domain.bookmark.service.BookmarkService;
 import com.vincent.domain.building.entity.Building;
+import com.vincent.domain.building.entity.Floor;
+import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.exception.handler.ErrorHandler;
 import java.util.Collections;
@@ -248,15 +250,24 @@ public class BookmarkControllerTest {
         Building building = Mockito.mock(Building.class);
         when(building.getName()).thenReturn("buildingName");
 
+        Floor floor = Mockito.mock(Floor.class);
+        when(floor.getBuilding()).thenReturn(building);
+
+        Space space = Mockito.mock(Space.class);
+        when(space.getName()).thenReturn("spaceName");
+        when(space.getFloor()).thenReturn(floor);
+
+
         when(bookmark.getId()).thenReturn(1L);
         when(bookmark.getSocket()).thenReturn(socket);
-//        when(socket.getBuilding()).thenReturn(building);
+        when(socket.getSpace()).thenReturn(space);
+        when(space.getFloor().getBuilding()).thenReturn(building);
 
         Page<Bookmark> bookmarkPage = new PageImpl<>(Collections.singletonList(bookmark),
                 PageRequest.of(page, 10), 1);
 
         BookmarkResponseDto.BookmarkDetail bookmarkDetail = new BookmarkResponseDto.BookmarkDetail(
-                1L, 1L, "socketName", "socketImage", "buildingName"
+                1L, 1L, "socketName", "socketImage", "buildingName", "spaceName"
         );
         BookmarkResponseDto.BookmarkList bookmarkListDto = new BookmarkResponseDto.BookmarkList(
                 Collections.singletonList(bookmarkDetail),
@@ -279,7 +290,8 @@ public class BookmarkControllerTest {
                 .andExpect(jsonPath("$.result.bookmarks[0].socketId").value(1L))
                 .andExpect(jsonPath("$.result.bookmarks[0].socketName").value("socketName"))
                 .andExpect(jsonPath("$.result.bookmarks[0].socketImage").value("socketImage"))
-                .andExpect(jsonPath("$.result.bookmarks[0].buildingName").value("buildingName"));
+                .andExpect(jsonPath("$.result.bookmarks[0].buildingName").value("buildingName"))
+                .andExpect(jsonPath("$.result.bookmarks[0].spaceName").value("spaceName"));
     }
 
     @Test

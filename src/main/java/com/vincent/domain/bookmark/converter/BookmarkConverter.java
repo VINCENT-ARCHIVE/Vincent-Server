@@ -20,7 +20,8 @@ public class BookmarkConverter {
             .socketId(bookmark.getSocket().getId())
             .socketName(bookmark.getSocket().getName())
             .socketImage(bookmark.getSocket().getImage())
-//        .buildingName(bookmark.getSocket().getBuilding().getName())
+            .buildingName(bookmark.getSocket().getSpace().getFloor().getBuilding().getName())
+            .spaceName(bookmark.getSocket().getSpace().getName())
             .build();
     }
 
