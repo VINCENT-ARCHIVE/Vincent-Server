@@ -58,6 +58,8 @@ public class BookmarkController {
         return ApiResponse.onSuccess(BookmarkConverter.toBookmarkListResponse(bookmarkList));
     }
 
+
+    /*
     @GetMapping("/bookmark/{socketId}")
     public ApiResponse<BookmarkResponseDto.BookmarkExistence> getBookmarkExist(
         @PathVariable("socketId") Long socketId,
@@ -68,6 +70,8 @@ public class BookmarkController {
         Boolean result = bookmarkService.getBookmarkExist(socketId, memberId);
         return ApiResponse.onSuccess(BookmarkConverter.toBookmarkExistenceResponse(result));
     }
+
+     */
 
 
 }
