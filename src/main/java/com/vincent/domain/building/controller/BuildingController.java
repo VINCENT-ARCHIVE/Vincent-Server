@@ -5,6 +5,8 @@ import com.vincent.domain.building.controller.dto.BuildingRequestDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
+import com.vincent.domain.building.entity.Floor;
+import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.service.BuildingService;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -73,5 +75,20 @@ public class BuildingController {
         return ApiResponse.onSuccess(
             BuildingConverter.toBuildingLocationListResponse(buildingList));
     }
+
+    @GetMapping("/building/floor")
+    public ApiResponse<BuildingResponseDto.FloorInfoList> floorInfoList(
+        @RequestParam("buildingId") Long buildingId,
+        @RequestParam("level") Integer level) {
+        Floor floor = buildingService.getFloorInfo(buildingId, level);
+        List<Floor> floors = buildingService.getFloorInfoList(buildingId);
+        List<Space> spaces = buildingService.getSpaceInfoList(floor.getId());
+
+        return  ApiResponse.onSuccess((
+            BuildingConverter.toFloorInfoListResponse(floor, floors, spaces)));
+
+
+    }
+
 
 }

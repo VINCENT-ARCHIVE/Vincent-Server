@@ -7,6 +7,8 @@ import com.vincent.domain.building.controller.dto.BuildingRequestDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingInfo;
 import com.vincent.domain.building.entity.Building;
+import com.vincent.domain.building.entity.Floor;
+import com.vincent.domain.building.entity.Space;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
@@ -64,6 +66,31 @@ public class BuildingConverter {
             .buildingLocations(b)
             .build();
     }
+
+    public static BuildingResponseDto.SpaceInfo toSpaceInfoResponse(
+        Space space) {
+        return BuildingResponseDto.SpaceInfo.builder()
+            .spaceName(space.getName())
+            .xCoordinate(space.getXCoordinate())
+            .yCoordinate(space.getYCoordinate())
+            .socketExistence(space.isSocketExist()).build();
+
+    }
+
+    public static BuildingResponseDto.FloorInfoList toFloorInfoListResponse(
+        Floor floor, List<Floor> floors, List<Space> spaces) {
+
+        List<BuildingResponseDto.SpaceInfo> spaceInfoList = spaces.stream()
+            .map(BuildingConverter::toSpaceInfoResponse).collect(Collectors.toList());
+
+        return  BuildingResponseDto.FloorInfoList.builder()
+            .buildingName(floor.getBuilding().getName())
+            .floors(floors.size())
+            .currentFloor(floor.getLevel())
+            .spaceInfoList(spaceInfoList)
+            .build();
+    }
+
 
 
 }

@@ -39,7 +39,10 @@ public enum ErrorStatus implements BaseCode {
     SOCKET_NOT_FOUND(HttpStatus.NOT_FOUND, "SOCKET4001", "소켓 정보를 찾을 수 없습니다."),
 
     // 빌딩
-    BUILDING_NOT_FOUND(HttpStatus.NOT_FOUND, "BUILDING4001", "빌딩 정보를 찾을 수 없습니다.");
+    BUILDING_NOT_FOUND(HttpStatus.NOT_FOUND, "BUILDING4001", "빌딩 정보를 찾을 수 없습니다."),
+
+    // 층
+    FLOOR_NOT_FOUND(HttpStatus.NOT_FOUND, "FLOOR4001", "층 정보를 찾을 수 없습니다.");
 
 
     private final HttpStatus httpStatus;
