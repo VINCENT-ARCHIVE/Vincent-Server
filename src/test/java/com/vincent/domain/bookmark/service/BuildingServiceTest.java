@@ -1,6 +1,7 @@
 package com.vincent.domain.bookmark.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -18,6 +19,7 @@ import com.vincent.domain.building.repository.FloorRepository;
 import com.vincent.domain.building.service.BuildingService;
 import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +37,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BuildingServiceTest {
@@ -199,5 +202,54 @@ public class BuildingServiceTest {
         assertThat(result.get(0).getLongitude()).isEqualTo(36.1);
         assertThat(result.get(0).getLatitude()).isEqualTo(120.1);
     }
+
+    @Test
+    public void 층_조회_getFloorInfo_성공() {
+        Long buildingId = 1L;
+        Integer level = 2;
+        Building building = Mockito.mock(Building.class);
+
+        Floor floor = Mockito.mock(Floor.class);
+        when(floor.getLevel()).thenReturn(level);
+        when(floor.getBuilding()).thenReturn(building);
+
+        when(buildingRepository.findById(buildingId)).thenReturn(Optional.of(building));
+        when(floorRepository.findByBuildingAndLevel(building, level)).thenReturn(floor);
+
+        Floor result = buildingService.getFloorInfo(buildingId, level);
+
+        assertNotNull(result);
+        assertEquals(level, result.getLevel());
+    }
+
+
+    @Test
+    public void 층_조회_getFloorInfo_실패_Floor없음() {
+        Long buildingId = 1L;
+        Integer level = 2;
+        Building building = Mockito.mock(Building.class);
+
+        when(buildingRepository.findById(buildingId)).thenReturn(Optional.of(building));
+        when(floorRepository.findByBuildingAndLevel(building, level)).thenReturn(null);
+
+        buildingService.getFloorInfo(buildingId, level);
+    }
+
+    @Test
+    public void 층_조회_getFloorInfoList_성공() {
+        Long buildingId = 1L;
+        Building building = Mockito.mock(Building.class);
+
+        List<Floor> floors = new ArrayList<>();
+
+        when(buildingRepository.findById(buildingId)).thenReturn(Optional.of(building));
+        when(floorRepository.findAllByBuilding(building)).thenReturn(floors);
+
+        List<Floor> result = buildingService.getFloorInfoList(buildingId);
+
+        assertNotNull(result);
+        assertEquals(floors, result);
+    }
+
 
 }
