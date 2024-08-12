@@ -44,7 +44,7 @@ public enum ErrorStatus implements BaseCode {
     // 층
     FLOOR_NOT_FOUND(HttpStatus.NOT_FOUND, "FLOOR4001", "층 정보를 찾을 수 없습니다."),
 
-    //이밎
+    //이미지
     IMAGE_CONVERT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE4001", "이미지 변환 중 에러가 발생했습니다.");
 
     private final HttpStatus httpStatus;
