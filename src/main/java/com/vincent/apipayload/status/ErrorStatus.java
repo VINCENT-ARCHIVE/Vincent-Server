@@ -39,8 +39,10 @@ public enum ErrorStatus implements BaseCode {
     SOCKET_NOT_FOUND(HttpStatus.NOT_FOUND, "SOCKET4001", "소켓 정보를 찾을 수 없습니다."),
 
     // 빌딩
-    BUILDING_NOT_FOUND(HttpStatus.NOT_FOUND, "BUILDING4001", "빌딩 정보를 찾을 수 없습니다.");
+    BUILDING_NOT_FOUND(HttpStatus.NOT_FOUND, "BUILDING4001", "빌딩 정보를 찾을 수 없습니다."),
 
+    //이밎
+    IMAGE_CONVERT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE4001", "이미지 변환 중 에러가 발생했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
