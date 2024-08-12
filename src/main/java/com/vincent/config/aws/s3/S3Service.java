@@ -4,6 +4,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.vincent.apipayload.status.ErrorStatus;
+import com.vincent.exception.handler.ErrorHandler;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,7 +34,7 @@ public class S3Service {
     public String upload(MultipartFile multipartFile, String type) throws IOException {
         File convertFile = convert(multipartFile)
             .orElseThrow(
-                () -> new IllegalArgumentException("file convert error")); // 파일을 변환할 수 없으면 에러
+                () -> new ErrorHandler(ErrorStatus.IMAGE_CONVERT_ERROR)); // 파일을 변환할 수 없으면 에러
 
         String baseDir = "";
 
@@ -77,7 +79,7 @@ public class S3Service {
         amazonS3Client.deleteObject(bucket, path);
     }
 
-    private Optional<File> convert(MultipartFile file) throws IOException {
+    public Optional<File> convert(MultipartFile file) throws IOException {
         File convertFile = new File(
             System.getProperty("user.dir") + "/" + file.getOriginalFilename());
         if (convertFile.createNewFile()) {
