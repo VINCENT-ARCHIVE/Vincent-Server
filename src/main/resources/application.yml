@@ -38,3 +38,24 @@ cloud:
       static: ap-northeast-2
     stack:
       auto: false
+
+management:
+  info:
+    java:
+      enabled: true
+    os:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include:
+          - info
+          - health
+          - loggers
+          - mappings
+          - metrics
+          - shutdown
+          - prometheus

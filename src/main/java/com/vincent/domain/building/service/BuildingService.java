@@ -107,5 +107,24 @@ public class BuildingService {
         return floorRepository.findById(floorId).orElseThrow(() -> new ErrorHandler(ErrorStatus.FLOOR_NOT_FOUND));
     }
 
+    @Transactional
+    public void createSpace(Long floorId, MultipartFile image, int x, int y, String name) throws IOException {
+        String uploadUrl = s3Service.upload(image, "Space");
+        Floor floor = floorRepository.findById(floorId)
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.FLOOR_NOT_FOUND));
+
+        Space space = Space.builder()
+            .floor(floor)
+            .name(name)
+            .xCoordinate(x)
+            .yCoordinate(y)
+            .image(uploadUrl)
+            .build();
+
+        spaceRepository.save(space);
+
+
+    }
+
 
 }

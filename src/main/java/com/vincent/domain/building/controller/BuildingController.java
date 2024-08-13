@@ -91,4 +91,17 @@ public class BuildingController {
     }
 
 
+    @PostMapping(value = "/building/floors/{floorId}/spaces", consumes = "multipart/form-data")
+    public ApiResponse<?> createSpace(
+        @PathVariable("floorId") Long floorId,
+        @RequestPart("image") MultipartFile image,
+        @RequestPart("xCoordinate") int xCoordinate,
+        @RequestPart("yCoordinate") int yCoordinate,
+        @RequestPart("name") String name)
+        throws IOException {
+        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name);
+        return ApiResponse.onSuccess(null);
+    }
+
+
 }

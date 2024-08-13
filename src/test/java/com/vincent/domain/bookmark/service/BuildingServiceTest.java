@@ -3,6 +3,7 @@ package com.vincent.domain.bookmark.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -14,8 +15,10 @@ import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.aws.s3.S3Service;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
+import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.repository.BuildingRepository;
 import com.vincent.domain.building.repository.FloorRepository;
+import com.vincent.domain.building.repository.SpaceRepository;
 import com.vincent.domain.building.service.BuildingService;
 import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
@@ -47,6 +50,9 @@ public class BuildingServiceTest {
 
     @Mock
     private FloorRepository floorRepository;
+
+    @Mock
+    private SpaceRepository spaceRepository;
 
     @Mock
     private S3Service s3Service;
@@ -251,5 +257,51 @@ public class BuildingServiceTest {
         assertEquals(floors, result);
     }
 
+
+    @Test
+    void createSpace_성공() throws IOException {
+
+        Long floorId = 1L;
+        MultipartFile image = null;
+        int xCoordinate = 10;
+        int yCoordinate = 20;
+        String name = "Test Space";
+        String uploadUrl = "https://s3.amazonaws.com/example.jpg";
+
+        Building building = Building.builder()
+            .id(1L)
+            .longitude(36.1)
+            .latitude(120.1)
+            .build();
+
+        Floor floor = Floor.builder()
+            .id(1L)
+            .image("http//test")
+            .level(1)
+            .building(building)
+            .build();
+
+        when(floorRepository.findById(floorId)).thenReturn(Optional.of(floor));
+        when(s3Service.upload(any(MultipartFile.class), any(String.class))).thenReturn(uploadUrl);
+
+        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name);
+
+        verify(spaceRepository).save(any(Space.class));
+        verify(s3Service).upload(any(MultipartFile.class), any(String.class));
+    }
+
+    @Test
+    void createSpace_실패_층없음() {
+
+        Long floorId = 1L;
+        MultipartFile image = null;
+
+        when(floorRepository.findById(floorId)).thenReturn(Optional.empty());
+
+
+        assertThrows(ErrorHandler.class, () -> {
+            buildingService.createSpace(floorId, image, 10, 20, "Test Space");
+        });
+    }
 
 }

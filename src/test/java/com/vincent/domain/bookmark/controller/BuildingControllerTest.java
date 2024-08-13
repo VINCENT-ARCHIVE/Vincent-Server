@@ -1,11 +1,15 @@
 package com.vincent.domain.bookmark.controller;
 
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +42,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(controllers = BuildingController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -220,4 +227,29 @@ public class BuildingControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.csrf()))
             .andExpect(status().isNotFound());
     }
+
+    @Test
+    @WithMockUser
+    void 층등록_성공() throws Exception {
+
+        Long floorId = 1L;
+        MockMultipartFile image = new MockMultipartFile("image", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "test image".getBytes());
+        String name = "Test Space";
+        int xCoordinate = 10;
+        int yCoordinate = 20;
+
+
+        mockMvc.perform(multipart("/v1/building/floors/{floorId}/spaces", floorId)
+                .file(image)
+                .param("xCoordinate", String.valueOf(xCoordinate))
+                .param("yCoordinate", String.valueOf(yCoordinate))
+                .param("name", name)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+            .andExpect(status().isOk());
+
+        verify(buildingService).createSpace(floorId, image, xCoordinate, yCoordinate, name);
+    }
+
+
 }

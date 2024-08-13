@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,5 +40,9 @@ public class Space {
 
     @ColumnDefault("false")
     private boolean isSocketExist;
+
+    @Setter
+    @Column(columnDefinition = "TEXT")
+    private String image;
 
 }
