@@ -235,8 +235,9 @@ public class BuildingControllerTest {
         Long floorId = 1L;
         MockMultipartFile image = new MockMultipartFile("image", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "test image".getBytes());
         String name = "Test Space";
-        int xCoordinate = 10;
-        int yCoordinate = 20;
+        double xCoordinate = 10;
+        double yCoordinate = 20;
+        boolean isSocketExist = true;
 
 
         mockMvc.perform(multipart("/v1/building/floors/{floorId}/spaces", floorId)
@@ -248,7 +249,7 @@ public class BuildingControllerTest {
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
             .andExpect(status().isOk());
 
-        verify(buildingService).createSpace(floorId, image, xCoordinate, yCoordinate, name);
+        verify(buildingService).createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
     }
 
 

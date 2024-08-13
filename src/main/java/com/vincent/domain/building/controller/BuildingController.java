@@ -95,11 +95,12 @@ public class BuildingController {
     public ApiResponse<?> createSpace(
         @PathVariable("floorId") Long floorId,
         @RequestPart("image") MultipartFile image,
-        @RequestPart("xCoordinate") int xCoordinate,
-        @RequestPart("yCoordinate") int yCoordinate,
-        @RequestPart("name") String name)
+        @RequestParam("name") String name,
+        @RequestParam("xCoordinate") double xCoordinate,
+        @RequestParam("yCoordinate") double yCoordinate,
+        @RequestParam("isSocketExist") boolean isSocketExist)
         throws IOException {
-        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name);
+        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
         return ApiResponse.onSuccess(null);
     }
 

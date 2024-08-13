@@ -263,10 +263,11 @@ public class BuildingServiceTest {
 
         Long floorId = 1L;
         MultipartFile image = null;
-        int xCoordinate = 10;
-        int yCoordinate = 20;
+        double xCoordinate = 10;
+        double yCoordinate = 20;
         String name = "Test Space";
         String uploadUrl = "https://s3.amazonaws.com/example.jpg";
+        boolean isSocketExist = true;
 
         Building building = Building.builder()
             .id(1L)
@@ -284,7 +285,7 @@ public class BuildingServiceTest {
         when(floorRepository.findById(floorId)).thenReturn(Optional.of(floor));
         when(s3Service.upload(any(MultipartFile.class), any(String.class))).thenReturn(uploadUrl);
 
-        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name);
+        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
 
         verify(spaceRepository).save(any(Space.class));
         verify(s3Service).upload(any(MultipartFile.class), any(String.class));
@@ -295,12 +296,13 @@ public class BuildingServiceTest {
 
         Long floorId = 1L;
         MultipartFile image = null;
+        boolean isSocketExist = true;
 
         when(floorRepository.findById(floorId)).thenReturn(Optional.empty());
 
 
         assertThrows(ErrorHandler.class, () -> {
-            buildingService.createSpace(floorId, image, 10, 20, "Test Space");
+            buildingService.createSpace(floorId, image, 10, 20, "Test Space", isSocketExist);
         });
     }
 
