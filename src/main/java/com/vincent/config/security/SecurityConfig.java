@@ -71,6 +71,7 @@ public class SecurityConfig {
                 .accessDeniedHandler(jwtAccessDeniedHandler))
             .authorizeHttpRequests((request) -> request
                 .requestMatchers("/v1/login", "/v1/reissue").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(new JwtFilter(jwtProvider),
                 UsernamePasswordAuthenticationFilter.class)
