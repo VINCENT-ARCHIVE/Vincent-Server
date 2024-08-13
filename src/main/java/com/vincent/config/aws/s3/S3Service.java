@@ -27,6 +27,8 @@ public class S3Service {
 
     public String BUILDING_IMG_DIR = "building";
     public String FLOOR_IMG_DIR = "floor";
+    public String SPACE_IMG_DIR = "space";
+    public String SOCKET_IMG_DIR = "socket";
 
     // S3 파일 업로드
     public String upload(MultipartFile multipartFile, String type) throws IOException {
@@ -34,7 +36,29 @@ public class S3Service {
             .orElseThrow(
                 () -> new ErrorHandler(ErrorStatus.IMAGE_CONVERT_ERROR)); // 파일을 변환할 수 없으면 에러
 
-        String baseDir = type.equals("Floor") ? FLOOR_IMG_DIR : BUILDING_IMG_DIR;
+        String baseDir = "";
+
+        switch (type) {
+            case "Building":
+                baseDir = BUILDING_IMG_DIR;
+                break;
+
+            case "Floor":
+                baseDir = FLOOR_IMG_DIR;
+                break;
+
+            case "Space":
+                baseDir = SPACE_IMG_DIR;
+                break;
+
+            case "Socket":
+                baseDir = SOCKET_IMG_DIR;
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid type: " + type);
+        }
+
 
         String fileName = baseDir + "/" + UUID.randomUUID() + "_" + convertFile.getName();
 

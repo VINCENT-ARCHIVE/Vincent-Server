@@ -4,8 +4,10 @@ import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.aws.s3.S3Service;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
+import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.repository.BuildingRepository;
 import com.vincent.domain.building.repository.FloorRepository;
+import com.vincent.domain.building.repository.SpaceRepository;
 import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
 import java.util.List;
@@ -23,6 +25,7 @@ public class BuildingService {
 
     private final BuildingRepository buildingRepository;
     private final FloorRepository floorRepository;
+    private final SpaceRepository spaceRepository;
     private final S3Service s3Service;
 
     public Building getBuildingInfo(Long buildingId) {
@@ -67,6 +70,25 @@ public class BuildingService {
         double latitudeLower = latitude - latitudeRange;
         double latitudeUpper = latitude + latitudeRange;
         return buildingRepository.findAllByLocation(longitudeLower, longitudeUpper, latitudeLower, latitudeUpper);
+
+    }
+
+    @Transactional
+    public void createSpace(Long floorId, MultipartFile image, int x, int y, String name) throws IOException {
+        String uploadUrl = s3Service.upload(image, "Space");
+        Floor floor = floorRepository.findById(floorId)
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.FLOOR_NOT_FOUND));
+
+        Space space = Space.builder()
+            .floor(floor)
+            .name(name)
+            .xCoordinate(x)
+            .yCoordinate(y)
+            .image(uploadUrl)
+            .build();
+
+        spaceRepository.save(space);
+
 
     }
 

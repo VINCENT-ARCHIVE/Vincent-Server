@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -35,5 +36,9 @@ public class Space {
     private double yCoordinate;
 
     private String name;
+
+    @Setter
+    @Column(columnDefinition = "TEXT")
+    private String image;
 
 }
