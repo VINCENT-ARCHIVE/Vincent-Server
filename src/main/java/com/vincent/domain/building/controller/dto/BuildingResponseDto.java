@@ -57,4 +57,30 @@ public class BuildingResponseDto {
 
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FloorInfoList {
+
+        String buildingName;
+        Integer floors;
+        Integer currentFloor;
+        List<SpaceInfo> spaceInfoList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SpaceInfo {
+
+        String spaceName;
+        Double xCoordinate;
+        Double yCoordinate;
+        Boolean socketExistence;
+    }
+
+
+
 }

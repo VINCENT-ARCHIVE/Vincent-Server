@@ -1,6 +1,7 @@
 package com.vincent.domain.bookmark.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,6 +22,7 @@ import com.vincent.domain.building.repository.SpaceRepository;
 import com.vincent.domain.building.service.BuildingService;
 import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +40,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BuildingServiceTest {
@@ -207,14 +210,64 @@ public class BuildingServiceTest {
     }
 
     @Test
+    public void 층_조회_getFloorInfo_성공() {
+        Long buildingId = 1L;
+        Integer level = 2;
+        Building building = Mockito.mock(Building.class);
+
+        Floor floor = Mockito.mock(Floor.class);
+        when(floor.getLevel()).thenReturn(level);
+        when(floor.getBuilding()).thenReturn(building);
+
+        when(buildingRepository.findById(buildingId)).thenReturn(Optional.of(building));
+        when(floorRepository.findByBuildingAndLevel(building, level)).thenReturn(floor);
+
+        Floor result = buildingService.getFloorInfo(buildingId, level);
+
+        assertNotNull(result);
+        assertEquals(level, result.getLevel());
+    }
+
+
+    @Test
+    public void 층_조회_getFloorInfo_실패_Floor없음() {
+        Long buildingId = 1L;
+        Integer level = 2;
+        Building building = Mockito.mock(Building.class);
+
+        when(buildingRepository.findById(buildingId)).thenReturn(Optional.of(building));
+        when(floorRepository.findByBuildingAndLevel(building, level)).thenReturn(null);
+
+        buildingService.getFloorInfo(buildingId, level);
+    }
+
+    @Test
+    public void 층_조회_getFloorInfoList_성공() {
+        Long buildingId = 1L;
+        Building building = Mockito.mock(Building.class);
+
+        List<Floor> floors = new ArrayList<>();
+
+        when(buildingRepository.findById(buildingId)).thenReturn(Optional.of(building));
+        when(floorRepository.findAllByBuilding(building)).thenReturn(floors);
+
+        List<Floor> result = buildingService.getFloorInfoList(buildingId);
+
+        assertNotNull(result);
+        assertEquals(floors, result);
+    }
+
+
+    @Test
     void createSpace_성공() throws IOException {
-        
+
         Long floorId = 1L;
         MultipartFile image = null;
-        int xCoordinate = 10;
-        int yCoordinate = 20;
+        double xCoordinate = 10;
+        double yCoordinate = 20;
         String name = "Test Space";
         String uploadUrl = "https://s3.amazonaws.com/example.jpg";
+        boolean isSocketExist = true;
 
         Building building = Building.builder()
             .id(1L)
@@ -232,7 +285,7 @@ public class BuildingServiceTest {
         when(floorRepository.findById(floorId)).thenReturn(Optional.of(floor));
         when(s3Service.upload(any(MultipartFile.class), any(String.class))).thenReturn(uploadUrl);
 
-        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name);
+        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
 
         verify(spaceRepository).save(any(Space.class));
         verify(s3Service).upload(any(MultipartFile.class), any(String.class));
@@ -243,12 +296,13 @@ public class BuildingServiceTest {
 
         Long floorId = 1L;
         MultipartFile image = null;
+        boolean isSocketExist = true;
 
         when(floorRepository.findById(floorId)).thenReturn(Optional.empty());
 
 
         assertThrows(ErrorHandler.class, () -> {
-            buildingService.createSpace(floorId, image, 10, 20, "Test Space");
+            buildingService.createSpace(floorId, image, 10, 20, "Test Space", isSocketExist);
         });
     }
 
