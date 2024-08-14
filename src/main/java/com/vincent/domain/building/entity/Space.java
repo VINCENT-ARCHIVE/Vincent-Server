@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import lombok.Setter;
 
 @Entity
@@ -36,6 +37,9 @@ public class Space {
     private double yCoordinate;
 
     private String name;
+
+    @ColumnDefault("false")
+    private boolean isSocketExist;
 
     @Setter
     @Column(columnDefinition = "TEXT")

@@ -21,10 +21,12 @@ import com.vincent.domain.building.controller.BuildingController;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
+import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.service.BuildingService;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.exception.handler.ErrorHandler;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -72,14 +74,14 @@ public class BuildingControllerTest {
         given(buildingService.getBuildingInfo(eq(buildingId))).willReturn(building);
 
         ResultActions resultActions = mockMvc.perform(get("/v1/building/{buildingId}", buildingId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
         resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("성공입니다"))
-                .andExpect(jsonPath("$.result").exists());
+            .andExpect(jsonPath("$.isSuccess").value(true))
+            .andExpect(jsonPath("$.code").value("COMMON200"))
+            .andExpect(jsonPath("$.message").value("성공입니다"))
+            .andExpect(jsonPath("$.result").exists());
         ;
     }
 
@@ -87,18 +89,18 @@ public class BuildingControllerTest {
     @WithMockUser
     public void 건물정보조회실패_건물없음() throws Exception {
         given(buildingService.getBuildingInfo(eq(buildingId)))
-                .willThrow(new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND));
+            .willThrow(new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND));
 
         ResultActions resultActions = mockMvc.perform(get("/v1/building/{buildingId}", buildingId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
         resultActions.andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.code").value(
-                        ErrorStatus.BUILDING_NOT_FOUND.getReason().getCode()))
-                .andExpect(jsonPath("$.message").value(
-                        ErrorStatus.BUILDING_NOT_FOUND.getReason().getMessage()));
+            .andExpect(jsonPath("$.isSuccess").value(false))
+            .andExpect(jsonPath("$.code").value(
+                ErrorStatus.BUILDING_NOT_FOUND.getReason().getCode()))
+            .andExpect(jsonPath("$.message").value(
+                ErrorStatus.BUILDING_NOT_FOUND.getReason().getMessage()));
     }
 
     @Test
@@ -126,17 +128,17 @@ public class BuildingControllerTest {
         when(buildingService.getBuildingSearch(keyword, page)).thenReturn(buildingPage);
 
         ResultActions resultActions = mockMvc.perform(get("/v1/building/search")
-                .param("keyword", keyword)
-                .param("page", String.valueOf(page))
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
+            .param("keyword", keyword)
+            .param("page", String.valueOf(page))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
         resultActions.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(objectMapper.writeValueAsString(
-                        ApiResponse.onSuccess(
-                                BuildingConverter.toBuildingListResponse(buildingPage))
-                )));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(objectMapper.writeValueAsString(
+                ApiResponse.onSuccess(
+                    BuildingConverter.toBuildingListResponse(buildingPage))
+            )));
     }
 
     @Test
@@ -162,16 +164,68 @@ public class BuildingControllerTest {
         ));
 
         ResultActions resultActions = mockMvc.perform(get("/v1/building/location")
-                .param("longitude", "36.0")
-                .param("latitude", "120.0")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
+            .param("longitude", "36.0")
+            .param("latitude", "120.0")
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
-
-            resultActions.andExpect(status().isOk())
+        resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.result.buildingLocations[0].buildingId").value(1))
             .andExpect(jsonPath("$.result.buildingLocations[0].longitude").value(36.1))
             .andExpect(jsonPath("$.result.buildingLocations[0].latitude").value(120.1));
+    }
+
+
+    @Test
+    @WithMockUser
+    public void 층_조회_성공() throws Exception {
+        Long buildingId = 1L;
+        Integer level = 2;
+
+        Building building = Mockito.mock(Building.class);
+
+        Floor floor = Mockito.mock(Floor.class);
+        when(floor.getLevel()).thenReturn(level);
+        when(floor.getBuilding()).thenReturn(building);
+
+        List<Floor> floors = new ArrayList<>();
+        List<Space> spaces = new ArrayList<>();
+
+        when(buildingService.getFloorInfo(buildingId, level)).thenReturn(floor);
+        when(buildingService.getFloorInfoList(buildingId)).thenReturn(floors);
+        when(buildingService.getSpaceInfoList(floor.getId())).thenReturn(spaces);
+
+        BuildingResponseDto.FloorInfoList floorInfoList = BuildingResponseDto.FloorInfoList.builder()
+            .buildingName("Building 1")
+            .floors(3)
+            .currentFloor(2)
+            .spaceInfoList(new ArrayList<>())
+            .build();
+
+        when(BuildingConverter.toFloorInfoListResponse(floor, floors, spaces)).thenReturn(floorInfoList);
+
+        mockMvc.perform(get("/v1/building/floor")
+                .param("buildingId", buildingId.toString())
+                .param("level", level.toString())
+                .with(SecurityMockMvcRequestPostProcessors.csrf()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.buildingName").value("Building 1"));
+    }
+
+    @Test
+    @WithMockUser
+    public void 층_조회_실패_빌딩없음() throws Exception {
+        Long buildingId = 1L;
+        Integer level = 2;
+
+        when(buildingService.getFloorInfo(buildingId, level)).thenThrow(
+            new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND));
+
+        mockMvc.perform(get("/v1/building/floor")
+                .param("buildingId", buildingId.toString())
+                .param("level", level.toString())
+                .with(SecurityMockMvcRequestPostProcessors.csrf()))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -181,8 +235,9 @@ public class BuildingControllerTest {
         Long floorId = 1L;
         MockMultipartFile image = new MockMultipartFile("image", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "test image".getBytes());
         String name = "Test Space";
-        int xCoordinate = 10;
-        int yCoordinate = 20;
+        double xCoordinate = 10;
+        double yCoordinate = 20;
+        boolean isSocketExist = true;
 
 
         mockMvc.perform(multipart("/v1/building/floors/{floorId}/spaces", floorId)
@@ -194,7 +249,7 @@ public class BuildingControllerTest {
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
             .andExpect(status().isOk());
 
-        verify(buildingService).createSpace(floorId, image, xCoordinate, yCoordinate, name);
+        verify(buildingService).createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
     }
 
 

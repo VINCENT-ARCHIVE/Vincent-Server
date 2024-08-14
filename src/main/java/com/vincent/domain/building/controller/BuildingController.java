@@ -5,6 +5,8 @@ import com.vincent.domain.building.controller.dto.BuildingRequestDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
+import com.vincent.domain.building.entity.Floor;
+import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.service.BuildingService;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -74,15 +76,31 @@ public class BuildingController {
             BuildingConverter.toBuildingLocationListResponse(buildingList));
     }
 
+    @GetMapping("/building/floor")
+    public ApiResponse<BuildingResponseDto.FloorInfoList> floorInfoList(
+        @RequestParam("buildingId") Long buildingId,
+        @RequestParam("level") Integer level) {
+        Floor floor = buildingService.getFloorInfo(buildingId, level);
+        List<Floor> floors = buildingService.getFloorInfoList(buildingId);
+        List<Space> spaces = buildingService.getSpaceInfoList(floor.getId());
+
+        return  ApiResponse.onSuccess((
+            BuildingConverter.toFloorInfoListResponse(floor, floors, spaces)));
+
+
+    }
+
+
     @PostMapping(value = "/building/floors/{floorId}/spaces", consumes = "multipart/form-data")
     public ApiResponse<?> createSpace(
         @PathVariable("floorId") Long floorId,
         @RequestPart("image") MultipartFile image,
-        @RequestPart("xCoordinate") int xCoordinate,
-        @RequestPart("yCoordinate") int yCoordinate,
-        @RequestPart("name") String name)
+        @RequestParam("name") String name,
+        @RequestParam("xCoordinate") double xCoordinate,
+        @RequestParam("yCoordinate") double yCoordinate,
+        @RequestParam("isSocketExist") boolean isSocketExist)
         throws IOException {
-        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name);
+        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
         return ApiResponse.onSuccess(null);
     }
 
