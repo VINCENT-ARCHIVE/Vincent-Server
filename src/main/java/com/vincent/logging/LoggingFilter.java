@@ -22,6 +22,10 @@ public class LoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
+        if (request.getContentType() != null && request.getContentType().startsWith("multipart/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         MDC.put("traceId", UUID.randomUUID().toString());
         Long memberId = extractMemberId();
         if (memberId != null) {
