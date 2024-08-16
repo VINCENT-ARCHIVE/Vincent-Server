@@ -60,7 +60,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
      */
 
 
-    @org.springframework.web.bind.annotation.ExceptionHandler
+    @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Object> exception(Exception e, WebRequest request) {
         e.printStackTrace();
         log.error("exception");

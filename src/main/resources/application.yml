@@ -21,6 +21,10 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
+      enabled: true
+  http:
+    multipart:
+      enabled: true
 
 jwt:
   token:
@@ -38,6 +42,12 @@ cloud:
       static: ap-northeast-2
     stack:
       auto: false
+#logging:
+#  level:
+#    org.springframework.web: DEBUG
+#    org.springframework.web.servlet: DEBUG
+#    org.springframework.web.multipart: TRACE
+#    org.springframework: TRACE
 
 management:
   info:

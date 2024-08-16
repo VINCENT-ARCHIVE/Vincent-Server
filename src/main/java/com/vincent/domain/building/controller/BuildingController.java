@@ -49,10 +49,10 @@ public class BuildingController {
         return ApiResponse.onSuccess(BuildingConverter.toBuildingListResponse(buildingPage));
     }
 
-    @PostMapping("/building")
+    @PostMapping(value = "/building", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<?> createBuilding(
-        @RequestPart MultipartFile image,
-        @Valid @RequestPart("data") BuildingRequestDto.Create request) throws IOException {
+        @RequestPart(value = "image") MultipartFile image,
+        @Valid @RequestPart(value = "request") BuildingRequestDto.Create request) throws IOException {
         buildingService.createBuilding(BuildingConverter.toBuilding(request), image);
         return ApiResponse.onSuccess(null);
     }
