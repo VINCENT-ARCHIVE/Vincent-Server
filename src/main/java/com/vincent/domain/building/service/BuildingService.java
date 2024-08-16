@@ -2,6 +2,8 @@ package com.vincent.domain.building.service;
 
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.aws.s3.S3Service;
+import com.vincent.domain.building.controller.dto.BuildingRequestDto;
+import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
@@ -9,6 +11,8 @@ import com.vincent.domain.building.repository.BuildingRepository;
 import com.vincent.domain.building.repository.FloorRepository;
 import com.vincent.domain.building.repository.SpaceRepository;
 import com.vincent.domain.member.entity.Member;
+import com.vincent.domain.socket.entity.Socket;
+import com.vincent.domain.socket.repository.SocketRepository;
 import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
 import java.util.List;
@@ -27,6 +31,7 @@ public class BuildingService {
     private final BuildingRepository buildingRepository;
     private final FloorRepository floorRepository;
     private final SpaceRepository spaceRepository;
+    private final SocketRepository socketRepository;
     private final S3Service s3Service;
 
     public Building getBuildingInfo(Long buildingId) {
@@ -124,6 +129,27 @@ public class BuildingService {
             .build();
 
         spaceRepository.save(space);
+
+
+    }
+
+    @Transactional
+    public void createSocket(
+        Long spaceId, MultipartFile image, double x, double y, String name, int holes) throws IOException {
+        String uploadUrl = s3Service.upload(image, "Socket");
+        Space space = spaceRepository.findById(spaceId)
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.SPACE_NOT_FOUND));
+
+        Socket socket = Socket.builder()
+            .space(space)
+            .name(name)
+            .xCoordinate(x)
+            .yCoordinate(y)
+            .image(uploadUrl)
+            .holes(holes)
+            .build();
+
+        socketRepository.save(socket);
 
 
     }

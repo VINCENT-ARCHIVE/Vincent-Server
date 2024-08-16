@@ -49,13 +49,14 @@ public class BuildingController {
         return ApiResponse.onSuccess(BuildingConverter.toBuildingListResponse(buildingPage));
     }
 
-    @PostMapping("/building")
+    @PostMapping(value = "/building", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<?> createBuilding(
-        @RequestPart MultipartFile image,
-        @Valid @RequestPart("data") BuildingRequestDto.Create request) throws IOException {
+        @RequestPart(value = "image") MultipartFile image,
+        @Valid @RequestPart(value = "request") BuildingRequestDto.Create request) throws IOException {
         buildingService.createBuilding(BuildingConverter.toBuilding(request), image);
         return ApiResponse.onSuccess(null);
     }
+
 
     @PostMapping("/building/{buildingId}/floors")
     public ApiResponse<?> createFloor(
@@ -90,7 +91,6 @@ public class BuildingController {
 
     }
 
-
     @PostMapping(value = "/building/floors/{floorId}/spaces", consumes = "multipart/form-data")
     public ApiResponse<?> createSpace(
         @PathVariable("floorId") Long floorId,
@@ -103,6 +103,23 @@ public class BuildingController {
         buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
         return ApiResponse.onSuccess(null);
     }
+
+
+
+    @PostMapping(value = "/building/floors/spaces/{spaceId}/socket", consumes = "multipart/form-data")
+    public ApiResponse<?> createSocket(
+        @PathVariable("spaceId") Long spaceId,
+        @RequestPart(value = "image") MultipartFile image,
+        @RequestParam("name") String name,
+        @RequestParam("xCoordinate") double xCoordinate,
+        @RequestParam("yCoordinate") double yCoordinate,
+        @RequestParam("holes") int holes)
+        throws IOException {
+        buildingService.createSocket(spaceId, image, xCoordinate, yCoordinate, name, holes);
+        return ApiResponse.onSuccess(null);
+    }
+
+
 
 
 }

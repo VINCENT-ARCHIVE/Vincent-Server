@@ -91,6 +91,17 @@ public class BuildingConverter {
             .build();
     }
 
+    /*
+    public static Space toSpace(BuildingRequestDto.Create request) {
+        return Space.builder()
+            .name(request.getName())
+            .xCoordinate(request.getLongitude())
+            .yCoordinate(request.getLatitude())
+            .build();
+    }
+
+     */
+
 
 
 }

@@ -36,29 +36,13 @@ public class S3Service {
             .orElseThrow(
                 () -> new ErrorHandler(ErrorStatus.IMAGE_CONVERT_ERROR)); // 파일을 변환할 수 없으면 에러
 
-        String baseDir = "";
-
-        switch (type) {
-            case "Building":
-                baseDir = BUILDING_IMG_DIR;
-                break;
-
-            case "Floor":
-                baseDir = FLOOR_IMG_DIR;
-                break;
-
-            case "Space":
-                baseDir = SPACE_IMG_DIR;
-                break;
-
-            case "Socket":
-                baseDir = SOCKET_IMG_DIR;
-                break;
-
-            default:
-                throw new IllegalArgumentException("Invalid type: " + type);
-        }
-
+        String baseDir = switch (type) {
+            case "Building" -> BUILDING_IMG_DIR;
+            case "Floor" -> FLOOR_IMG_DIR;
+            case "Space" -> SPACE_IMG_DIR;
+            case "Socket" -> SOCKET_IMG_DIR;
+            default -> throw new IllegalArgumentException("Invalid type: " + type);
+        };
 
         String fileName = baseDir + "/" + UUID.randomUUID() + "_" + convertFile.getName();
 
