@@ -29,6 +29,9 @@ public class BuildingService {
     private final SpaceRepository spaceRepository;
     private final S3Service s3Service;
 
+    private static final double longitudeRange = 0.0007092929741;
+    private static final double latitudeRange = 0.00146597950179;
+
     public Building getBuildingInfo(Long buildingId) {
 
         return buildingRepository.findById(buildingId)
@@ -64,12 +67,12 @@ public class BuildingService {
     }
 
     public List<Building> getBuildingLocation(Double longitude, Double latitude) {
-        double longitudeRange = 3.1; //임의의 범위
-        double latitudeRange = 6.1; //임의의 범위
+
         double longitudeLower = longitude - longitudeRange;
         double longitudeUpper = longitude + longitudeRange;
         double latitudeLower = latitude - latitudeRange;
         double latitudeUpper = latitude + latitudeRange;
+
         return buildingRepository.findAllByLocation(longitudeLower, longitudeUpper, latitudeLower, latitudeUpper);
 
     }
