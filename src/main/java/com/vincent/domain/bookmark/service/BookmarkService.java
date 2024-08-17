@@ -61,7 +61,7 @@ public class BookmarkService {
 
         Member member = findMemberById(memberId);
 
-        return bookmarkRepository.findAllByMember(member, PageRequest.of(page, 10));
+        return bookmarkRepository.findAllByMemberOrderByCreatedAtDesc(member, PageRequest.of(page, 10));
 
     }
 
