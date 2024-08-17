@@ -20,6 +20,8 @@ import com.vincent.domain.building.repository.BuildingRepository;
 import com.vincent.domain.building.repository.FloorRepository;
 import com.vincent.domain.building.repository.SpaceRepository;
 import com.vincent.domain.building.service.BuildingService;
+import com.vincent.domain.socket.entity.Socket;
+import com.vincent.domain.socket.repository.SocketRepository;
 import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,6 +56,9 @@ public class BuildingServiceTest {
 
     @Mock
     private SpaceRepository spaceRepository;
+
+    @Mock
+    private SocketRepository socketRepository;
 
     @Mock
     private S3Service s3Service;
@@ -304,6 +310,29 @@ public class BuildingServiceTest {
         assertThrows(ErrorHandler.class, () -> {
             buildingService.createSpace(floorId, image, 10, 20, "Test Space", isSocketExist);
         });
+    }
+
+    @Test
+    void 소켓등록_성공() throws IOException {
+
+        MockMultipartFile mockImage = new MockMultipartFile("image", "socket.jpg", "image/jpeg", "image content".getBytes());
+
+
+        Space mockSpace = Mockito.mock(Space.class);
+        when(mockSpace.getName()).thenReturn("s1_floor1");
+        String mockUploadUrl = "http://mock-s3-url/socket.jpg";
+
+
+        when(spaceRepository.findById(1L)).thenReturn(Optional.of(mockSpace));
+        when(s3Service.upload(mockImage, "Socket")).thenReturn(mockUploadUrl);
+
+
+        buildingService.createSocket(1L, mockImage, 123.45, 543.21, "Test Socket", 3);
+
+
+        verify(spaceRepository).findById(1L);
+        verify(s3Service).upload(mockImage, "Socket");
+        verify(socketRepository).save(any(Socket.class));
     }
 
 }
