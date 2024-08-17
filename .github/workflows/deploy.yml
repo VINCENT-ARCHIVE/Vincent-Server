@@ -93,5 +93,11 @@ jobs:
           script: |
             cd ~/project
             ls -l
-            docker-compose down
-            docker-compose up -d
+            script: |
+            # Docker 이미지 다운로드
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/vincent:latest
+            
+            sudo docker-compose up -d
+            sudo docker-compose logs -f
+            
+            sudo docker image prune -f
