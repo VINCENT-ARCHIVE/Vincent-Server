@@ -96,6 +96,5 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/vincent:latest
             
             sudo docker-compose up -d
-            sudo docker-compose logs -f
             
             sudo docker image prune -f
