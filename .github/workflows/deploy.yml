@@ -54,4 +54,4 @@ jobs:
               BUCKET_NAME=${{ secrets.BUCKET_NAME }}
               BUCKET_ACCESS_KEY=${{ secrets.BUCKET_ACCESS_KEY }}
                 BUCKET_SECRET_KEY=${{ secrets.BUCKET_SECRET_KEY }}
-            tags: ${{ secrets.DOCKER_REPO }}/vincent:latest
+            tags: ${{ secrets.DOCKER_USERNAME }}/vincent:latest
