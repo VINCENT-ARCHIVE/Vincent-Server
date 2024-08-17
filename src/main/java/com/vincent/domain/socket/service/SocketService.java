@@ -10,6 +10,7 @@ import com.vincent.domain.building.repository.SpaceRepository;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.repository.SocketRepository;
 import com.vincent.exception.handler.ErrorHandler;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,24 +31,25 @@ public class SocketService {
         return  socketRepository.findById(socketId).orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
     }
 
-    public List<Socket> getSocketLocationList(Long buildingId, int level) {
+    public List<Socket> getSocketList(Long buildingId, int level) {
 
-        Building a = buildingRepository.findById(buildingId).orElseThrow(()
+        Building building = buildingRepository.findById(buildingId).orElseThrow(()
             -> new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND));
 
-        Floor b = floorRepository.findByBuildingAndLevel(a, level);
+        Floor floor = floorRepository.findByBuildingAndLevel(building, level);
 
-        List<Space> s = spaceRepository.findAllByFloor(b);
+        List<Space> spaceList = spaceRepository.findAllByFloor(floor);
 
-        List<Socket> socket = null;
+        List<Socket> socketList = new ArrayList<>();
 
-        for (Space space : s) {
+        for (Space oneSpace : spaceList) {
 
-            socket = socketRepository.findAllBySpace(space);
+            List<Socket> socketListForOneSpace = socketRepository.findAllBySpace(oneSpace);
+            socketList.addAll(socketListForOneSpace);
         }
 
 
-        return  socket;
+        return  socketList;
     }
 
 }

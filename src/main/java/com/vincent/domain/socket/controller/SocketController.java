@@ -43,12 +43,12 @@ public class SocketController {
     }
 
 
-    @GetMapping("/building/{buildingId}/socket")
+    @GetMapping("/socket")
     public ApiResponse<SocketResponseDto.SocketLocationList> getSocketLocationList(
-        @PathVariable("buildingId") Long buildingId,
+        @RequestParam("buildingId") Long buildingId,
         @RequestParam("level") Integer level) {
         return  ApiResponse.onSuccess((
-            SocketConverter.toSocketLocationList(socketService.getSocketLocationList(buildingId, level))));
+            SocketConverter.toSocketLocationList(socketService.getSocketList(buildingId, level))));
 
 
     }

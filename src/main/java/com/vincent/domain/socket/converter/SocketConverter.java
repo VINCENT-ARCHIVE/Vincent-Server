@@ -27,10 +27,10 @@ public class SocketConverter {
     }
 
     public static SocketResponseDto.SocketLocationList toSocketLocationList(List<Socket> socketList) {
-        List<SocketResponseDto.SocketLocation> a = socketList.stream()
+        List<SocketResponseDto.SocketLocation> socketLocationList = socketList.stream()
             .map(SocketConverter::toSocketLocation).collect(Collectors.toList());
         return SocketResponseDto.SocketLocationList.builder()
-            .locationList(a)
+            .locationList(socketLocationList)
             .build();
     }
 
