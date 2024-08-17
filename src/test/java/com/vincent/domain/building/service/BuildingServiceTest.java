@@ -1,4 +1,4 @@
-package com.vincent.domain.bookmark.service;
+package com.vincent.domain.building.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
