@@ -93,8 +93,6 @@ jobs:
           script: |
             cd ~/project
             ls -l
-            script: |
-            # Docker 이미지 다운로드
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/vincent:latest
             
             sudo docker-compose up -d
