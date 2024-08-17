@@ -1,4 +1,4 @@
-package com.vincent.domain.bookmark.controller;
+package com.vincent.domain.feedback.controller;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
