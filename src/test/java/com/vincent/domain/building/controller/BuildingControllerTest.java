@@ -1,4 +1,4 @@
-package com.vincent.domain.bookmark.controller;
+package com.vincent.domain.building.controller;
 
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

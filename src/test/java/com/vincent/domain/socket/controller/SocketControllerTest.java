@@ -1,7 +1,9 @@
-package com.vincent.domain.bookmark.controller;
+package com.vincent.domain.socket.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,6 +23,8 @@ import com.vincent.domain.socket.controller.dto.SocketResponseDto.SocketInfo;
 import com.vincent.domain.socket.converter.SocketConverter;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.service.SocketService;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -110,5 +114,22 @@ public class SocketControllerTest {
 
     }
 
+    @Test
+    void 층소켓조회_성공() throws Exception {
 
+        List<Socket> mockSocketList = new ArrayList<>();
+
+
+        when(socketService.getSocketList(anyLong(), anyInt())).thenReturn(mockSocketList);
+        when(socketConverter.toSocketLocationList(mockSocketList)).thenReturn(new SocketResponseDto.SocketLocationList());
+
+
+        mockMvc.perform(get("/socket")
+                .param("buildingId", "1")
+                .param("level", "2"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("SUCCESS"));
+
+
+    }
 }
