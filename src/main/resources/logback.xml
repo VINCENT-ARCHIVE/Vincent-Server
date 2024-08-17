@@ -29,7 +29,7 @@
       <pattern>${FILE_LOG_PATTERN}</pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <fileNamePattern>${LOGS_ABSOLUTE_PATH}/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
       <maxHistory>30</maxHistory>
       <totalSizeCap>3GB</totalSizeCap>
     </rollingPolicy>
@@ -51,7 +51,7 @@
       <pattern>${FILE_LOG_PATTERN}</pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>user-requests.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <fileNamePattern>${LOGS_ABSOLUTE_PATH}/user-requests.%d{yyyy-MM-dd}.log</fileNamePattern>
       <!-- 최대 보관할 로그 파일 개수 -->
       <maxHistory>30</maxHistory>
       <!-- 총 로그 파일 크기 제한 -->
