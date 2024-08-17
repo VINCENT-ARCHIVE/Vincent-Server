@@ -57,6 +57,7 @@ jobs:
             BUCKET_ACCESS_KEY=${{ secrets.BUCKET_ACCESS_KEY }}
             BUCKET_SECRET_KEY=${{ secrets.BUCKET_SECRET_KEY }}
             REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
           tags: ${{ secrets.DOCKER_USERNAME }}/vincent:latest
 
   deploy:
@@ -80,6 +81,7 @@ jobs:
             echo "BUCKET_ACCESS_KEY=${{ secrets.BUCKET_ACCESS_KEY }}" >> ~/project/.env
             echo "BUCKET_SECRET_KEY=${{ secrets.BUCKET_SECRET_KEY }}" >> ~/project/.env
             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ~/project/.env
+            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ~/project/.env
             chmod 600 ~/project/.env
 
       - name: Docker Compose on EC2

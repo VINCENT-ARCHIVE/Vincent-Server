@@ -16,7 +16,7 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST}
-      port: 6379
+      port: ${REDIS_PORT}
   servlet:
     multipart:
       max-file-size: 20MB
