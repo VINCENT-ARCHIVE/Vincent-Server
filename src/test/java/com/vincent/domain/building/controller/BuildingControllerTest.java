@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -250,6 +251,22 @@ public class BuildingControllerTest {
             .andExpect(status().isOk());
 
         verify(buildingService).createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
+    }
+
+    @Test
+    void 소켓등록_성공() throws Exception {
+
+        MockMultipartFile mockImage = new MockMultipartFile("image", "socket.jpg", "image/jpeg", "image content".getBytes());
+
+        doNothing().when(buildingService).createSocket(any(Long.class), any(MultipartFile.class), any(Double.class), any(Double.class), any(String.class), any(Integer.class));
+
+        mockMvc.perform(multipart("/building/floors/spaces/1/socket")
+                .file(mockImage)
+                .param("name", "Test Socket")
+                .param("xCoordinate", "123.45")
+                .param("yCoordinate", "543.21")
+                .param("holes", "3"))
+            .andExpect(status().isOk());
     }
 
 
