@@ -137,14 +137,17 @@ public class BuildingServiceTest {
     public void 빌딩_등록_성공() throws IOException {
         //given
         MultipartFile image = mock(MultipartFile.class);
-        Building building = Building.builder().build();
+        String name = "building1";
+        String address = "b1_address";
+        double latitude = 10.2;
+        double longitude = 10.9;
         String mockUrl = "test.com";
 
         //when
         when(s3Service.upload(image, "Building")).thenReturn(mockUrl);
 
         //then
-        buildingService.createBuilding(building, image);
+        buildingService.createBuilding(image, name, address, latitude, longitude);
         verify(s3Service, times(1)).upload(eq(image), eq("Building"));
         verify(buildingRepository, times(1)).save(eq(building));
         assertEquals(mockUrl, building.getImage());

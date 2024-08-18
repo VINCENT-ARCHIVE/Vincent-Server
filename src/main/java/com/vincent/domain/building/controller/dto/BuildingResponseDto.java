@@ -76,8 +76,8 @@ public class BuildingResponseDto {
     public static class SpaceInfo {
 
         String spaceName;
-        Double xCoordinate;
-        Double yCoordinate;
+        Double longitude;
+        Double latitude;
         Boolean socketExistence;
     }
 

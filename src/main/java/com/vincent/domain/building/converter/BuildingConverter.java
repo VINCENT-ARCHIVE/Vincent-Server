@@ -71,8 +71,8 @@ public class BuildingConverter {
         Space space) {
         return BuildingResponseDto.SpaceInfo.builder()
             .spaceName(space.getName())
-            .xCoordinate(space.getXCoordinate())
-            .yCoordinate(space.getYCoordinate())
+            .latitude(space.getLatitude())
+            .longitude(space.getLongitude())
             .socketExistence(space.isSocketExist()).build();
 
     }
@@ -92,13 +92,7 @@ public class BuildingConverter {
     }
 
 
-    public static Space toSpace(BuildingRequestDto.Create request) {
-        return Space.builder()
-            .name(request.getName())
-            .xCoordinate(request.getLongitude())
-            .yCoordinate(request.getLatitude())
-            .build();
-    }
+
 
 
 

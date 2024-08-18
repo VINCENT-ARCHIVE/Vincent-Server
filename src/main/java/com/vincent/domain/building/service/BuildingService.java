@@ -47,9 +47,17 @@ public class BuildingService {
     }
 
     @Transactional
-    public void createBuilding(Building building, MultipartFile image) throws IOException {
+    public void createBuilding(MultipartFile image, String name, String address, double latitude, double longitude) throws IOException {
         String uploadUrl = s3Service.upload(image, "Building");
-        building.setImage(uploadUrl);
+
+        Building building = Building.builder()
+            .name(name)
+            .address(address)
+            .latitude(latitude)
+            .longitude(longitude)
+            .image(uploadUrl)
+            .build();
+
         buildingRepository.save(building);
     }
 
@@ -114,7 +122,8 @@ public class BuildingService {
 
     @Transactional
     public void createSpace(
-        Long floorId, MultipartFile image, double x, double y, String name, boolean isSocketExist) throws IOException {
+        Long floorId, MultipartFile image, double latitude, double longitude, String name, boolean isSocketExist)
+        throws IOException {
         String uploadUrl = s3Service.upload(image, "Space");
         Floor floor = floorRepository.findById(floorId)
             .orElseThrow(() -> new ErrorHandler(ErrorStatus.FLOOR_NOT_FOUND));
@@ -122,8 +131,8 @@ public class BuildingService {
         Space space = Space.builder()
             .floor(floor)
             .name(name)
-            .xCoordinate(x)
-            .yCoordinate(y)
+            .longitude(longitude)
+            .latitude(latitude)
             .image(uploadUrl)
             .isSocketExist(isSocketExist)
             .build();
@@ -135,7 +144,8 @@ public class BuildingService {
 
     @Transactional
     public void createSocket(
-        Long spaceId, MultipartFile image, double x, double y, String name, int holes) throws IOException {
+        Long spaceId, MultipartFile image, double latitude, double longitude, String name, int holes)
+        throws IOException {
         String uploadUrl = s3Service.upload(image, "Socket");
         Space space = spaceRepository.findById(spaceId)
             .orElseThrow(() -> new ErrorHandler(ErrorStatus.SPACE_NOT_FOUND));
@@ -143,8 +153,8 @@ public class BuildingService {
         Socket socket = Socket.builder()
             .space(space)
             .name(name)
-            .xCoordinate(x)
-            .yCoordinate(y)
+            .latitude(latitude)
+            .longitude(longitude)
             .image(uploadUrl)
             .holes(holes)
             .build();
