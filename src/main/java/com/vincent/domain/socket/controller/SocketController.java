@@ -32,14 +32,16 @@ public class SocketController {
     private final BookmarkService bookmarkService;
 
     @GetMapping("/socket/{socketId}")
-    public ApiResponse<SocketResponseDto.SocketInfo> socketInfo(@PathVariable("socketId") Long socketId,
+    public ApiResponse<SocketResponseDto.SocketInfo> socketInfo(
+        @PathVariable("socketId") Long socketId,
         Authentication authentication) {
 
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Long memberId = principalDetails.getMemberId();
         Boolean isBookmarkExist = bookmarkService.getBookmarkExist(socketId, memberId);
         Socket socketInfo = socketService.getSocketInfo(socketId);
-        return ApiResponse.onSuccess(SocketConverter.toSocketInfoResponse(socketInfo, isBookmarkExist));
+        return ApiResponse.onSuccess(
+            SocketConverter.toSocketInfoResponse(socketInfo, isBookmarkExist));
     }
 
 
@@ -47,12 +49,10 @@ public class SocketController {
     public ApiResponse<SocketResponseDto.SocketLocationList> getSocketLocationList(
         @RequestParam("buildingId") Long buildingId,
         @RequestParam("level") Integer level) {
-        return  ApiResponse.onSuccess((
+        return ApiResponse.onSuccess((
             SocketConverter.toSocketLocationList(socketService.getSocketList(buildingId, level))));
 
 
     }
-
-
 
 }

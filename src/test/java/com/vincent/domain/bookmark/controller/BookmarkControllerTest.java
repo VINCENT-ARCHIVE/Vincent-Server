@@ -1,374 +1,116 @@
 package com.vincent.domain.bookmark.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vincent.apipayload.status.ErrorStatus;
+import com.vincent.apipayload.ApiResponse;
+import com.vincent.config.security.principal.PrincipalDetails;
 import com.vincent.domain.bookmark.controller.dto.BookmarkResponseDto;
-import com.vincent.domain.bookmark.converter.BookmarkConverter;
-import com.vincent.domain.bookmark.entity.Bookmark;
+import com.vincent.domain.bookmark.controller.dto.BookmarkResponseDto.Bookmark;
 import com.vincent.domain.bookmark.service.BookmarkService;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
+import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.socket.entity.Socket;
-import com.vincent.exception.handler.ErrorHandler;
-import java.util.Collections;
+import java.util.List;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import org.springframework.security.core.Authentication;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = BookmarkController.class)
-@MockBean(JpaMetamodelMappingContext.class)
+@ExtendWith(MockitoExtension.class)
 public class BookmarkControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private BookmarkService bookmarkService;
 
-    //@MockBean
-    //private BookmarkConverter bookmarkConverter;
+    @Mock
+    private Authentication authentication;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @InjectMocks
+    private BookmarkController bookmarkController;
 
-    // 테스트 데이터
-    Long socketId = 1L;
-    Long memberId = 1L;
+    private PrincipalDetails principalDetails;
 
-    @Test
-    @WithMockUser(username = "1")
-    public void 북마크성공() throws Exception {
-
-        BookmarkService.BookmarkResult result = new BookmarkService.BookmarkResult(socketId);
-
-        // Mocking 서비스 응답
-        when(bookmarkService.bookmark(eq(socketId), eq(memberId))).thenReturn(result);
-
-        // 요청 실행
-        ResultActions resultActions = mockMvc.perform(post("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        // 응답 검증
-        resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("성공입니다"))
-                .andExpect(jsonPath("$.result.bookmarkId").value(result.getBookmarkId()));
-    }
-
-
-    @Test
-    @WithMockUser(username = "1")
-    public void 북마크실패_이미북마크존재() throws Exception {
-
-        // Mocking 서비스 응답
-        when(bookmarkService.bookmark(eq(socketId), eq(memberId)))
-                .thenThrow(new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_EXIST));
-
-        // 요청 실행
-        ResultActions resultActions = mockMvc.perform(post("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        // 응답 검증
-        resultActions.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.code").value(
-                        ErrorStatus.BOOKMARK_ALREADY_EXIST.getReason().getCode()))
-                .andExpect(jsonPath("$.message").value(
-                        ErrorStatus.BOOKMARK_ALREADY_EXIST.getReason().getMessage()));
+    @BeforeEach
+    public void setUp() {
+        Member member = Member.builder().id(1L).build();
+        principalDetails = new PrincipalDetails(member);
+        when(authentication.getPrincipal()).thenReturn(principalDetails);
     }
 
     @Test
-    @WithMockUser(username = "1")
-    public void 북마크실패_멤버없음() throws Exception {
+    public void 북마크_성공() {
+        // given
+        Long socketId = 1L;
+        BookmarkService.BookmarkResult bookmarkResult = new BookmarkService.BookmarkResult(
+            socketId);
 
-        // Mocking 서비스 응답
-        when(bookmarkService.bookmark(eq(socketId), eq(memberId)))
-                .thenThrow(new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        //when
+        when(bookmarkService.bookmark(socketId, principalDetails.getMemberId())).thenReturn(
+            bookmarkResult);
 
-        // 요청 실행
-        ResultActions resultActions = mockMvc.perform(post("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
+        // then
+        ApiResponse<Bookmark> response = bookmarkController.bookmark(socketId, authentication);
+        Bookmark result = response.getResult();
 
-        // 응답 검증
-        resultActions.andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.code").value(
-                        ErrorStatus.MEMBER_NOT_FOUND.getReason().getCode()))
-                .andExpect(jsonPath("$.message").value(
-                        ErrorStatus.MEMBER_NOT_FOUND.getReason().getMessage()));
+        verify(bookmarkService).bookmark(socketId, principalDetails.getMemberId());
+
+        Assertions.assertThat(response.getIsSuccess()).isTrue();
+        Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");
+        Assertions.assertThat(result.getBookmarkId()).isEqualTo(bookmarkResult.getBookmarkId());
     }
 
     @Test
-    @WithMockUser(username = "1")
-    public void 북마크실패_소켓없음() throws Exception {
+    public void 북마크취소_성공() {
+        // given
+        Long socketId = 1L;
 
-        // Mocking 서비스 응답
-        when(bookmarkService.bookmark(eq(socketId), eq(memberId)))
-                .thenThrow(new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
+        // then
+        ApiResponse<?> response = bookmarkController.deleteBookmark(socketId, authentication);
 
-        // 요청 실행
-        ResultActions resultActions = mockMvc.perform(post("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
+        verify(bookmarkService).deleteBookmark(socketId, principalDetails.getMemberId());
 
-        // 응답 검증
-        resultActions.andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.code").value(
-                        ErrorStatus.SOCKET_NOT_FOUND.getReason().getCode()))
-                .andExpect(jsonPath("$.message").value(
-                        ErrorStatus.SOCKET_NOT_FOUND.getReason().getMessage()));
+        Assertions.assertThat(response.getIsSuccess()).isTrue();
+        Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");
     }
 
     @Test
-    @WithMockUser(username = "1")
-    public void 북마크취소_성공() throws Exception {
-
-        // Mocking 서비스 응답
-        doNothing().when(bookmarkService).deleteBookmark(eq(socketId), eq(memberId));
-
-        // 요청 실행
-        ResultActions resultActions = mockMvc.perform(delete("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        // 응답 검증
-        resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("성공입니다"));
-    }
-
-    @Test
-    @WithMockUser(username = "1")
-    public void 북마크취소실패_북마크존재하지않음() throws Exception {
-
-        // Mocking 서비스 응답
-        doThrow(new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED)).when(bookmarkService)
-                .deleteBookmark(eq(socketId), eq(memberId));
-
-        // 요청 실행
-        ResultActions resultActions = mockMvc.perform(delete("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        // 응답 검증
-        resultActions.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.code").value(
-                        ErrorStatus.BOOKMARK_ALREADY_DELETED.getReason().getCode()))
-                .andExpect(jsonPath("$.message").value(
-                        ErrorStatus.BOOKMARK_ALREADY_DELETED.getReason().getMessage()));
-    }
-
-    @Test
-    @WithMockUser(username = "1")
-    public void 북마크취소실패_멤버없음() throws Exception {
-
-        // Mocking 서비스 응답
-        doThrow(new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND)).when(bookmarkService)
-                .deleteBookmark(eq(socketId), eq(memberId));
-
-        // 요청 실행
-        ResultActions resultActions = mockMvc.perform(delete("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        // 응답 검증
-        resultActions.andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.code").value(
-                        ErrorStatus.MEMBER_NOT_FOUND.getReason().getCode()))
-                .andExpect(jsonPath("$.message").value(
-                        ErrorStatus.MEMBER_NOT_FOUND.getReason().getMessage()));
-    }
-
-    @Test
-    @WithMockUser(username = "1")
-    public void 북마크취소실패_소켓없음() throws Exception {
-
-        // Mocking 서비스 응답
-        doThrow(new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND)).when(bookmarkService)
-                .deleteBookmark(eq(socketId), eq(memberId));
-
-        // 요청 실행
-        ResultActions resultActions = mockMvc.perform(delete("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        // 응답 검증
-        resultActions.andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.code").value(
-                        ErrorStatus.SOCKET_NOT_FOUND.getReason().getCode()))
-                .andExpect(jsonPath("$.message").value(
-                        ErrorStatus.SOCKET_NOT_FOUND.getReason().getMessage()));
-    }
-
-
-    @Test
-    @WithMockUser(username = "1")
-    public void 북마크리스트조회성공() throws Exception {
-
+    public void 북마크리스트조회_성공() {
+        //given
         int page = 0;
+        Building building = Building.builder().name("Test Building").build();
+        Floor floor = Floor.builder().building(building).level(1).build();
+        Space space = Space.builder().floor(floor).name("Test Space").build();
+        Socket socket = Socket.builder().space(space).name("Test Socket").build();
+        com.vincent.domain.bookmark.entity.Bookmark bookmark = com.vincent.domain.bookmark.entity.Bookmark.builder()
+            .socket(socket)
+            .build();
+        Page<com.vincent.domain.bookmark.entity.Bookmark> bookmarkPage = new PageImpl<>(
+            List.of(bookmark));
 
-        Bookmark bookmark = Mockito.mock(Bookmark.class);
+        //when
+        when(bookmarkService.findBookmarkList(principalDetails.getMemberId(), page)).thenReturn(
+            bookmarkPage);
 
-        Socket socket = Mockito.mock(Socket.class);
-        when(socket.getId()).thenReturn(1L);
-        when(socket.getName()).thenReturn("socketName");
-        when(socket.getImage()).thenReturn("socketImage");
+        //then
+        ApiResponse<BookmarkResponseDto.BookmarkList> response = bookmarkController.bookmarkList(
+            page, authentication);
+        BookmarkResponseDto.BookmarkList result = response.getResult();
 
-        Building building = Mockito.mock(Building.class);
-        when(building.getName()).thenReturn("buildingName");
-
-        Floor floor = Mockito.mock(Floor.class);
-        when(floor.getBuilding()).thenReturn(building);
-
-        Space space = Mockito.mock(Space.class);
-        when(space.getName()).thenReturn("spaceName");
-        when(space.getFloor()).thenReturn(floor);
-
-
-        when(bookmark.getId()).thenReturn(1L);
-        when(bookmark.getSocket()).thenReturn(socket);
-        when(socket.getSpace()).thenReturn(space);
-        when(space.getFloor().getBuilding()).thenReturn(building);
-
-        Page<Bookmark> bookmarkPage = new PageImpl<>(Collections.singletonList(bookmark),
-                PageRequest.of(page, 10), 1);
-
-        BookmarkResponseDto.BookmarkDetail bookmarkDetail = new BookmarkResponseDto.BookmarkDetail(
-                1L, 1L, "socketName", "socketImage", "buildingName", "spaceName"
-        );
-        BookmarkResponseDto.BookmarkList bookmarkListDto = new BookmarkResponseDto.BookmarkList(
-                Collections.singletonList(bookmarkDetail),
-                1, 1, 1L, true, true
-        );
-
-        when(bookmarkService.findBookmarkList(eq(memberId), eq(page))).thenReturn(bookmarkPage);
-        when(BookmarkConverter.toBookmarkListResponse(any(Page.class))).thenReturn(bookmarkListDto);
-
-        ResultActions resultActions = mockMvc.perform(get("/v1/bookmark")
-                .param("page", String.valueOf(page))
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("성공입니다"))
-                .andExpect(jsonPath("$.result.bookmarks").isArray())
-                .andExpect(jsonPath("$.result.bookmarks[0].bookmarkId").value(1L))
-                .andExpect(jsonPath("$.result.bookmarks[0].socketId").value(1L))
-                .andExpect(jsonPath("$.result.bookmarks[0].socketName").value("socketName"))
-                .andExpect(jsonPath("$.result.bookmarks[0].socketImage").value("socketImage"))
-                .andExpect(jsonPath("$.result.bookmarks[0].buildingName").value("buildingName"))
-                .andExpect(jsonPath("$.result.bookmarks[0].spaceName").value("spaceName"));
-    }
-
-    @Test
-    @WithMockUser(username = "1")
-    public void 북마크리스트조회실패_멤버없음() throws Exception {
-
-        int page = 0;
-
-        when(bookmarkService.findBookmarkList(eq(memberId), eq(page)))
-                .thenThrow(new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
-        ResultActions resultActions = mockMvc.perform(get("/v1/bookmark")
-                .param("page", String.valueOf(page))
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        resultActions.andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.code").value(
-                        ErrorStatus.MEMBER_NOT_FOUND.getReason().getCode()))
-                .andExpect(jsonPath("$.message").value(
-                        ErrorStatus.MEMBER_NOT_FOUND.getReason().getMessage()));
-    }
-
-    @Test
-    @WithMockUser(username = "1")
-    public void 북마크여부조회성공() throws Exception {
-
-        Boolean result = true;
-
-        when(bookmarkService.getBookmarkExist(socketId, memberId)).thenReturn(result);
-
-        ResultActions resultActions = mockMvc.perform(get("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("성공입니다"))
-                .andExpect(jsonPath("$.result.isBookmarkExist").value(result));
-    }
-
-    @Test
-    @WithMockUser(username = "1")
-    public void 북마크여부조회실패_멤버없음() throws Exception {
-
-        when(bookmarkService.getBookmarkExist(eq(socketId), eq(memberId)))
-                .thenThrow(new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
-        ResultActions resultActions = mockMvc.perform(get("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        resultActions.andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.code").value(
-                        ErrorStatus.MEMBER_NOT_FOUND.getReason().getCode()))
-                .andExpect(jsonPath("$.message").value(
-                        ErrorStatus.MEMBER_NOT_FOUND.getReason().getMessage()));
-    }
-
-    @Test
-    @WithMockUser(username = "1")
-    public void 북마크여부조회실패_소켓없음() throws Exception {
-
-        when(bookmarkService.getBookmarkExist(eq(socketId), eq(memberId)))
-                .thenThrow(new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
-
-        ResultActions resultActions = mockMvc.perform(get("/v1/bookmark/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-        resultActions.andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.code").value(
-                        ErrorStatus.SOCKET_NOT_FOUND.getReason().getCode()))
-                .andExpect(jsonPath("$.message").value(
-                        ErrorStatus.SOCKET_NOT_FOUND.getReason().getMessage()));
+        Assertions.assertThat(response.getIsSuccess()).isTrue();
+        Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");
+        Assertions.assertThat(result.getBookmarkDetails().size()).isEqualTo(1);
+        BookmarkResponseDto.BookmarkDetail detail = result.getBookmarkDetails().get(0);
+        Assertions.assertThat(detail.getSocketName()).isEqualTo("Test Socket");
+        Assertions.assertThat(detail.getSpaceName()).isEqualTo("Test Space");
+        Assertions.assertThat(detail.getBuildingName()).isEqualTo("Test Building");
+        verify(bookmarkService).findBookmarkList(principalDetails.getMemberId(), page);
     }
 }

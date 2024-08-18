@@ -88,7 +88,7 @@ public class BuildingController {
         List<Floor> floors = buildingService.getFloorInfoList(buildingId);
         List<Space> spaces = buildingService.getSpaceInfoList(floor.getId());
 
-        return  ApiResponse.onSuccess((
+        return ApiResponse.onSuccess((
             BuildingConverter.toFloorInfoListResponse(floor, floors, spaces)));
 
 
@@ -108,7 +108,6 @@ public class BuildingController {
     }
 
 
-
     @PostMapping(value = "/building/floors/spaces/{spaceId}/socket", consumes = "multipart/form-data")
     public ApiResponse<?> createSocket(
         @PathVariable("spaceId") Long spaceId,
@@ -121,8 +120,6 @@ public class BuildingController {
         buildingService.createSocket(spaceId, image, latitude, longitude, name, holes);
         return ApiResponse.onSuccess(null);
     }
-
-
 
 
 }
