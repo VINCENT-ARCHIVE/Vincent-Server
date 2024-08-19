@@ -32,9 +32,9 @@ public class Space {
     @JoinColumn(name = "floor_id", nullable = false)
     private Floor floor;
 
-    private double xCoordinate;
+    private double longitude;
 
-    private double yCoordinate;
+    private double latitude;
 
     private String name;
 

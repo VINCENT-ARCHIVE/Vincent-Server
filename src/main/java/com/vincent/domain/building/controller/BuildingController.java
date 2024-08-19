@@ -58,21 +58,24 @@ public class BuildingController {
     }
 
     @Operation(summary = "빌딩 등록하기")
-    @PostMapping(value = "/building", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/building", consumes = "multipart/form-data")
     public ApiResponse<?> createBuilding(
         @RequestPart(value = "image") MultipartFile image,
-        @Valid @RequestPart(value = "request") BuildingRequestDto.Create request) throws IOException {
-        buildingService.createBuilding(BuildingConverter.toBuilding(request), image);
+        @RequestParam("name") String name,
+        @RequestParam("address") String address,
+        @RequestParam("latitude") Double latitude,
+        @RequestParam("longitude") Double longitude) throws IOException {
+        buildingService.createBuilding(image, name, address, latitude, longitude);
         return ApiResponse.onSuccess(null);
     }
 
     @Operation(summary = "층 등록하기")
     @Parameter(name = "level", description = "등록하려는 현재 층의 층수")
-    @PostMapping("/building/{buildingId}/floors")
+    @PostMapping(value = "/building/{buildingId}/floors", consumes = "multipart/form-data")
     public ApiResponse<?> createFloor(
         @PathVariable("buildingId") Long buildingId,
-        @RequestPart MultipartFile image,
-        @RequestPart int level)
+        @RequestPart("image") MultipartFile image,
+        @RequestParam("level") int level)
         throws IOException {
         buildingService.createFloor(buildingId, level, image);
         return ApiResponse.onSuccess(null);
@@ -84,8 +87,8 @@ public class BuildingController {
     @Parameter(name = "latitude", description = "지도의 중심 위도, 지도의 중심 y좌표")
     @GetMapping("/building/location")
     public ApiResponse<BuildingResponseDto.BuildingLocationList> buildingLocation(
-        @RequestParam("longitude") Double longitude,
-        @RequestParam("latitude") Double latitude) {
+        @RequestParam("latitude") Double latitude,
+        @RequestParam("longitude") Double longitude) {
         List<Building> buildingList = buildingService.getBuildingLocation(longitude, latitude);
         return ApiResponse.onSuccess(
             BuildingConverter.toBuildingLocationListResponse(buildingList));
@@ -115,13 +118,30 @@ public class BuildingController {
         @PathVariable("floorId") Long floorId,
         @RequestPart("image") MultipartFile image,
         @RequestParam("name") String name,
-        @RequestParam("xCoordinate") double xCoordinate,
-        @RequestParam("yCoordinate") double yCoordinate,
+        @RequestParam("latitude") Double latitude,
+        @RequestParam("longitude") Double longitude,
         @RequestParam("isSocketExist") boolean isSocketExist)
         throws IOException {
-        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
+        buildingService.createSpace(floorId, image, latitude, longitude, name, isSocketExist);
         return ApiResponse.onSuccess(null);
     }
+
+
+
+    @PostMapping(value = "/building/floors/spaces/{spaceId}/socket", consumes = "multipart/form-data")
+    public ApiResponse<?> createSocket(
+        @PathVariable("spaceId") Long spaceId,
+        @RequestPart(value = "image") MultipartFile image,
+        @RequestParam("name") String name,
+        @RequestParam("latitude") double latitude,
+        @RequestParam("longitude") double longitude,
+        @RequestParam("holes") int holes)
+        throws IOException {
+        buildingService.createSocket(spaceId, image, latitude, longitude, name, holes);
+        return ApiResponse.onSuccess(null);
+    }
+
+
 
 
 }
