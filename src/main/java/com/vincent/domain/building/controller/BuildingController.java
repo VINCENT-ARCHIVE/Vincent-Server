@@ -128,6 +128,7 @@ public class BuildingController {
 
 
 
+    @Operation(summary = "소켓 등록하기")
     @PostMapping(value = "/building/floors/spaces/{spaceId}/socket", consumes = "multipart/form-data")
     public ApiResponse<?> createSocket(
         @PathVariable("spaceId") Long spaceId,

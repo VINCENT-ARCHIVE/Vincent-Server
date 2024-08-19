@@ -46,6 +46,7 @@ public class SocketController {
     }
 
 
+    @Operation(summary = "층 콘센트 조회하기", description = "빌딩의 해당 층에 있는 모든 소켓의 Id와 위도, 경도를 조회함")
     @GetMapping("/socket")
     public ApiResponse<SocketResponseDto.SocketLocationList> getSocketLocationList(
         @RequestParam("buildingId") Long buildingId,
