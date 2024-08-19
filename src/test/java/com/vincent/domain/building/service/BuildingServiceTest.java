@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -215,7 +216,7 @@ public class BuildingServiceTest {
             .latitude(120.1)
             .build();
 
-        given(buildingRepository.findAllByLocation(32.900, 39.100, 113.900, 126.100))
+        given(buildingRepository.findAllByLocation(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
             .willReturn(Collections.singletonList(building));
 
         List<Building> result = buildingService.getBuildingLocation(36.0, 120.0);

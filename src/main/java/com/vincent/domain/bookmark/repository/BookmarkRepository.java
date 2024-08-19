@@ -15,6 +15,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     Boolean existsBySocketAndMember(Socket socket, Member member);
 
-    Page<Bookmark> findAllByMember(Member member, PageRequest pageRequest);
+    Page<Bookmark> findAllByMemberOrderByCreatedAtDesc(Member member, PageRequest pageRequest);
 
 }

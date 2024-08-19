@@ -8,6 +8,8 @@ import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.service.BuildingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
@@ -34,6 +36,9 @@ public class BuildingController {
 
     private final BuildingService buildingService;
 
+
+    @Operation(summary = "건물의 정보 조회하기", description = "지도 상에서 건물 마크를 클릭했을 때 보여지는 정보를 제공함")
+    @Parameter(name = "buildingId", description = "정보를 조회할 빌딩의 Id")
     @GetMapping("/building/{buildingId}")
     public ApiResponse<BuildingResponseDto.BuildingInfo> buildingInfo(
         @PathVariable("buildingId") Long buildingId) {
@@ -41,6 +46,9 @@ public class BuildingController {
         return ApiResponse.onSuccess(BuildingConverter.toBuildingInfoResponse(result));
     }
 
+    @Operation(summary = "검색하기", description = "검색창에 입력한 키워드와 건물의 이름이 일치하는 순서대로 건물 목록을 조회함(한 페이지에 최대 10개씩)")
+    @Parameter(name = "keyword", description = "검색 키워드")
+    @Parameter(name = "page", description = "검색 목록의 페이지 번호(0부터 시작)")
     @GetMapping("/building/search")
     public ApiResponse<BuildingResponseDto.BuildingList> buildingList(
         @RequestParam("keyword") String keyword,
@@ -49,6 +57,7 @@ public class BuildingController {
         return ApiResponse.onSuccess(BuildingConverter.toBuildingListResponse(buildingPage));
     }
 
+    @Operation(summary = "빌딩 등록하기")
     @PostMapping(value = "/building", consumes = "multipart/form-data")
     public ApiResponse<?> createBuilding(
         @RequestPart(value = "image") MultipartFile image,
@@ -60,7 +69,8 @@ public class BuildingController {
         return ApiResponse.onSuccess(null);
     }
 
-
+    @Operation(summary = "층 등록하기")
+    @Parameter(name = "level", description = "등록하려는 현재 층의 층수")
     @PostMapping(value = "/building/{buildingId}/floors", consumes = "multipart/form-data")
     public ApiResponse<?> createFloor(
         @PathVariable("buildingId") Long buildingId,
@@ -71,6 +81,10 @@ public class BuildingController {
         return ApiResponse.onSuccess(null);
     }
 
+    @Operation(summary = "주변 건물 조회하기",
+        description = "지도의 중심 좌표를 기준으로 경도: 약 +-0.0007, 위도: 약 +-0.0014 범위 내에 있는 건물들의 위치를 조회함")
+    @Parameter(name = "longitude", description = "지도의 중심 경도, 지도의 중심 x좌표")
+    @Parameter(name = "latitude", description = "지도의 중심 위도, 지도의 중심 y좌표")
     @GetMapping("/building/location")
     public ApiResponse<BuildingResponseDto.BuildingLocationList> buildingLocation(
         @RequestParam("latitude") Double latitude,
@@ -80,6 +94,9 @@ public class BuildingController {
             BuildingConverter.toBuildingLocationListResponse(buildingList));
     }
 
+
+    @Operation(summary = "층 정보 조회하기", description = "빌딩의 총 층 수와 현재 층, 현재 층의 공간 정보들을 조회함")
+    @Parameter(name = "level", description = "공간 정보를 조회하고 싶은 층")
     @GetMapping("/building/floor")
     public ApiResponse<BuildingResponseDto.FloorInfoList> floorInfoList(
         @RequestParam("buildingId") Long buildingId,
@@ -88,16 +105,18 @@ public class BuildingController {
         List<Floor> floors = buildingService.getFloorInfoList(buildingId);
         List<Space> spaces = buildingService.getSpaceInfoList(floor.getId());
 
-        return ApiResponse.onSuccess((
+        return  ApiResponse.onSuccess((
             BuildingConverter.toFloorInfoListResponse(floor, floors, spaces)));
 
 
     }
 
+
+    @Operation(summary = "공간 등록하기")
     @PostMapping(value = "/building/floors/{floorId}/spaces", consumes = "multipart/form-data")
     public ApiResponse<?> createSpace(
         @PathVariable("floorId") Long floorId,
-        @RequestPart(value = "image", required = false) MultipartFile image,
+        @RequestPart("image") MultipartFile image,
         @RequestParam("name") String name,
         @RequestParam("latitude") Double latitude,
         @RequestParam("longitude") Double longitude,
@@ -108,6 +127,8 @@ public class BuildingController {
     }
 
 
+
+    @Operation(summary = "소켓 등록하기")
     @PostMapping(value = "/building/floors/spaces/{spaceId}/socket", consumes = "multipart/form-data")
     public ApiResponse<?> createSocket(
         @PathVariable("spaceId") Long spaceId,
@@ -120,6 +141,8 @@ public class BuildingController {
         buildingService.createSocket(spaceId, image, latitude, longitude, name, holes);
         return ApiResponse.onSuccess(null);
     }
+
+
 
 
 }
