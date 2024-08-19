@@ -35,14 +35,16 @@ public class SocketController {
 
     @Operation(summary = "개별 콘센트 조회하기", description = "공간 지도에서 한 콘센트의 마크를 클릭 했을 때 보여지는 정보를 조회함(콘센트 정보와 콘센트 찜 여부 함께 조회)")
     @GetMapping("/socket/{socketId}")
-    public ApiResponse<SocketResponseDto.SocketInfo> socketInfo(@PathVariable("socketId") Long socketId,
+    public ApiResponse<SocketResponseDto.SocketInfo> socketInfo(
+        @PathVariable("socketId") Long socketId,
         Authentication authentication) {
 
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Long memberId = principalDetails.getMemberId();
         Boolean isBookmarkExist = bookmarkService.getBookmarkExist(socketId, memberId);
         Socket socketInfo = socketService.getSocketInfo(socketId);
-        return ApiResponse.onSuccess(SocketConverter.toSocketInfoResponse(socketInfo, isBookmarkExist));
+        return ApiResponse.onSuccess(
+            SocketConverter.toSocketInfoResponse(socketInfo, isBookmarkExist));
     }
 
 
@@ -51,12 +53,10 @@ public class SocketController {
     public ApiResponse<SocketResponseDto.SocketLocationList> getSocketLocationList(
         @RequestParam("buildingId") Long buildingId,
         @RequestParam("level") Integer level) {
-        return  ApiResponse.onSuccess((
+        return ApiResponse.onSuccess((
             SocketConverter.toSocketLocationList(socketService.getSocketList(buildingId, level))));
 
 
     }
-
-
 
 }

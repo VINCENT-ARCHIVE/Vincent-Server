@@ -192,7 +192,7 @@ public class BookmarkServiceTest {
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         Page<Bookmark> bookmarkPage = new PageImpl<>(Collections.singletonList(bookmark),
                 PageRequest.of(page, 10), 1);
-        when(bookmarkRepository.findAllByMember(any(Member.class),
+        when(bookmarkRepository.findAllByMemberOrderByCreatedAtDesc(any(Member.class),
                 any(PageRequest.class))).thenReturn(bookmarkPage);
 
         Page<Bookmark> result = bookmarkService.findBookmarkList(memberId, page);
