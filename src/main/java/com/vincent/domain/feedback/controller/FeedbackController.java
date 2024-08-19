@@ -4,6 +4,8 @@ import com.vincent.apipayload.ApiResponse;
 import com.vincent.config.security.principal.PrincipalDetails;
 import com.vincent.domain.feedback.controller.dto.FeedbackRequestDto;
 import com.vincent.domain.feedback.service.FeedbackService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,8 @@ public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
+    @Operation(summary = "피드백 생성하기")
+    @Parameter(name = "contents", description = "내용은 최대 300자까지 가능")
     @PostMapping("/feedback")
     public ApiResponse<?> addFeedback(@RequestBody @Valid FeedbackRequestDto.addFeedbackDto request,
         Authentication authentication) {
