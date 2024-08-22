@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: Vincent
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASS}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+      enabled: true
+  http:
+    multipart:
+      enabled: true
+
+jwt:
+  token:
+    secret: ${JWT_TOKEN_SECRET}
+
+
+cloud:
+  aws:
+    s3:
+      bucket: ${BUCKET_NAME}
+    credentials:
+      accessKey: ${BUCKET_ACCESS_KEY}
+      secretKey: ${BUCKET_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+#logging:
+#  level:
+#    org.springframework.web: DEBUG
+#    org.springframework.web.servlet: DEBUG
+#    org.springframework.web.multipart: TRACE
+#    org.springframework: TRACE
+
+management:
+  info:
+    java:
+      enabled: true
+    os:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include:
+          - info
+          - health
+          - loggers
+          - mappings
+          - metrics
+          - shutdown
+          - prometheus
