@@ -154,6 +154,8 @@ public class BuildingService {
         Space space = spaceRepository.findById(spaceId)
             .orElseThrow(() -> new ErrorHandler(ErrorStatus.SPACE_NOT_FOUND));
 
+        space.setSocketExist(true);
+
         Socket socket = Socket.builder()
             .space(space)
             .name(name)

@@ -39,6 +39,7 @@ public class Space {
     private String name;
 
     @ColumnDefault("false")
+    @Setter
     private boolean isSocketExist;
 
     @Setter
