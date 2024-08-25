@@ -66,6 +66,7 @@ public class BuildingResponseDto {
         String buildingName;
         Integer floors;
         Integer currentFloor;
+        String floorImage;
         List<SpaceInfo> spaceInfoList;
     }
 

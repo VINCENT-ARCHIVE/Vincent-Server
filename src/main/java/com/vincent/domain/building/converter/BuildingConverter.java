@@ -87,6 +87,7 @@ public class BuildingConverter {
             .buildingName(floor.getBuilding().getName())
             .floors(floors.size())
             .currentFloor(floor.getLevel())
+            .floorImage(floor.getImage())
             .spaceInfoList(spaceInfoList)
             .build();
     }
