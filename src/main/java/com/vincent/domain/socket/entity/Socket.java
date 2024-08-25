@@ -39,9 +39,9 @@ public class Socket {
 
     private int holes;
 
-    private double longitude;
+    private double xCoordinate;
 
-    private double latitude;
+    private double yCoordinate;
 
     @Column(columnDefinition = "TEXT")
     private String image;
