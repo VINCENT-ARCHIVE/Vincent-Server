@@ -126,7 +126,7 @@ public class BuildingService {
 
     @Transactional
     public void createSpace(
-        Long floorId, MultipartFile image, double latitude, double longitude, String name, boolean isSocketExist)
+        Long floorId, MultipartFile image, double yCoordinate, double xCoordinate, String name, boolean isSocketExist)
         throws IOException {
         String uploadUrl = s3Service.upload(image, "Space");
         Floor floor = floorRepository.findById(floorId)
@@ -135,8 +135,8 @@ public class BuildingService {
         Space space = Space.builder()
             .floor(floor)
             .name(name)
-            .longitude(longitude)
-            .latitude(latitude)
+            .xCoordinate(xCoordinate)
+            .yCoordinate(yCoordinate)
             .image(uploadUrl)
             .isSocketExist(isSocketExist)
             .build();
@@ -148,7 +148,7 @@ public class BuildingService {
 
     @Transactional
     public void createSocket(
-        Long spaceId, MultipartFile image, double latitude, double longitude, String name, int holes)
+        Long spaceId, MultipartFile image, double yCoordinate, double xCoordinate, String name, int holes)
         throws IOException {
         String uploadUrl = s3Service.upload(image, "Socket");
         Space space = spaceRepository.findById(spaceId)
@@ -159,8 +159,8 @@ public class BuildingService {
         Socket socket = Socket.builder()
             .space(space)
             .name(name)
-            .latitude(latitude)
-            .longitude(longitude)
+            .yCoordinate(yCoordinate)
+            .xCoordinate(xCoordinate)
             .image(uploadUrl)
             .holes(holes)
             .build();

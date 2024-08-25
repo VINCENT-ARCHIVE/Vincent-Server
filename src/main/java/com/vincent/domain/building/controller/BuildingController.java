@@ -118,11 +118,11 @@ public class BuildingController {
         @PathVariable("floorId") Long floorId,
         @RequestPart("image") MultipartFile image,
         @RequestParam("name") String name,
-        @RequestParam("latitude") Double latitude,
-        @RequestParam("longitude") Double longitude,
+        @RequestParam("yCoordinate") Double yCoordinate,
+        @RequestParam("xCoordinate") Double xCoordinate,
         @RequestParam("isSocketExist") boolean isSocketExist)
         throws IOException {
-        buildingService.createSpace(floorId, image, latitude, longitude, name, isSocketExist);
+        buildingService.createSpace(floorId, image, yCoordinate, xCoordinate, name, isSocketExist);
         return ApiResponse.onSuccess(null);
     }
 
@@ -134,11 +134,11 @@ public class BuildingController {
         @PathVariable("spaceId") Long spaceId,
         @RequestPart(value = "image") MultipartFile image,
         @RequestParam("name") String name,
-        @RequestParam("latitude") double latitude,
-        @RequestParam("longitude") double longitude,
+        @RequestParam("yCoordinate") double yCoordinate,
+        @RequestParam("xCoordinate") double xCoordinate,
         @RequestParam("holes") int holes)
         throws IOException {
-        buildingService.createSocket(spaceId, image, latitude, longitude, name, holes);
+        buildingService.createSocket(spaceId, image, yCoordinate, xCoordinate, name, holes);
         return ApiResponse.onSuccess(null);
     }
 
