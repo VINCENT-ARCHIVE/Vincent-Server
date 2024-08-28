@@ -3,13 +3,16 @@ package com.vincent.domain.building.service;
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.aws.s3.S3Service;
 import com.vincent.domain.building.controller.dto.BuildingRequestDto;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.repository.BuildingRepository;
 import com.vincent.domain.building.repository.FloorRepository;
+import com.vincent.domain.building.repository.FloorRepository.FloorInfoProjection;
 import com.vincent.domain.building.repository.SpaceRepository;
+import com.vincent.domain.building.repository.SpaceRepository.SpaceInfoProjection;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.repository.SocketRepository;
@@ -91,29 +94,19 @@ public class BuildingService {
 
     }
 
-    public Floor getFloorInfo(Long buildingId, Integer level) {
 
-        Building building = findBuildingById(buildingId);
 
-        return floorRepository.findByBuildingAndLevel(building, level);
 
+    public FloorInfoProjection getFloorInfo(Long buildingId, int level) {
+        return floorRepository.findFloorInfoByBuildingIdAndLevel(buildingId, level);
     }
 
-    public List<Floor> getFloorInfoList(Long buildingId) {
 
-        Building building = findBuildingById(buildingId);
 
-        return floorRepository.findAllByBuilding(building);
-
+    public List<SpaceInfoProjection> getSpaceInfoList(Long buildingId, int level) {
+        return spaceRepository.findSpaceInfoByBuildingIdAndLevel(buildingId, level);
     }
 
-    public List<Space> getSpaceInfoList(Long floorId) {
-
-        Floor floor = findFloorById(floorId);
-
-        return spaceRepository.findAllByFloor(floor);
-
-    }
 
     private Building findBuildingById(Long buildingId) {
         return buildingRepository.findById(buildingId)

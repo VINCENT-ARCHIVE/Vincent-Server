@@ -1,5 +1,6 @@
 package com.vincent.domain.building.repository;
 
+import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import java.util.List;
@@ -13,6 +14,39 @@ public interface FloorRepository extends JpaRepository<Floor, Long> {
 
     Floor findByBuildingAndLevel(Building building, Integer level);
 
-    List<Floor> findAllByBuilding(Building building);
+
+    public interface FloorInfoProjection {
+        String getBuildingName();
+
+        Integer getFloors();
+
+        Integer getLevel();
+        
+        String getImage();
+    }
+
+
+    @Query("SELECT "
+        + "b.name AS buildingName, "
+        + "(SELECT COUNT(f2) FROM Floor f2 WHERE f2.building.id = :buildingId) AS floors, "
+        + "f.level AS level, "
+        + "f.image AS image "
+        + "FROM Building b "
+        + "JOIN Floor f "
+        + "ON b.id = f.building.id "
+        + "WHERE b.id = :buildingId AND f.level = :level")  // spaceInfoList를 제외
+    FloorInfoProjection findFloorInfoByBuildingIdAndLevel(
+        @Param("buildingId") Long buildingId,
+        @Param("level") int level);
+
+
+
+
+
+
+
+
+
+
 
 }

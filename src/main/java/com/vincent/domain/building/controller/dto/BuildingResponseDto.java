@@ -1,10 +1,13 @@
 package com.vincent.domain.building.controller.dto;
 
+import com.vincent.domain.building.repository.SpaceRepository.SpaceInfoProjection;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class BuildingResponseDto {
 
@@ -59,15 +62,19 @@ public class BuildingResponseDto {
 
     @Builder
     @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FloorInfoList {
+    public static class FloorInfo {
 
         String buildingName;
         Integer floors;
         Integer currentFloor;
         String floorImage;
-        List<SpaceInfo> spaceInfoList;
+        List<SpaceInfoProjection> spaceInfoList;
+
+
+
     }
 
     @Builder

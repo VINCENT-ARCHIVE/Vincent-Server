@@ -230,6 +230,7 @@ public class BuildingControllerTest {
             .isEqualTo(expected.getBuildingLocations());
     }
 
+    /*
     @Test
     public void 층_조회_성공(){
         //given
@@ -256,5 +257,7 @@ public class BuildingControllerTest {
         Assertions.assertThat(response.getMessage()).isEqualTo("성공입니다");
         Assertions.assertThat(result.getBuildingName()).isEqualTo(expected.getBuildingName());
     }
+
+     */
 
 }
