@@ -8,22 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
 
 public interface FloorRepository extends JpaRepository<Floor, Long> {
 
 
     Floor findByBuildingAndLevel(Building building, Integer level);
-
-
-    public interface FloorInfoProjection {
-        String getBuildingName();
-
-        Integer getFloors();
-
-        Integer getLevel();
-        
-        String getImage();
-    }
 
 
     @Query("SELECT "

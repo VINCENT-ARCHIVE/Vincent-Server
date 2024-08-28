@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 
 public interface SpaceRepository extends JpaRepository<Space, Long> {
 
@@ -14,15 +15,6 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
 
     List<Space> findAllByFloor(Floor floor);
 
-    public interface SpaceInfoProjection {
-        String getSpaceName();
-
-        Double getxCoordinate();
-
-        Double getyCoordinate();
-
-        Boolean getIsSocketExist();
-    }
 
     @Query("SELECT "
         + "s.name AS spaceName, "

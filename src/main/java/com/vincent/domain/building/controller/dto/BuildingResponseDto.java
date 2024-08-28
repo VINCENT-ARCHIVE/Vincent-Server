@@ -1,6 +1,6 @@
 package com.vincent.domain.building.controller.dto;
 
-import com.vincent.domain.building.repository.SpaceRepository.SpaceInfoProjection;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -77,6 +77,18 @@ public class BuildingResponseDto {
 
     }
 
+
+
+    public interface FloorInfoProjection {
+        String getBuildingName();
+
+        Integer getFloors();
+
+        Integer getLevel();
+
+        String getImage();
+    }
+
     @Builder
     @Getter
     @NoArgsConstructor
@@ -89,6 +101,16 @@ public class BuildingResponseDto {
         Boolean socketExistence;
     }
 
+    @JsonPropertyOrder({"spaceName", "xCoordinate", "yCoordinate", "isSocketExist"})
+    public interface SpaceInfoProjection {
+        String getSpaceName();
+
+        Double getxCoordinate();
+
+        Double getyCoordinate();
+
+        Boolean getIsSocketExist();
+    }
 
 
 }
