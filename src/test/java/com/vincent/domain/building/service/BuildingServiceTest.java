@@ -14,6 +14,8 @@ import static org.mockito.Mockito.when;
 
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.aws.s3.S3Service;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
@@ -70,7 +72,11 @@ public class BuildingServiceTest {
     private Floor floor;
     private Space space;
 
-    /*
+    private FloorInfoProjection floorInfoProjection;
+    private SpaceInfoProjection spaceInfoProjection;
+    private List<SpaceInfoProjection> spaceInfoProjectionList;
+
+
     @BeforeEach
     public void setUp() {
         building = Building.builder()
@@ -91,12 +97,59 @@ public class BuildingServiceTest {
             .id(1L)
             .floor(floor)
             .name("Test Space")
-            .latitude(10.0)
-            .longitude(20.0)
+            .xCoordinate(10.0)
+            .yCoordinate(20.0)
             .build();
+
+        floorInfoProjection = new FloorInfoProjection() {
+            @Override
+            public String getBuildingName() {
+                return "Building1";
+            }
+
+            @Override
+            public Integer getFloors() {
+                return 5;
+            }
+
+            @Override
+            public Integer getLevel() {
+                return 2;
+            }
+
+            @Override
+            public String getImage() {
+                return "floorImage.jpg";
+            }
+        };
+
+
+        spaceInfoProjection = new SpaceInfoProjection() {
+            @Override
+            public String getSpaceName() {
+                return "Space1";
+            }
+
+            @Override
+            public Double getxCoordinate() {
+                return 1.1;
+            }
+
+            @Override
+            public Double getyCoordinate() {
+                return 1.1;
+            }
+
+            @Override
+            public Boolean getIsSocketExist() {
+                return true;
+            }
+        };
+
+        spaceInfoProjectionList = List.of(spaceInfoProjection);
     }
 
-     */
+
 
 
     @Test
@@ -230,53 +283,53 @@ public class BuildingServiceTest {
         assertThat(result.get(0).getLatitude()).isEqualTo(120.1);
     }
 
-    /*
+
     @Test
     public void 층_조회_getFloorInfo_성공() {
-        when(buildingRepository.findById(1L)).thenReturn(Optional.of(building));
-        when(floorRepository.findByBuildingAndLevel(building, 1)).thenReturn(floor);
+
+        Long buildingId = 1L;
+        Integer level = 1;
+        when(floorRepository.findFloorInfoByBuildingIdAndLevel(buildingId, level))
+            .thenReturn(floorInfoProjection);
 
 
-        Floor result = buildingService.getFloorInfo(1L, 1);
+        FloorInfoProjection result = buildingService.getFloorInfo(buildingId, level);
 
-        assertNotNull(result);
-        assertThat(result).isEqualTo(floor);
-        assertThat(result.getBuilding()).isEqualTo(building);
-        assertThat(result.getLevel()).isEqualTo(1);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getBuildingName()).isEqualTo("Building1");
+        assertThat(result.getFloors()).isEqualTo(5);
+        assertThat(result.getLevel()).isEqualTo(2);
+        assertThat(result.getImage()).isEqualTo("floorImage.jpg");
     }
 
-     */
+
+
+
+
 
 
     @Test
-    public void 층_조회_getFloorInfo_실패_Floor없음() {
+    public void 층_조회_getSpaceInfoList_성공() {
         Long buildingId = 1L;
-        Integer level = 2;
+        Integer level = 1;
+        when(spaceRepository.findSpaceInfoByBuildingIdAndLevel(buildingId, level))
+            .thenReturn(spaceInfoProjectionList);
 
-        when(buildingRepository.findById(buildingId)).thenReturn(Optional.of(building));
-        when(floorRepository.findByBuildingAndLevel(building, level)).thenReturn(null);
+        List<SpaceInfoProjection> result = buildingService.getSpaceInfoList(buildingId, level);
 
-        buildingService.getFloorInfo(buildingId, level);
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(1);
+        SpaceInfoProjection spaceInfo = result.get(0);
+        assertThat(spaceInfo.getSpaceName()).isEqualTo("Space1");
+        assertThat(spaceInfo.getxCoordinate()).isEqualTo(1.1);
+        assertThat(spaceInfo.getyCoordinate()).isEqualTo(1.1);
+        assertThat(spaceInfo.getIsSocketExist()).isTrue();
     }
 
-    /*
-    @Test
-    public void 층_조회_getFloorInfoList_성공() {
-        Long buildingId = 1L;
-        Building building = Mockito.mock(Building.class);
 
-        List<Floor> floors = new ArrayList<>();
 
-        when(buildingRepository.findById(buildingId)).thenReturn(Optional.of(building));
-        when(floorRepository.findAllByBuilding(building)).thenReturn(floors);
 
-        List<Floor> result = buildingService.getFloorInfoList(buildingId);
-
-        assertNotNull(result);
-        assertEquals(floors, result);
-    }
-
-     */
 
 
     @Test
