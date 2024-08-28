@@ -6,6 +6,8 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASS}
+    hikari:
+      maximum-pool-size: 50
   jpa:
     hibernate:
       ddl-auto: update
