@@ -3,10 +3,13 @@ package com.vincent.domain.building.controller;
 import com.vincent.apipayload.ApiResponse;
 import com.vincent.domain.building.controller.dto.BuildingRequestDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfo;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 import com.vincent.domain.building.service.BuildingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -98,15 +101,13 @@ public class BuildingController {
     @Operation(summary = "층 정보 조회하기", description = "빌딩의 총 층 수와 현재 층, 현재 층의 공간 정보들을 조회함")
     @Parameter(name = "level", description = "공간 정보를 조회하고 싶은 층")
     @GetMapping("/building/floor")
-    public ApiResponse<BuildingResponseDto.FloorInfoList> floorInfoList(
+    public ApiResponse<BuildingResponseDto.FloorInfo> floorInfoList(
         @RequestParam("buildingId") Long buildingId,
         @RequestParam("level") Integer level) {
-        Floor floor = buildingService.getFloorInfo(buildingId, level);
-        List<Floor> floors = buildingService.getFloorInfoList(buildingId);
-        List<Space> spaces = buildingService.getSpaceInfoList(floor.getId());
-
+        FloorInfoProjection floorInfoProjection = buildingService.getFloorInfo(buildingId, level);
+        List<SpaceInfoProjection> spaceInfoProjectionList = buildingService.getSpaceInfoList(buildingId, level);
         return  ApiResponse.onSuccess((
-            BuildingConverter.toFloorInfoListResponse(floor, floors, spaces)));
+            BuildingConverter.toFloorInfoListResponse(floorInfoProjection, spaceInfoProjectionList)));
 
 
     }
@@ -118,11 +119,11 @@ public class BuildingController {
         @PathVariable("floorId") Long floorId,
         @RequestPart("image") MultipartFile image,
         @RequestParam("name") String name,
-        @RequestParam("latitude") Double latitude,
-        @RequestParam("longitude") Double longitude,
+        @RequestParam("yCoordinate") Double yCoordinate,
+        @RequestParam("xCoordinate") Double xCoordinate,
         @RequestParam("isSocketExist") boolean isSocketExist)
         throws IOException {
-        buildingService.createSpace(floorId, image, latitude, longitude, name, isSocketExist);
+        buildingService.createSpace(floorId, image, yCoordinate, xCoordinate, name, isSocketExist);
         return ApiResponse.onSuccess(null);
     }
 
@@ -134,11 +135,11 @@ public class BuildingController {
         @PathVariable("spaceId") Long spaceId,
         @RequestPart(value = "image") MultipartFile image,
         @RequestParam("name") String name,
-        @RequestParam("latitude") double latitude,
-        @RequestParam("longitude") double longitude,
+        @RequestParam("yCoordinate") double yCoordinate,
+        @RequestParam("xCoordinate") double xCoordinate,
         @RequestParam("holes") int holes)
         throws IOException {
-        buildingService.createSocket(spaceId, image, latitude, longitude, name, holes);
+        buildingService.createSocket(spaceId, image, yCoordinate, xCoordinate, name, holes);
         return ApiResponse.onSuccess(null);
     }
 
