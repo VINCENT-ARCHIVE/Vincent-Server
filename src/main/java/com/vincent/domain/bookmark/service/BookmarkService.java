@@ -48,9 +48,7 @@ public class BookmarkService {
         Socket socket = findSocketById(socketId);
 
         if (!isBookmarkExists(socket, member)) {
-            {
-                throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
-            }
+            throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
         }
 
         delete(member, socket);
