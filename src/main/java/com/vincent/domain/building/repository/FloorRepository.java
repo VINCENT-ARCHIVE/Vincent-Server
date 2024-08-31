@@ -24,19 +24,12 @@ public interface FloorRepository extends JpaRepository<Floor, Long> {
         + "FROM Building b "
         + "JOIN Floor f "
         + "ON b.id = f.building.id "
-        + "WHERE b.id = :buildingId AND f.level = :level")  // spaceInfoList를 제외
+        + "WHERE b.id = :buildingId AND f.level = :level")
+        // spaceInfoList를 제외
     FloorInfoProjection findFloorInfoByBuildingIdAndLevel(
         @Param("buildingId") Long buildingId,
-        @Param("level") int level);
-
-
-
-
-
-
-
-
-
+        @Param("level") int level
+    );
 
 
 }
