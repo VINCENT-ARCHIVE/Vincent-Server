@@ -23,8 +23,8 @@ public class MemberDataService {
             .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
 
-    public void save(Member member) {
-        memberRepository.save(member);
+    public Member save(Member member) {
+        return memberRepository.save(member);
     }
 
 }

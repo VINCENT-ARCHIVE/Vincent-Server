@@ -4,6 +4,7 @@ import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.member.repository.MemberRepository;
+import com.vincent.domain.member.service.data.MemberDataService;
 import com.vincent.exception.handler.ErrorHandler;
 import com.vincent.config.redis.entity.RefreshToken;
 import com.vincent.config.redis.service.RedisService;
@@ -19,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberService {
 
-    private final MemberRepository memberRepository;
+    private final MemberDataService memberDataService;
     private final RedisService redisService;
     private final JwtProvider jwtProvider;
 
@@ -28,12 +29,12 @@ public class MemberService {
      */
     @Transactional
     public LoginResult login(String email) {
-        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        Optional<Member> optionalMember = memberDataService.findByEmail(email);
         Member member = optionalMember.orElseGet(() -> {
             Member newMember = Member.builder()
                     .email(email)
                     .build();
-            return memberRepository.save(newMember);
+            return memberDataService.save(newMember);
         });
 
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getEmail());
@@ -47,22 +48,15 @@ public class MemberService {
         jwtProvider.validateToken(token);
         Long memberId = jwtProvider.getMemberId(token);
 
-        //memberId로 Redis에서 리프레시 토큰 조회
-        RefreshToken refreshToken = redisService.findRefreshToken(memberId)
-                .orElseThrow(() -> new ErrorHandler(ErrorStatus.JWT_REFRESH_TOKEN_EXPIRED));
-
+        RefreshToken refreshToken = redisService.findByMemberId(memberId);
         //탈취 검증
         //만약 사용자가 보낸 토큰이랑 Redis에서 조회한 토큰이 다르다면 토큰이 탈취되었을 가능성이 있다
-        if (!refreshToken.getRefreshToken().equals(token)) {
-            redisService.delete(refreshToken);
-            throw new ErrorHandler(ErrorStatus.ANOTHER_USER);
-        }
+        redisService.verifyTokenNotHijacked(refreshToken, token);
 
-        Member member = memberRepository.findById(refreshToken.getMemberId())
-                .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberDataService.findById(refreshToken.getMemberId());
 
         String newAccessToken = jwtProvider.createAccessToken(member.getId(), member.getEmail());
-        String newRefreshToken = redisService.reGenerateRefreshToken(member, refreshToken)
+        String newRefreshToken = redisService.regenerateRefreshToken(member, refreshToken)
                 .getRefreshToken();
 
         return new ReissueResult(newAccessToken, newRefreshToken);
@@ -72,10 +66,9 @@ public class MemberService {
     public void logout(String accessToken, String refreshToken) {
         Long memberIdFromRefresh = jwtProvider.getMemberId(refreshToken);
 
-        //리프레시 토큰 삭제
-        Optional<RefreshToken> optionalRefreshToken = redisService.findRefreshToken(
-                memberIdFromRefresh);
-        optionalRefreshToken.ifPresent(redisService::delete);
+        if (redisService.exists(memberIdFromRefresh)) {
+            redisService.delete(memberIdFromRefresh);
+        }
 
         //AccessToken의 유효시간을 가져와서 블랙리스트 생성
         redisService.blacklist(accessToken);
@@ -83,8 +76,7 @@ public class MemberService {
 
     @Transactional
     public void withdraw(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberDataService.findById(memberId);
         member.delete();
     }
 
