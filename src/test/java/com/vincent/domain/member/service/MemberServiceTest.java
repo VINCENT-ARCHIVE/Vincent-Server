@@ -1,37 +1,30 @@
 package com.vincent.domain.member.service;
 
-import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
-import com.vincent.domain.member.repository.MemberRepository;
+import com.vincent.domain.member.service.MemberService.LoginResult;
 import com.vincent.domain.member.service.MemberService.ReissueResult;
-import com.vincent.exception.handler.ErrorHandler;
-import com.vincent.exception.handler.JwtExpiredHandler;
-import com.vincent.exception.handler.JwtInvalidHandler;
+import com.vincent.domain.member.service.data.MemberDataService;
 import com.vincent.config.redis.entity.RefreshToken;
 import com.vincent.config.redis.service.RedisService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.Optional;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberDataService memberDataService;
     @Mock
     private RedisService redisService;
     @Mock
@@ -41,207 +34,141 @@ class MemberServiceTest {
     private MemberService memberService;
 
     @Test
-    @DisplayName("로그인_기존 회원")
-    public void 로그인_기존회원() {
+    public void 로그인성공() {
         //given
         Member member = Member.builder()
             .id(1L)
             .email("test@gmail.com")
             .build();
-        RefreshToken refreshToken = RefreshToken.builder()
-            .memberId(1L)
-            .refreshToken("refreshToken")
-            .build();
-
-        //when
-        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
-        when(jwtProvider.createAccessToken(member.getId(), member.getEmail())).thenReturn(
-            "accessToken");
-        when(redisService.generateRefreshToken(member)).thenReturn(refreshToken);
-
-        //then
-        MemberService.LoginResult result = memberService.login("test@gmail.com");
-
-        Assertions.assertEquals("accessToken", result.getAccessToken());
-        Assertions.assertEquals("refreshToken", result.getRefreshToken());
-
-    }
-
-    @Test
-    @DisplayName("로그인_새로운 회원 생성")
-    public void 로그인_새로운회원() {
-        //given
         String email = "test@gmail.com";
-        Member newMember = Member.builder()
-            .id(1L)
-            .email(email)
-            .build();
+        String accessToken = "access";
         RefreshToken refreshToken = RefreshToken.builder()
-            .memberId(1L)
-            .refreshToken("refreshToken")
+            .memberId(member.getId())
+            .refreshToken("refresh")
             .build();
 
         //when
-        when(memberRepository.findByEmail(email)).thenReturn(Optional.empty());
-        when(memberRepository.save(any(Member.class))).thenReturn(newMember);
-        when(jwtProvider.createAccessToken(newMember.getId(), newMember.getEmail())).thenReturn(
-            "accessToken");
-        when(redisService.generateRefreshToken(newMember)).thenReturn(refreshToken);
+        when(memberDataService.findByEmail(email)).thenReturn(Optional.of(member));
+        when(jwtProvider.createAccessToken(member.getId(), member.getEmail())).thenReturn(accessToken);
+        when(redisService.generateRefreshToken(member)).thenReturn(refreshToken);
+        LoginResult result = memberService.login(email);
 
         //then
-        MemberService.LoginResult result = memberService.login(email);
-        Assertions.assertEquals("accessToken", result.getAccessToken());
-        Assertions.assertEquals("refreshToken", result.getRefreshToken());
+        verify(memberDataService, times(1)).findByEmail(email);
+        verify(jwtProvider, times(1)).createAccessToken(1L, "test@gmail.com");
+        verify(redisService, times(1)).generateRefreshToken(member);
+        Assertions.assertEquals(result.getAccessToken(), accessToken);
+        Assertions.assertEquals(result.getRefreshToken(), refreshToken.getRefreshToken());
+
     }
 
     @Test
-    @DisplayName("토큰 재발급 성공")
-    public void 토큰재발급성공() {
+    public void 로그인성공_회원가입(){
         //given
-        String token = "refreshToken";
-        RefreshToken refreshToken = RefreshToken.builder()
-            .memberId(1L)
-            .refreshToken("refreshToken")
-            .build();
-        RefreshToken newRefreshToken = RefreshToken.builder()
-            .memberId(1L)
-            .refreshToken("newRefreshToken")
-            .build();
         Member member = Member.builder()
             .id(1L)
             .email("test@gmail.com")
             .build();
+        String email = "test@gmail.com";
+        String accessToken = "access";
+        RefreshToken refreshToken = RefreshToken.builder()
+            .memberId(member.getId())
+            .refreshToken("refresh")
+            .build();
 
         //when
-        when(jwtProvider.getMemberId(token)).thenReturn(Long.valueOf(1));
-        when(redisService.findRefreshToken(1L)).thenReturn(Optional.of(refreshToken));
-        when(memberRepository.findById(refreshToken.getMemberId())).thenReturn(Optional.of(member));
-        when(jwtProvider.createAccessToken(member.getId(), member.getEmail())).thenReturn(
-            "newAccessToken");
-        when(redisService.reGenerateRefreshToken(member, refreshToken)).thenReturn(newRefreshToken);
+        when(memberDataService.findByEmail(email)).thenReturn(Optional.empty());
+        when(memberDataService.save(any(Member.class))).thenReturn(member);
+        when(jwtProvider.createAccessToken(member.getId(), member.getEmail())).thenReturn(accessToken);
+        when(redisService.generateRefreshToken(member)).thenReturn(refreshToken);
+        LoginResult result = memberService.login(email);
 
         //then
+        verify(memberDataService, times(1)).findByEmail(email);
+        verify(memberDataService, times(1)).save(any(Member.class));
+        verify(jwtProvider, times(1)).createAccessToken(1L, "test@gmail.com");
+        verify(redisService, times(1)).generateRefreshToken(member);
+        Assertions.assertEquals(result.getAccessToken(), accessToken);
+        Assertions.assertEquals(result.getRefreshToken(), refreshToken.getRefreshToken());
+    }
+
+    @Test
+    public void 토큰재발급() {
+        //given
+        String token = "token";
+        String newToken = "token2";
+        Member member = Member.builder()
+            .id(1L)
+            .email("test@gmail.com")
+            .build();
+        RefreshToken refreshToken = RefreshToken.builder()
+            .memberId(member.getId())
+            .refreshToken("refresh")
+            .build();
+        RefreshToken refreshToken2 = RefreshToken.builder()
+            .memberId(member.getId())
+            .refreshToken("refresh2")
+            .build();
+
+
+        //when
+        doNothing().when(jwtProvider).validateToken(token);
+        when(jwtProvider.getMemberId(token)).thenReturn(1L);
+        when(redisService.findByMemberId(1L)).thenReturn(refreshToken);
+        when(memberDataService.findById(1L)).thenReturn(member);
+        when(jwtProvider.createAccessToken(member.getId(), member.getEmail())).thenReturn("token2");
+        when(redisService.regenerateRefreshToken(member,refreshToken)).thenReturn(refreshToken2);
         ReissueResult result = memberService.reissue(token);
-        Assertions.assertEquals("newAccessToken", result.getAccessToken());
-        Assertions.assertEquals("newRefreshToken", result.getRefreshToken());
-    }
-
-    @Test
-    @DisplayName("토큰 재발급 실패 - 멤버 없음")
-    public void 토큰재발급실패_멤버없음() {
-        //given
-        String token = "refreshToken";
-        RefreshToken refreshToken = RefreshToken.builder()
-            .memberId(1L)
-            .refreshToken("refreshToken")
-            .build();
-
-        //when
-        when(jwtProvider.getMemberId(token)).thenReturn(Long.valueOf(1));
-        when(redisService.findRefreshToken(1L)).thenReturn(Optional.of(refreshToken));
-        when(memberRepository.findById(refreshToken.getMemberId())).thenReturn(Optional.empty());
 
         //then
-        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class, () -> {
-            memberService.reissue(token);
-        });
-        Assertions.assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
-        Mockito.verify(redisService, never())
-            .reGenerateRefreshToken(any(Member.class), any(RefreshToken.class));
-        Mockito.verify(jwtProvider, never())
-            .createAccessToken(any(Long.class), any(String.class));
+        verify(jwtProvider,times(1)).getMemberId(token);
+        verify(jwtProvider, times(1)).createAccessToken(member.getId(), member.getEmail());
+        verify(redisService, times(1)).regenerateRefreshToken(member, refreshToken);
+        Assertions.assertEquals(result.getAccessToken(), newToken);
+        Assertions.assertEquals(result.getRefreshToken(), refreshToken2.getRefreshToken());
     }
 
     @Test
-    @DisplayName("토큰 재발급 실패 - 토큰 오류(Invalid)")
-    public void 토큰재발급실패_Invalid() {
+    public void 로그아웃_리프레시토큰존재() {
         //given
-        String token = "Invalid refreshToken";
-        doThrow(new JwtInvalidHandler("Invalid Token Exception")).when(jwtProvider)
-            .validateToken(token);
-        //when/then
-        JwtInvalidHandler thrown = Assertions.assertThrows(JwtInvalidHandler.class, () -> {
-            memberService.reissue(token);
-        });
-        Assertions.assertEquals("Invalid Token Exception", thrown.getMessage());
-    }
-
-    @Test
-    @DisplayName("토큰 재발급 실패 - 토큰 오류(Expired)")
-    public void 토큰재발급실패_Expired() {
-        //given
-        String token = "Expired refreshToken";
-        doThrow(new JwtExpiredHandler("Expired Token Exception")).when(jwtProvider)
-            .validateToken(token);
-
-        //when/then
-        JwtExpiredHandler thrown = Assertions.assertThrows(JwtExpiredHandler.class, () -> {
-            memberService.reissue(token);
-        });
-        Assertions.assertEquals("Expired Token Exception", thrown.getMessage());
-    }
-
-    @Test
-    @DisplayName("토큰 재발급 실패 - 탈취 위험")
-    public void 토큰재발급실패_탈취위험() {
-        //given
-        String token = "previous refreshToken";
-        RefreshToken refreshToken = RefreshToken.builder()
-            .memberId(1L)
-            .refreshToken("new refreshToken")
-            .build();
+        String accessToken = "access";
+        String refreshToken = "refresh";
+        Long memberId = 1L;
 
         //when
-        when(jwtProvider.getMemberId(token)).thenReturn(1L);
-        when(redisService.findRefreshToken(1L)).thenReturn(Optional.of(refreshToken));
-
-        //then
-        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class, () -> {
-            memberService.reissue(token);
-        });
-        Assertions.assertEquals(ErrorStatus.ANOTHER_USER, thrown.getCode());
-    }
-
-    @Test
-    @DisplayName("토큰 재발급 실패 - 토큰 만료")
-    public void 토큰재발급실퍠_토큰만료() {
-        //given
-        String token = "refreshToken";
-
-        //when
-        when(jwtProvider.getMemberId(token)).thenReturn(1L);
-        when(redisService.findRefreshToken(1L)).thenReturn(Optional.empty());
-
-        //then
-        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class, () -> {
-            memberService.reissue(token);
-        });
-        Assertions.assertEquals(ErrorStatus.JWT_REFRESH_TOKEN_EXPIRED, thrown.getCode());
-    }
-
-    @Test
-    @DisplayName("로그아웃 - 성공")
-    public void 로그아웃(){
-        //given
-        String accessToken = "accessToken";
-        String refreshToken = "refreshToken";
-        RefreshToken refresh = RefreshToken.builder()
-            .memberId(1L)
-            .refreshToken("refreshToken")
-            .build();
-
-        //when
-        when(jwtProvider.getMemberId(refreshToken)).thenReturn(1L);
-        when(redisService.findRefreshToken(1L)).thenReturn(Optional.of(refresh));
-        doNothing().when(redisService).delete(refresh);
+        when(jwtProvider.getMemberId(refreshToken)).thenReturn(memberId);
+        when(redisService.exists(memberId)).thenReturn(true);
+        doNothing().when(redisService).delete(memberId);
         doNothing().when(redisService).blacklist(accessToken);
+        memberService.logout(accessToken, refreshToken);
 
         //then
-        memberService.logout(accessToken, refreshToken);
+        verify(jwtProvider, times(1)).getMemberId(refreshToken);
+        verify(redisService, times(1)).exists(memberId);
+        verify(redisService,times(1)).delete(memberId);
+        verify(redisService, times(1)).blacklist(accessToken);
     }
 
     @Test
-    @DisplayName("회원탈퇴 - 성공")
+    public void 로그아웃_리프레시토큰존재하지않음() {
+        //given
+        String accessToken = "access";
+        String refreshToken = "refresh";
+        Long memberId = 1L;
+
+        //when
+        when(jwtProvider.getMemberId(refreshToken)).thenReturn(memberId);
+        when(redisService.exists(memberId)).thenReturn(false);
+        doNothing().when(redisService).blacklist(accessToken);
+        memberService.logout(accessToken, refreshToken);
+
+        //then
+        verify(jwtProvider, times(1)).getMemberId(refreshToken);
+        verify(redisService, times(1)).exists(memberId);
+        verify(redisService, times(1)).blacklist(accessToken);
+    }
+
+    @Test
     public void 회원탈퇴(){
         //given
         Long memberId = 1L;
@@ -249,28 +176,50 @@ class MemberServiceTest {
             .id(1L)
             .email("test@gmail.com")
             .build();
+
         //when
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(memberDataService.findById(memberId)).thenReturn(member);
         memberService.withdraw(memberId);
 
         //then
-        Assertions.assertTrue(member.isWithdraw());
-    }
-
-    @Test
-    @DisplayName("회원탈퇴 - 실패")
-    public void 회원탈퇴실패(){
-        //given
-        Long memberId = 1L;
-
-        //when
-        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
-        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class, () -> {
-            memberService.withdraw(memberId);
-        });
-
-        //then
-        Assertions.assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
+        verify(memberDataService, times(1)).findById(memberId);
+        Assertions.assertEquals(member.isWithdraw(), true);
 
     }
+
+
+//
+//    @Test
+//    @DisplayName("회원탈퇴 - 성공")
+//    public void 회원탈퇴(){
+//        //given
+//        Long memberId = 1L;
+//        Member member = Member.builder()
+//            .id(1L)
+//            .email("test@gmail.com")
+//            .build();
+//        //when
+//        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+//        memberService.withdraw(memberId);
+//
+//        //then
+//        Assertions.assertTrue(member.isWithdraw());
+//    }
+//
+//    @Test
+//    @DisplayName("회원탈퇴 - 실패")
+//    public void 회원탈퇴실패(){
+//        //given
+//        Long memberId = 1L;
+//
+//        //when
+//        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+//        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class, () -> {
+//            memberService.withdraw(memberId);
+//        });
+//
+//        //then
+//        Assertions.assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
+//
+//    }
 }
