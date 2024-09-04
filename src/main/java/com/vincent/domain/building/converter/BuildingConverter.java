@@ -17,7 +17,7 @@ public class BuildingConverter {
 
     public static BuildingResponseDto.BuildingInfo toBuildingInfoResponse(Building result) {
         return BuildingResponseDto.BuildingInfo.builder()
-            .buildingId(result.getId())
+            .buildingId(result.getId().intValue())
             .buildingName(result.getName())
             .buildingImage(result.getImage())
             .buildingAddress(result.getAddress())

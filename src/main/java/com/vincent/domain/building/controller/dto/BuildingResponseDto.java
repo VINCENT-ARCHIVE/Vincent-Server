@@ -14,7 +14,7 @@ public class BuildingResponseDto {
     @AllArgsConstructor
     public static class BuildingInfo {
 
-        Long buildingId;
+        Integer buildingId;
         String buildingName;
         String buildingImage;
         String buildingAddress;
