@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface BuildingRepository extends JpaRepository<Building, Long> {
 
+    /*
     @Query(
         value = "SELECT * FROM Building b WHERE b.name LIKE CONCAT('%', :keyword, '%') "
             + "ORDER BY CASE "
@@ -36,5 +37,7 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
         @Param("latitudeLower") Double latitudeLower,
         @Param("latitudeUpper") Double latitudeUpper
     );
+
+     */
 
 }
