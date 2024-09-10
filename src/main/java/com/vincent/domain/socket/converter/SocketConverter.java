@@ -21,8 +21,8 @@ public class SocketConverter {
     public static SocketResponseDto.SocketLocation toSocketLocation(Socket socket) {
         return SocketResponseDto.SocketLocation.builder()
             .socketId(socket.getId())
-            .longitude(socket.getLongitude())
-            .latitude(socket.getLatitude())
+            .xCoordinate(socket.getXCoordinate())
+            .yCoordinate(socket.getYCoordinate())
             .build();
     }
 

@@ -22,6 +22,9 @@ import com.vincent.domain.building.controller.BuildingController;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingInfo;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingLocationList;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfo;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
@@ -71,6 +74,9 @@ public class BuildingControllerTest {
     private Building building;
     private Floor floor;
     private Space space;
+    private FloorInfoProjection floorInfoProjection;
+
+    private SpaceInfoProjection spaceInfoProjection;
 
     @BeforeEach
     public void setUp() {
@@ -90,10 +96,56 @@ public class BuildingControllerTest {
         space = Space.builder()
             .id(1L)
             .name("Space 1")
-            .longitude(10)
-            .latitude(20)
+            .xCoordinate(10.0)
+            .yCoordinate(20.0)
             .floor(floor)
             .build();
+
+
+        floorInfoProjection = new FloorInfoProjection() {
+            @Override
+            public String getBuildingName() {
+                return "Building 1";
+            }
+
+            @Override
+            public Integer getFloors() {
+                return 2;
+            }
+
+            @Override
+            public Integer getLevel() {
+                return 1;
+            }
+
+            @Override
+            public String getImage() {
+                return "floor_image";
+            }
+        };
+
+        spaceInfoProjection = new SpaceInfoProjection() {
+            @Override
+            public String getSpaceName() {
+                return "Space 1";
+            }
+
+            @Override
+            public Double getxCoordinate() {
+                return 10.0;
+            }
+
+            @Override
+            public Double getyCoordinate() {
+                return 20.0;
+            }
+
+            @Override
+            public Boolean getIsSocketExist() {
+                return true;
+            }
+        };
+
     }
 
     @Test
@@ -230,31 +282,31 @@ public class BuildingControllerTest {
             .isEqualTo(expected.getBuildingLocations());
     }
 
+
     @Test
     public void 층_조회_성공(){
         //given
         Long buildingId = 1L;
         Integer level = 1;
 
-        List<Floor> floors = List.of(floor);
-        List<Space> spaces = List.of(space);
+        List<SpaceInfoProjection> spaceInfoProjectionList = List.of(spaceInfoProjection);
 
         //when
-        when(buildingService.getFloorInfo(buildingId, level)).thenReturn(floor);
-        when(buildingService.getFloorInfoList(buildingId)).thenReturn(floors);
-        when(buildingService.getSpaceInfoList(floor.getId())).thenReturn(spaces);
+        when(buildingService.getFloorInfo(buildingId, level)).thenReturn(floorInfoProjection);
 
         //then
-        ApiResponse<BuildingResponseDto.FloorInfoList> response = buildingController.floorInfoList(
+        ApiResponse<BuildingResponseDto.FloorInfo> response = buildingController.floorInfoList(
             buildingId, level);
-        BuildingResponseDto.FloorInfoList result = response.getResult();
-        BuildingResponseDto.FloorInfoList expected = BuildingConverter.toFloorInfoListResponse(
-            floor, floors, spaces);
+        BuildingResponseDto.FloorInfo result = response.getResult();
+        BuildingResponseDto.FloorInfo expected = BuildingConverter.toFloorInfoListResponse(
+            floorInfoProjection, spaceInfoProjectionList);
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");
         Assertions.assertThat(response.getMessage()).isEqualTo("성공입니다");
         Assertions.assertThat(result.getBuildingName()).isEqualTo(expected.getBuildingName());
     }
+
+
 
 }

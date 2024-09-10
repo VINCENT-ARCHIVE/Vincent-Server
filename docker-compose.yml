@@ -8,8 +8,7 @@ services:
       - my_network
     environment:
       - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT={REDIS_PORT}
-      # .env 파일에서 가져온 환경 변수들을 여기에 추가
+      - REDIS_PORT=${REDIS_PORT}
       - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASS=${DB_PASS}
@@ -32,6 +31,26 @@ services:
     hostname: redis
     ports:
       - "6379:6379"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Prometheus 설정 파일 마운트
+    ports:
+      - "9090:9090"
+    networks:
+      - my_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - my_network
+    depends_on:
+      - prometheus
 networks:
   my_network:
     driver: bridge

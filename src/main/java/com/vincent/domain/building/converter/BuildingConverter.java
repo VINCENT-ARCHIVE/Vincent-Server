@@ -9,6 +9,9 @@ import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingIn
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
+import com.vincent.domain.building.repository.FloorRepository;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
@@ -49,6 +52,18 @@ public class BuildingConverter {
             .build();
     }
 
+    public static BuildingResponseDto.FloorInfo toFloorInfoListResponse(
+        FloorInfoProjection a, List<SpaceInfoProjection> b) {
+        return BuildingResponseDto.FloorInfo.builder()
+            .buildingName(a.getBuildingName())
+            .floors(a.getFloors())
+            .currentFloor(a.getLevel())
+            .floorImage(a.getImage())
+            .spaceInfoList(b).build();
+
+    }
+
+
     public static BuildingResponseDto.BuildingLocation toBuildingLocationResponse(
         Building result) {
         return BuildingResponseDto.BuildingLocation.builder()
@@ -67,29 +82,7 @@ public class BuildingConverter {
             .build();
     }
 
-    public static BuildingResponseDto.SpaceInfo toSpaceInfoResponse(
-        Space space) {
-        return BuildingResponseDto.SpaceInfo.builder()
-            .spaceName(space.getName())
-            .latitude(space.getLatitude())
-            .longitude(space.getLongitude())
-            .socketExistence(space.isSocketExist()).build();
 
-    }
-
-    public static BuildingResponseDto.FloorInfoList toFloorInfoListResponse(
-        Floor floor, List<Floor> floors, List<Space> spaces) {
-
-        List<BuildingResponseDto.SpaceInfo> spaceInfoList = spaces.stream()
-            .map(BuildingConverter::toSpaceInfoResponse).collect(Collectors.toList());
-
-        return  BuildingResponseDto.FloorInfoList.builder()
-            .buildingName(floor.getBuilding().getName())
-            .floors(floors.size())
-            .currentFloor(floor.getLevel())
-            .spaceInfoList(spaceInfoList)
-            .build();
-    }
 
 
 

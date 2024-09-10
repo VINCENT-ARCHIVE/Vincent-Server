@@ -30,8 +30,8 @@ public class SocketResponseDto {
     public static class SocketLocation {
 
         Long socketId;
-        Double longitude;
-        Double latitude;
+        Double xCoordinate;
+        Double yCoordinate;
 
     }
 
