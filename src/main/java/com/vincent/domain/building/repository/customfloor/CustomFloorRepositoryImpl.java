@@ -3,6 +3,7 @@ package com.vincent.domain.building.repository.customfloor;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.transaction.annotation.Transactional;
 
 public class CustomFloorRepositoryImpl implements CustomFloorRepository {
 
@@ -10,6 +11,7 @@ public class CustomFloorRepositoryImpl implements CustomFloorRepository {
     private EntityManager entityManager;
 
     @Override
+    @Transactional(readOnly = true)
     public FloorInfoProjection findFloorInfoByBuildingIdAndLevel(Long buildingId, int level) {
 
         String jpql = "SELECT "
