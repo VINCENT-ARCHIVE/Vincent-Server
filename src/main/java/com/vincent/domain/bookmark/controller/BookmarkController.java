@@ -38,8 +38,8 @@ public class BookmarkController {
 
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Long memberId = principalDetails.getMemberId();
-        BookmarkService.BookmarkResult result = bookmarkService.bookmark(socketId, memberId);
-        return ApiResponse.onSuccess(BookmarkConverter.toBookmarkResponse(result.getBookmarkId()));
+        Long bookmarkId = bookmarkService.bookmark(socketId, memberId);
+        return ApiResponse.onSuccess(BookmarkConverter.toBookmarkResponse(bookmarkId));
     }
 
     @Operation(summary = "콘센트 찜 취소하기", description = "북마크 목록에서 찜한 콘센트를 삭제함")
