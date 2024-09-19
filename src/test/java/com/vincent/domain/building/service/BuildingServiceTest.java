@@ -102,17 +102,17 @@ public class BuildingServiceTest {
             .build();
 
         floorInfoProjection = FloorInfoProjection.builder()
-            .buildingName("Building_1")
-            .floors(2L)
-            .currentFloor(1)
-            .floorImage("floor_image")
+            .buildingName("Building1")
+            .floors(5L)
+            .currentFloor(2)
+            .floorImage("floorImage.jpg")
             .build();
 
 
         spaceInfoProjection = SpaceInfoProjection.builder()
-            .spaceName("Space_1")
-            .xCoordinate(10.0)
-            .yCoordinate(20.0)
+            .spaceName("Space1")
+            .xCoordinate(1.1)
+            .yCoordinate(1.1)
             .socketExistence(true)
             .build();
 
@@ -311,7 +311,7 @@ public class BuildingServiceTest {
         Long floorId = 1L;
         double xCoordinate = 10;
         double yCoordinate = 20;
-        String name = "Space";
+        String name = "Space_1";
         String uploadUrl = "https://s3.amazonaws.com/example.jpg";
         boolean isSocketExist = true;
 
