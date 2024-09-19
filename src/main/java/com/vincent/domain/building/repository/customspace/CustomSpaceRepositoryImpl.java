@@ -16,11 +16,11 @@ public class CustomSpaceRepositoryImpl implements CustomSpaceRepository {
     @Override
     @Transactional(readOnly = true)
     public List<SpaceInfoProjection> findSpaceInfoByBuildingIdAndLevel(Long buildingId, int level) {
-        String jpql = "SELECT "
-            + "s.name AS spaceName, "
-            + "s.xCoordinate AS xCoordinate, "
-            + "s.yCoordinate AS yCoordinate, "
-            + "s.isSocketExist AS isSocketExist "
+        String jpql = "SELECT new com.vincent.domain.building.controller.dto.BuildingResponseDto$SpaceInfoProjection("
+            + "s.name, "
+            + "s.xCoordinate, "
+            + "s.yCoordinate, "
+            + "s.isSocketExist) "
             + "FROM Floor f "
             + "JOIN Space s "
             + "ON f.id = s.floor.id "
