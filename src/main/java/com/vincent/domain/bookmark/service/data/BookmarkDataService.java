@@ -25,11 +25,23 @@ public class BookmarkDataService {
         return bookmarkRepository.save(bookmark);
     }
 
+    public Boolean existsBySocketAndMember(Socket socket, Member member) {
+        return bookmarkRepository.existsBySocketAndMember(socket, member);
+    }
+
     public void isBookmarkExists(Socket socket, Member member) {
         Boolean exists = bookmarkRepository.existsBySocketAndMember(socket, member);
         if (exists) {
             throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_EXIST);
         }
+    }
+
+    public void isBookmarkDeleted(Socket socket, Member member) {
+        Boolean exists = bookmarkRepository.existsBySocketAndMember(socket, member);
+        if (!exists) {
+            throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
+        }
+
     }
 
     public Page<Bookmark> findAllByMember(Member member, Integer page) {
