@@ -14,7 +14,6 @@ public class CustomSpaceRepositoryImpl implements CustomSpaceRepository {
     private EntityManager entityManager;
 
     @Override
-    @Transactional(readOnly = true)
     public List<SpaceInfoProjection> findSpaceInfoByBuildingIdAndLevel(Long buildingId, int level) {
         String jpql = "SELECT new com.vincent.domain.building.controller.dto.BuildingResponseDto$SpaceInfoProjection("
             + "s.name, "

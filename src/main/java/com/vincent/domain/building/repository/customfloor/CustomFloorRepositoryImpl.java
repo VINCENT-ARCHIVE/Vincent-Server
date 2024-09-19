@@ -11,7 +11,6 @@ public class CustomFloorRepositoryImpl implements CustomFloorRepository {
     private EntityManager entityManager;
 
     @Override
-    @Transactional(readOnly = true)
     public FloorInfoProjection findFloorInfoByBuildingIdAndLevel(Long buildingId, int level) {
 
         String jpql = "SELECT new com.vincent.domain.building.controller.dto.BuildingResponseDto$FloorInfoProjection("

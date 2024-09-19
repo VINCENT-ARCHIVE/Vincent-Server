@@ -15,7 +15,6 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
     private EntityManager entityManager;
 
     @Override
-    @Transactional(readOnly = true)
     public Page<Building> findByNameContainingOrderBySimilarity(String keyword, PageRequest pageRequest) {
 
         String jpql = "SELECT b FROM Building b WHERE b.name LIKE CONCAT('%', :keyword, '%') "
