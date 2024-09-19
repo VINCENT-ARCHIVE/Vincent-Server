@@ -23,7 +23,6 @@ import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingInfo;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingLocationList;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
-import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfo;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
@@ -102,49 +101,21 @@ public class BuildingControllerTest {
             .build();
 
 
-        floorInfoProjection = new FloorInfoProjection() {
-            @Override
-            public String getBuildingName() {
-                return "Building 1";
-            }
+        floorInfoProjection = FloorInfoProjection.builder()
+            .buildingName("Building_1")
+            .floors(2L)
+            .currentFloor(1)
+            .floorImage("floor_image")
+            .build();
 
-            @Override
-            public Integer getFloors() {
-                return 2;
-            }
 
-            @Override
-            public Integer getLevel() {
-                return 1;
-            }
+        spaceInfoProjection = SpaceInfoProjection.builder()
+            .spaceName("Space_1")
+            .xCoordinate(10.0)
+            .yCoordinate(20.0)
+            .socketExistence(true)
+            .build();
 
-            @Override
-            public String getImage() {
-                return "floor_image";
-            }
-        };
-
-        spaceInfoProjection = new SpaceInfoProjection() {
-            @Override
-            public String getSpaceName() {
-                return "Space 1";
-            }
-
-            @Override
-            public Double getxCoordinate() {
-                return 10.0;
-            }
-
-            @Override
-            public Double getyCoordinate() {
-                return 20.0;
-            }
-
-            @Override
-            public Boolean getIsSocketExist() {
-                return true;
-            }
-        };
 
     }
 
