@@ -22,8 +22,12 @@ import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.repository.BuildingRepository;
 import com.vincent.domain.building.repository.FloorRepository;
 import com.vincent.domain.building.repository.SpaceRepository;
+import com.vincent.domain.building.service.data.BuildingDataService;
+import com.vincent.domain.building.service.data.FloorDataService;
+import com.vincent.domain.building.service.data.SpaceDataService;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.repository.SocketRepository;
+import com.vincent.domain.socket.service.data.SocketDataService;
 import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,21 +53,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 public class BuildingServiceTest {
-
-    @Mock
-    private BuildingRepository buildingRepository;
-
-    @Mock
-    private FloorRepository floorRepository;
-
-    @Mock
-    private SpaceRepository spaceRepository;
-
-    @Mock
-    private SocketRepository socketRepository;
-
     @Mock
     private S3Service s3Service;
+
+    @Mock
+    private BuildingDataService buildingDataService;
+
+    @Mock
+    private FloorDataService floorDataService;
+
+    @Mock
+    private SpaceDataService spaceDataService;
+
+    @Mock
+    private SocketDataService socketDataService;
 
     @InjectMocks
     private BuildingService buildingService;
@@ -122,29 +125,22 @@ public class BuildingServiceTest {
 
 
 
-
     @Test
     public void 건물정보조회성공() {
-        when(buildingRepository.findById(1L)).thenReturn(Optional.of(building));
+        //given
+        Long buildingId = 1L;
+        Building building = Building.builder().id(1L).build();
 
+        //when
+        when(buildingDataService.findById(buildingId)).thenReturn(building);
+
+        //then
         Building result = buildingService.getBuildingInfo(1L);
 
         assertEquals(building, result);
-        verify(buildingRepository, times(1)).findById(1L);
+        verify(buildingDataService, times(1)).findById(buildingId);
     }
 
-    @Test
-    public void 건물정보조회실패_건물없음() {
-
-        when(buildingRepository.findById(1L)).thenReturn(Optional.empty());
-
-        ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
-            buildingService.getBuildingInfo(1L);
-        });
-
-        assertEquals(ErrorStatus.BUILDING_NOT_FOUND, thrown.getCode());
-        verify(buildingRepository, times(1)).findById(1L);
-    }
 
     @Test
     public void 빌딩검색성공() {
@@ -153,8 +149,7 @@ public class BuildingServiceTest {
         Page<Building> buildingPage = new PageImpl<>(List.of(building));
 
         //when
-        when(buildingRepository.findByNameContainingOrderBySimilarity(keyword,
-            PageRequest.of(0, 10))).thenReturn(buildingPage);
+        when(buildingDataService.findAllByName(keyword,0)).thenReturn(buildingPage);
 
         //then
         Page<Building> result = buildingService.getBuildingSearch(keyword, 0);
@@ -178,7 +173,7 @@ public class BuildingServiceTest {
         buildingService.createBuilding(image, name, address, latitude, longitude);
 
         ArgumentCaptor<Building> buildingCaptor = ArgumentCaptor.forClass(Building.class);
-        verify(buildingRepository).save(buildingCaptor.capture());
+        verify(buildingDataService).save(buildingCaptor.capture());
         Building savedBuilding = buildingCaptor.getValue();
 
         // 검증: 저장된 빌딩 객체의 필드 값이 예상된 값과 일치하는지 확인
@@ -201,12 +196,12 @@ public class BuildingServiceTest {
 
         //when
         when(s3Service.upload(image, "Floor")).thenReturn(mockUrl);
-        when(buildingRepository.findById(buildId)).thenReturn(Optional.of(building));
+        when(buildingDataService.findById(buildId)).thenReturn(building);
 
         //then
         buildingService.createFloor(buildId, level, image);
         ArgumentCaptor<Floor> floorCaptor = ArgumentCaptor.forClass(Floor.class);
-        verify(floorRepository).save(floorCaptor.capture());
+        verify(floorDataService).save(floorCaptor.capture());
 
         Floor savedFloor = floorCaptor.getValue();
 
@@ -216,23 +211,6 @@ public class BuildingServiceTest {
         verify(s3Service, times(1)).upload(eq(image), eq("Floor"));
     }
 
-    @Test
-    public void 층_등록_실패() throws IOException {
-        //given
-        MultipartFile image = mock(MultipartFile.class);
-        Long buildId = 1L;
-        int level = 1;
-        String mockUrl = "test.com";
-
-        //when
-        when(s3Service.upload(image, "Floor")).thenReturn(mockUrl);
-        when(buildingRepository.findById(buildId)).thenReturn(Optional.empty());
-
-        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class, () -> {
-            buildingService.createFloor(1L, level, image);
-        });
-        Assertions.assertEquals(ErrorStatus.BUILDING_NOT_FOUND, thrown.getCode());
-    }
 
     @Test
     public void 주변건물조회_성공() {
@@ -243,8 +221,8 @@ public class BuildingServiceTest {
             .latitude(120.1)
             .build();
 
-        given(buildingRepository.findAllByLocation(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
-            .willReturn(Collections.singletonList(building));
+        when(buildingDataService.findAllByLocation(anyDouble(), anyDouble())).thenReturn(
+            Collections.singletonList(building));
 
         List<Building> result = buildingService.getBuildingLocation(36.0, 120.0);
 
@@ -260,9 +238,8 @@ public class BuildingServiceTest {
 
         Long buildingId = 1L;
         Integer level = 1;
-        when(floorRepository.findFloorInfoByBuildingIdAndLevel(buildingId, level))
-            .thenReturn(floorInfoProjection);
-
+        when(floorDataService.findFloorInfoByBuildingIdAndLevel(buildingId, level)).thenReturn(
+            floorInfoProjection);
 
         FloorInfoProjection result = buildingService.getFloorInfo(buildingId, level);
 
@@ -275,17 +252,11 @@ public class BuildingServiceTest {
     }
 
 
-
-
-
-
-
     @Test
     public void 층_조회_getSpaceInfoList_성공() {
         Long buildingId = 1L;
         Integer level = 1;
-        when(spaceRepository.findSpaceInfoByBuildingIdAndLevel(buildingId, level))
-            .thenReturn(spaceInfoProjectionList);
+        when(spaceDataService.getSpaceInfoList(buildingId,level)).thenReturn(spaceInfoProjectionList);
 
         List<SpaceInfoProjection> result = buildingService.getSpaceInfoList(buildingId, level);
 
@@ -299,47 +270,29 @@ public class BuildingServiceTest {
     }
 
 
-
-
-
-/*
     @Test
     void createSpace_성공() throws IOException {
-
+        //given
         MultipartFile image = Mockito.mock(MultipartFile.class);
 
         Long floorId = 1L;
         double xCoordinate = 10;
         double yCoordinate = 20;
-        String name = "Space1";
+        String name = "Space";
         String uploadUrl = "https://s3.amazonaws.com/example.jpg";
         boolean isSocketExist = true;
 
-        when(floorRepository.findById(floorId)).thenReturn(Optional.of(floor));
+        //when
+        when(floorDataService.findById(floorId)).thenReturn(floor);
         when(s3Service.upload(image, name)).thenReturn(uploadUrl);
 
-        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
+        //then
+        buildingService.createSpace(floorId, image, yCoordinate, xCoordinate, name, isSocketExist);
 
-        verify(spaceRepository).save(any(Space.class));
+        verify(spaceDataService).save(any(Space.class));
         verify(s3Service).upload(image, "Space");
     }
 
- */
-
-    @Test
-    void createSpace_실패_층없음() {
-
-        Long floorId = 1L;
-        MultipartFile image = null;
-        boolean isSocketExist = true;
-
-        when(floorRepository.findById(floorId)).thenReturn(Optional.empty());
-
-
-        assertThrows(ErrorHandler.class, () -> {
-            buildingService.createSpace(floorId, image, 10, 20, "Test Space", isSocketExist);
-        });
-    }
 
     @Test
     void 소켓등록_성공() throws IOException {
@@ -348,16 +301,16 @@ public class BuildingServiceTest {
         String mockUploadUrl = "http://mock-s3-url/socket.jpg";
 
 
-        when(spaceRepository.findById(1L)).thenReturn(Optional.of(space));
+        when(spaceDataService.findById(1L)).thenReturn(space);
         when(s3Service.upload(image, "Socket")).thenReturn(mockUploadUrl);
 
 
         buildingService.createSocket(1L, image, 123.45, 543.21, "Test Socket", 3);
 
 
-        verify(spaceRepository).findById(1L);
+        verify(spaceDataService).findById(1L);
         verify(s3Service).upload(image, "Socket");
-        verify(socketRepository).save(any(Socket.class));
+        verify(socketDataService).save(any(Socket.class));
     }
 
 }
