@@ -41,10 +41,8 @@ class BuildingDataServiceTest {
         //when
         when(buildingRepository.findById(buildingId)).thenReturn(Optional.of(building));
 
-        // when
-        Building result = buildingDataService.findById(buildingId);
-
         // then
+        Building result = buildingDataService.findById(buildingId);
         Assertions.assertEquals(result, building);
         verify(buildingRepository, times(1)).findById(buildingId);
     }

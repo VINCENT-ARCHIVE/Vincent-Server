@@ -2,6 +2,7 @@ package com.vincent.domain.building.service.data;
 
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
+import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.repository.FloorRepository;
 import com.vincent.exception.handler.ErrorHandler;
@@ -27,4 +28,8 @@ public class FloorDataService {
         return floorRepository.findFloorInfoByBuildingIdAndLevel(buildingId, level);
     }
 
+    public Floor findByBuildingAndLevel(Building building, Integer level) {
+        return floorRepository.findByBuildingAndLevel(building, level)
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.FLOOR_NOT_FOUND));
+    }
 }

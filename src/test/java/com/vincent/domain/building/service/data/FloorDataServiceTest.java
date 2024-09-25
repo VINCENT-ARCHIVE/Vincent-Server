@@ -1,6 +1,5 @@
 package com.vincent.domain.building.service.data;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -88,4 +87,39 @@ class FloorDataServiceTest {
         verify(floorRepository, times(1)).findFloorInfoByBuildingIdAndLevel(buildingId, level);
 
     }
+
+    @Test
+    void 건물_및_층수로_층_찾기_성공() {
+        // given
+        int level = 2;
+        Building building = Building.builder().id(1L).build();
+        Floor floor = Floor.builder().id(1L).building(building).level(2).build();
+
+        //when
+        when(floorRepository.findByBuildingAndLevel(building, level)).thenReturn(Optional.of(floor));
+
+        // then
+        Floor result = floorDataService.findByBuildingAndLevel(building, level);
+
+        // then
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(floor, result);
+        verify(floorRepository, times(1)).findByBuildingAndLevel(building, level);
+    }
+
+    @Test
+    void 건물_및_층수로_층_찾기_실패() {
+        // given
+        int level = 2;
+        Building building = Building.builder().id(1L).build();
+
+        //when
+        when(floorRepository.findByBuildingAndLevel(building, level)).thenReturn(Optional.empty());
+
+        //then
+        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class,
+            () -> floorDataService.findByBuildingAndLevel(building, level));
+        Assertions.assertEquals(ErrorStatus.FLOOR_NOT_FOUND, thrown.getCode());
+    }
 }
+
