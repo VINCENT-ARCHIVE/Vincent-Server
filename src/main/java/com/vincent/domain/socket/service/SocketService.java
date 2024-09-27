@@ -1,17 +1,15 @@
 package com.vincent.domain.socket.service;
 
-import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
-import com.vincent.domain.building.repository.BuildingRepository;
-import com.vincent.domain.building.repository.FloorRepository;
-import com.vincent.domain.building.repository.SpaceRepository;
+import com.vincent.domain.building.service.data.BuildingDataService;
+import com.vincent.domain.building.service.data.FloorDataService;
+import com.vincent.domain.building.service.data.SpaceDataService;
 import com.vincent.domain.socket.entity.Socket;
-import com.vincent.domain.socket.repository.SocketRepository;
-import com.vincent.exception.handler.ErrorHandler;
-import java.util.ArrayList;
+import com.vincent.domain.socket.service.data.SocketDataService;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,35 +19,26 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class SocketService {
 
-    private final SocketRepository socketRepository;
-    private final BuildingRepository buildingRepository;
-    private final FloorRepository floorRepository;
-    private final SpaceRepository spaceRepository;
+    private final SocketDataService socketDataService;
+    private final BuildingDataService buildingDataService;
+    private final FloorDataService floorDataService;
+    private final SpaceDataService spaceDataService;
 
     public Socket getSocketInfo(Long socketId) {
-
-        return  socketRepository.findById(socketId).orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
+        return socketDataService.findById(socketId);
     }
 
     public List<Socket> getSocketList(Long buildingId, int level) {
 
-        Building building = buildingRepository.findById(buildingId).orElseThrow(()
-            -> new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND));
+        Building building = buildingDataService.findById(buildingId);
+        Floor floor = floorDataService.findByBuildingAndLevel(building, level);
+        List<Space> spaces = spaceDataService.findAllByFloor(floor);
 
-        Floor floor = floorRepository.findByBuildingAndLevel(building, level);
+        return spaces.stream()
+            .map(space -> socketDataService.findAllBySpace(space))
+            .flatMap(sockets -> sockets.stream())
+            .collect(Collectors.toList());
 
-        List<Space> spaceList = spaceRepository.findAllByFloor(floor);
-
-        List<Socket> socketList = new ArrayList<>();
-
-        for (Space oneSpace : spaceList) {
-
-            List<Socket> socketListForOneSpace = socketRepository.findAllBySpace(oneSpace);
-            socketList.addAll(socketListForOneSpace);
-        }
-
-
-        return  socketList;
     }
 
 }

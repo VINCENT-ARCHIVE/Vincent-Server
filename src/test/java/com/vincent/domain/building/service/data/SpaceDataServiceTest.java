@@ -6,10 +6,12 @@ import static org.mockito.Mockito.when;
 
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
+import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.repository.SpaceRepository;
 import com.vincent.exception.handler.ErrorHandler;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -83,5 +85,23 @@ class SpaceDataServiceTest {
         List<SpaceInfoProjection> result = spaceDataService.getSpaceInfoList(buildingId, level);
         Assertions.assertEquals(result, spaceInfoList);
         verify(spaceRepository, times(1)).findSpaceInfoByBuildingIdAndLevel(buildingId, level);
+    }
+
+    @Test
+    void 층으로_모든_공간_찾기(){
+        //given
+        Floor floor = Floor.builder().id(1L).build();
+        Space space = Space.builder().id(1L).floor(floor).build();
+        List<Space> spaces = Collections.singletonList(space);
+
+        //when
+        when(spaceRepository.findAllByFloor(floor)).thenReturn(spaces);
+
+        //then
+        List<Space> result = spaceDataService.findAllByFloor(floor);
+        Assertions.assertEquals(result.size(), spaces.size());
+        Assertions.assertIterableEquals(result, spaces);
+        verify(spaceRepository, times(1)).findAllByFloor(floor);
+
     }
 }
