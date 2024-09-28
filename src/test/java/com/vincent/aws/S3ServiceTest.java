@@ -11,12 +11,9 @@ import static org.mockito.Mockito.when;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.aws.s3.S3Service;
-import com.vincent.exception.handler.ErrorHandler;
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

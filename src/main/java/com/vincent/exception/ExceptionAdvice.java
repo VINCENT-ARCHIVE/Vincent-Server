@@ -3,7 +3,6 @@ package com.vincent.exception;
 import com.vincent.apipayload.ApiResponse;
 import com.vincent.apipayload.code.ReasonDto;
 import com.vincent.apipayload.status.ErrorStatus;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

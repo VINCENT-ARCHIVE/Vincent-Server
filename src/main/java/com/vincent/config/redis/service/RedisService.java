@@ -6,7 +6,6 @@ import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.config.redis.entity.RefreshToken;
 import com.vincent.exception.handler.ErrorHandler;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
