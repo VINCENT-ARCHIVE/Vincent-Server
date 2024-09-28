@@ -347,7 +347,7 @@ public class BuildingServiceTest {
         when(floorRepository.findById(floorId)).thenReturn(Optional.of(floor));
         when(s3Service.upload(image, name)).thenReturn(uploadUrl);
 
-        buildingService.createSpace(floorId, image, xCoordinate, yCoordinate, name, isSocketExist);
+        buildingService.createSpace(floorId, xCoordinate, yCoordinate, name, isSocketExist);
 
         verify(spaceRepository).save(any(Space.class));
         verify(s3Service).upload(image, "Space");
@@ -364,7 +364,7 @@ public class BuildingServiceTest {
 
 
         assertThrows(ErrorHandler.class, () -> {
-            buildingService.createSpace(floorId, image, 10, 20, "Test Space", isSocketExist);
+            buildingService.createSpace(floorId,10, 20, "Test Space", isSocketExist);
         });
     }
 
