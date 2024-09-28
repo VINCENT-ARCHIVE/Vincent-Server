@@ -9,7 +9,6 @@ import com.vincent.domain.member.service.MemberService;
 import com.vincent.domain.member.service.MemberService.LoginResult;
 import com.vincent.domain.member.service.MemberService.ReissueResult;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;

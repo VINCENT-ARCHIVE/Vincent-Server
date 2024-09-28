@@ -30,7 +30,7 @@
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOGS_ABSOLUTE_PATH}/logback.%d{yyyy-MM-dd}.log</fileNamePattern>
-      <maxHistory>30</maxHistory>
+      <maxHistory>7</maxHistory>
       <totalSizeCap>3GB</totalSizeCap>
     </rollingPolicy>
   </appender>
@@ -45,21 +45,17 @@
   </logger>
 
   <appender name="USER_REQUEST_RESPONSE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <!-- 설정된 로그 파일 경로 및 이름 -->
     <file>${LOGS_ABSOLUTE_PATH}/user-requests.log</file>
     <encoder>
       <pattern>${FILE_LOG_PATTERN}</pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOGS_ABSOLUTE_PATH}/user-requests.%d{yyyy-MM-dd}.log</fileNamePattern>
-      <!-- 최대 보관할 로그 파일 개수 -->
-      <maxHistory>30</maxHistory>
-      <!-- 총 로그 파일 크기 제한 -->
+      <maxHistory>7</maxHistory>
       <totalSizeCap>3GB</totalSizeCap>
     </rollingPolicy>
   </appender>
 
-  <!-- Logger for User Request/Response -->
   <logger name="com.vincent.logging" level="info" additivity="false">
     <appender-ref ref="USER_REQUEST_RESPONSE_FILE" />
   </logger>
