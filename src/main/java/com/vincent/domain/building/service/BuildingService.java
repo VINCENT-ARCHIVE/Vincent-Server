@@ -121,6 +121,7 @@ public class BuildingService {
     public void createSpace(
         Long floorId, double yCoordinate, double xCoordinate, String name, boolean isSocketExist)
         throws IOException {
+
         Floor floor = floorRepository.findById(floorId)
             .orElseThrow(() -> new ErrorHandler(ErrorStatus.FLOOR_NOT_FOUND));
 
