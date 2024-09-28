@@ -114,16 +114,15 @@ public class BuildingController {
 
 
     @Operation(summary = "공간 등록하기")
-    @PostMapping(value = "/building/floors/{floorId}/spaces", consumes = "multipart/form-data")
+    @PostMapping(value = "/building/floors/{floorId}/spaces")
     public ApiResponse<?> createSpace(
         @PathVariable("floorId") Long floorId,
-        @RequestPart("image") MultipartFile image,
         @RequestParam("name") String name,
         @RequestParam("yCoordinate") Double yCoordinate,
         @RequestParam("xCoordinate") Double xCoordinate,
         @RequestParam("isSocketExist") boolean isSocketExist)
         throws IOException {
-        buildingService.createSpace(floorId, image, yCoordinate, xCoordinate, name, isSocketExist);
+        buildingService.createSpace(floorId, yCoordinate, xCoordinate, name, isSocketExist);
         return ApiResponse.onSuccess(null);
     }
 
