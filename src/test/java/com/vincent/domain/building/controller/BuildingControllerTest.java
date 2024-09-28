@@ -235,8 +235,8 @@ public class BuildingControllerTest {
         boolean isSocketExist = true;
 
         //when/then
-        ApiResponse<?> response = buildingController.createSpace(floorId, image, name, longitude, latitude, isSocketExist);
-        verify(buildingService).createSpace(floorId, image, longitude, latitude, name, isSocketExist);
+        ApiResponse<?> response = buildingController.createSpace(floorId, name, longitude, latitude, isSocketExist);
+        verify(buildingService).createSpace(floorId, longitude, latitude, name, isSocketExist);
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getIsSuccess()).isTrue();
     }
