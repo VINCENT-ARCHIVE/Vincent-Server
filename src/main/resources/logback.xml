@@ -8,12 +8,22 @@
   <property name="FILE_LOG_PATTERN"
     value="[%d{yyyy-MM-dd HH:mm:ss}:%-3relative] %-5level ${PID:-} --- [%15.15thread] %-40.40logger{36} : %msg%n"/>
 
+  <!-- STDOUT Console Appender -->
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <layout class="ch.qos.logback.classic.PatternLayout">
       <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
     </layout>
   </appender>
 
+  <!-- FILE Appender for logback.log -->
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${LOGS_ABSOLUTE_PATH}/logback.log</file>
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+    </encoder>
+  </appender>
+
+  <!-- AsyncAppender for logback.log -->
   <appender name="QUERY_FILE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
     <appender-ref ref="FILE" />
     <queueSize>512</queueSize>
@@ -23,43 +33,28 @@
     <maxFlushTime>1000</maxFlushTime>
   </appender>
 
-  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${LOGS_ABSOLUTE_PATH}/logback.log</file>
-    <encoder>
-      <pattern>${FILE_LOG_PATTERN}</pattern>
-    </encoder>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${LOGS_ABSOLUTE_PATH}/logback.%d{yyyy-MM-dd}.log</fileNamePattern>
-      <maxHistory>7</maxHistory>
-      <totalSizeCap>3GB</totalSizeCap>
-    </rollingPolicy>
-  </appender>
-
+  <!-- Root Logger -->
   <root level="info">
     <appender-ref ref="STDOUT" />
     <appender-ref ref="QUERY_FILE_ASYNC" />
   </root>
 
+  <!-- Logger for org.springframework.web -->
   <logger name="org.springframework.web" level="debug" additivity="false">
     <appender-ref ref="FILE" />
   </logger>
 
-  <appender name="USER_REQUEST_RESPONSE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  <!-- USER_REQUEST_RESPONSE_FILE Appender for user-requests.log -->
+  <appender name="USER_REQUEST_RESPONSE_FILE" class="ch.qos.logback.core.FileAppender">
     <file>${LOGS_ABSOLUTE_PATH}/user-requests.log</file>
     <encoder>
       <pattern>${FILE_LOG_PATTERN}</pattern>
     </encoder>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${LOGS_ABSOLUTE_PATH}/user-requests.%d{yyyy-MM-dd}.log</fileNamePattern>
-      <maxHistory>7</maxHistory>
-      <totalSizeCap>3GB</totalSizeCap>
-    </rollingPolicy>
   </appender>
 
+  <!-- Logger for com.vincent.logging -->
   <logger name="com.vincent.logging" level="info" additivity="false">
     <appender-ref ref="USER_REQUEST_RESPONSE_FILE" />
   </logger>
 
 </configuration>
-
-
