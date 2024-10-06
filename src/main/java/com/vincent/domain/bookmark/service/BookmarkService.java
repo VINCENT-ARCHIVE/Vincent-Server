@@ -86,7 +86,8 @@ public class BookmarkService {
 
 
     public void delete(Member member, Socket socket) {
-        bookmarkRepository.delete(Bookmark.builder().member(member).socket(socket).build());
+        Bookmark bookmark = bookmarkRepository.findByMemberAndSocket(member, socket);
+        bookmarkRepository.delete(bookmark);
     }
 
 
