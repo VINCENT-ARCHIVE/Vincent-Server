@@ -24,7 +24,6 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     @Operation(summary = "피드백 생성하기")
-    @Parameter(name = "contents", description = "내용은 최대 300자까지 가능")
     @PostMapping("/feedback")
     public ApiResponse<?> addFeedback(@RequestBody @Valid FeedbackRequestDto.addFeedbackDto request,
         Authentication authentication) {
