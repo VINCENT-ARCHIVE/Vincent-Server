@@ -135,13 +135,20 @@ public class BookmarkServiceTest {
     @Test
     public void 북마크취소_성공() {
 
+
+        Bookmark bookmark = Bookmark.builder()
+            .member(member)
+            .socket(socket)
+            .build();
+
         when(memberRepository.findById(memberId)).thenReturn(java.util.Optional.of(member));
         when(socketRepository.findById(socketId)).thenReturn(java.util.Optional.of(socket));
         when(bookmarkRepository.existsBySocketAndMember(socket, member)).thenReturn(true);
+        when(bookmarkRepository.findByMemberAndSocket(member, socket)).thenReturn(bookmark);
 
         bookmarkService.deleteBookmark(socketId, memberId);
 
-        verify(bookmarkRepository, times(1)).delete(any(Bookmark.class));
+        verify(bookmarkRepository, times(1)).delete(bookmark);
     }
 
     @Test

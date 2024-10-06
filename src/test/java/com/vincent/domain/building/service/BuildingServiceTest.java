@@ -341,16 +341,13 @@ public class BuildingServiceTest {
         double xCoordinate = 10;
         double yCoordinate = 20;
         String name = "Space";
-        String uploadUrl = "https://s3.amazonaws.com/example.jpg";
         boolean isSocketExist = true;
 
         when(floorRepository.findById(floorId)).thenReturn(Optional.of(floor));
-        when(s3Service.upload(image, name)).thenReturn(uploadUrl);
 
         buildingService.createSpace(floorId, xCoordinate, yCoordinate, name, isSocketExist);
 
         verify(spaceRepository).save(any(Space.class));
-        verify(s3Service).upload(image, "Space");
     }
 
     @Test
