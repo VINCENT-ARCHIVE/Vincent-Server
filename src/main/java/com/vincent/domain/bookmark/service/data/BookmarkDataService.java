@@ -44,6 +44,10 @@ public class BookmarkDataService {
 
     }
 
+    public Bookmark findByMemberAndSocket(Member member, Socket socket) {
+        return bookmarkRepository.findByMemberAndSocket(member, socket);
+    }
+
     public Page<Bookmark> findAllByMember(Member member, Integer page) {
         return bookmarkRepository.findAllByMemberOrderByCreatedAtDesc(member,
             PageRequest.of(page, 10));
