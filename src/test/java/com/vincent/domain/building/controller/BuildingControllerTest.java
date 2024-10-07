@@ -174,13 +174,13 @@ public class BuildingControllerTest {
         Long floorId = 1L;
         MultipartFile image = null;
         String name = "test";
-        double longitude = 10.0;
-        double latitude = 20.0;
+        double xCoordinate = 10.0;
+        double yCoordinate = 20.0;
         boolean isSocketExist = true;
 
         //when/then
-        ApiResponse<?> response = buildingController.createSpace(floorId, image, name, longitude, latitude, isSocketExist);
-        verify(buildingService).createSpace(floorId, image, longitude, latitude, name, isSocketExist);
+        ApiResponse<?> response = buildingController.createSpace(floorId, name, yCoordinate, xCoordinate, isSocketExist);
+        verify(buildingService).createSpace(floorId, yCoordinate, xCoordinate, name, isSocketExist);
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getIsSuccess()).isTrue();
     }
@@ -191,13 +191,13 @@ public class BuildingControllerTest {
         Long spaceId = 1L;
         MultipartFile image = null;
         String name = "test";
-        double longitude = 10.0;
-        double latitude = 20.0;
+        double xCoordinate = 10.0;
+        double yCoordinate = 20.0;
         int holes = 3;
 
         //when/then
-        ApiResponse<?> response = buildingController.createSocket(spaceId, image, name, longitude, latitude, holes);
-        verify(buildingService).createSocket(spaceId, image, longitude, latitude, name, holes);
+        ApiResponse<?> response = buildingController.createSocket(spaceId, image, name, yCoordinate, xCoordinate, holes);
+        verify(buildingService).createSocket(spaceId, image, yCoordinate, xCoordinate, name, holes);
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getIsSuccess()).isTrue();
     }

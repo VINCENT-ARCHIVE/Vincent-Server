@@ -275,7 +275,7 @@ public class BuildingServiceTest {
         when(s3Service.upload(image, name)).thenReturn(uploadUrl);
 
         //then
-        buildingService.createSpace(floorId, image, yCoordinate, xCoordinate, name, isSocketExist);
+        buildingService.createSpace(floorId, yCoordinate, xCoordinate, name, isSocketExist);
 
         verify(spaceDataService).save(any(Space.class));
         verify(s3Service).upload(image, "Space");
