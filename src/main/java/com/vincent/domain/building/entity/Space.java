@@ -42,8 +42,10 @@ public class Space {
     @Setter
     private boolean isSocketExist;
 
+    /*
     @Setter
     @Column(columnDefinition = "TEXT")
     private String image;
+     */
 
 }
