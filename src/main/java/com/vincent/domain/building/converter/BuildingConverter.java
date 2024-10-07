@@ -57,8 +57,8 @@ public class BuildingConverter {
         return BuildingResponseDto.FloorInfo.builder()
             .buildingName(a.getBuildingName())
             .floors(a.getFloors())
-            .currentFloor(a.getLevel())
-            .floorImage(a.getImage())
+            .currentFloor(a.getCurrentFloor())
+            .floorImage(a.getFloorImage())
             .spaceInfoList(b).build();
 
     }

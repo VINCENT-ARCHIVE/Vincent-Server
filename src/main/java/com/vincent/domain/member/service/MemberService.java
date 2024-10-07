@@ -1,11 +1,8 @@
 package com.vincent.domain.member.service;
 
-import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
-import com.vincent.domain.member.repository.MemberRepository;
 import com.vincent.domain.member.service.data.MemberDataService;
-import com.vincent.exception.handler.ErrorHandler;
 import com.vincent.config.redis.entity.RefreshToken;
 import com.vincent.config.redis.service.RedisService;
 import java.util.Optional;

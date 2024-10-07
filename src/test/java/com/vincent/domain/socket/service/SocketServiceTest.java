@@ -2,128 +2,88 @@ package com.vincent.domain.socket.service;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-
-import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
-import com.vincent.domain.building.repository.BuildingRepository;
-import com.vincent.domain.building.repository.FloorRepository;
-import com.vincent.domain.building.repository.SpaceRepository;
+import com.vincent.domain.building.service.data.BuildingDataService;
+import com.vincent.domain.building.service.data.FloorDataService;
+import com.vincent.domain.building.service.data.SpaceDataService;
 import com.vincent.domain.socket.entity.Socket;
-import com.vincent.domain.socket.repository.SocketRepository;
-import com.vincent.domain.socket.service.SocketService;
-import com.vincent.exception.handler.ErrorHandler;
-import java.util.ArrayList;
+import com.vincent.domain.socket.service.data.SocketDataService;
+import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-import org.mockito.Spy;
-
+@ExtendWith(MockitoExtension.class)
 public class SocketServiceTest {
 
     @Mock
-    private SocketRepository socketRepository;
+    private FloorDataService floorDataService;
 
     @Mock
-    private FloorRepository floorRepository;
+    private SpaceDataService spaceDataService;
 
     @Mock
-    private SpaceRepository spaceRepository;
+    private BuildingDataService buildingDataService;
 
     @Mock
-    private BuildingRepository buildingRepository;
+    private SocketDataService socketDataService;
 
     @InjectMocks
     private SocketService socketService;
 
-    @Spy
-    private Socket socket;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void 개별_콘센트_조회_성공() {
-
+        //given
         Long socketId = 1L;
+        Socket socket = Socket.builder().id(1L).build();
 
-        when(socket.getId()).thenReturn(socketId);
+        //when
+        when(socketDataService.findById(socketId)).thenReturn(socket);
 
-
-        when(socketRepository.findById(socketId)).thenReturn(Optional.of(socket));
-
-
-
+        //then
         Socket result = socketService.getSocketInfo(socketId);
 
-
-        assertNotNull(result);
-        assertEquals(socketId, result.getId());
-        verify(socketRepository, times(1)).findById(socketId);
+        assertEquals(socket, result);
+        verify(socketDataService, times(1)).findById(socketId);
     }
 
-    @Test
-    public void 개별_콘센트_조회_실패_소켓없음() {
-        Long socketId = 1L;
-
-        when(socketRepository.findById(socketId)).thenReturn(Optional.empty());
-
-        ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
-            socketService.getSocketInfo(socketId);
-        });
-
-        assertEquals(ErrorStatus.SOCKET_NOT_FOUND, thrown.getCode());
-        verify(socketRepository, times(1)).findById(socketId);
-    }
 
     @Test
     void 층소켓조회_성공() {
+        //given
+        Long buildingId = 1L;
+        int level = 2;
+        Building building = Building.builder().id(1L).build();
+        Floor floor = Floor.builder().id(1L).level(2).building(building).build();
+        Space space = Space.builder().id(1L).floor(floor).build();
+        Socket socket = Socket.builder().id(1L).space(space).build();
+        List<Space> spaces = Collections.singletonList(space);
+        List<Socket> sockets = Collections.singletonList(socket);
 
-        Building mockBuilding = Mockito.mock(Building.class);
-        when(mockBuilding.getName()).thenReturn("s1_building1");
+        //when
+        when(buildingDataService.findById(buildingId)).thenReturn(building);
+        when(floorDataService.findByBuildingAndLevel(building, level)).thenReturn(floor);
+        when(spaceDataService.findAllByFloor(floor)).thenReturn(spaces);
+        when(socketDataService.findAllBySpace(space)).thenReturn(sockets);
 
-        Floor mockFloor = Mockito.mock(Floor.class);
-        when(mockFloor.getBuilding()).thenReturn(mockBuilding);
+        //then
+        List<Socket> result = socketService.getSocketList(buildingId, level);
 
-        Space mockSpace = Mockito.mock(Space.class);
-        when(mockSpace.getFloor()).thenReturn(mockFloor);
-        when(mockSpace.getName()).thenReturn("s1_floor1");
-
-        Socket mockSocket = Mockito.mock(Socket.class);
-        when(mockSocket.getId()).thenReturn(1L);
-        when(mockSocket.getName()).thenReturn("s1");
-        when(mockSocket.getImage()).thenReturn("s1_image");
-        when(mockSocket.getSpace()).thenReturn(mockSpace);
-
-        List<Space> mockSpaceList = new ArrayList<>();
-        mockSpaceList.add(mockSpace);
-
-        List<Socket> mockSocketList = new ArrayList<>();
-        mockSocketList.add(mockSocket);
-
-
-        when(buildingRepository.findById(1L)).thenReturn(Optional.of(mockBuilding));
-        when(floorRepository.findByBuildingAndLevel(mockBuilding, 2)).thenReturn(mockFloor);
-        when(spaceRepository.findAllByFloor(mockFloor)).thenReturn(mockSpaceList);
-        when(socketRepository.findAllBySpace(mockSpace)).thenReturn(mockSocketList);
-
-
-        List<Socket> result = socketService.getSocketList(1L, 2);
-
-
-        assertEquals(1, result.size());
-        assertEquals(mockSocket, result.get(0));
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(socket, result.get(0));
+        verify(buildingDataService).findById(buildingId);
+        verify(floorDataService).findByBuildingAndLevel(building, level);
+        verify(spaceDataService).findAllByFloor(floor);
+        verify(socketDataService).findAllBySpace(space);
     }
 }

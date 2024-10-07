@@ -1,6 +1,7 @@
 package com.vincent.domain.building.repository;
 
 import com.vincent.domain.building.entity.Building;
+import com.vincent.domain.building.repository.custombuilding.CustomBuildingRepository;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -8,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface BuildingRepository extends JpaRepository<Building, Long> {
+public interface BuildingRepository extends JpaRepository<Building, Long>, CustomBuildingRepository {
 
     @Query(
         value = "SELECT * FROM building b WHERE b.name LIKE CONCAT('%', :keyword, '%') "
