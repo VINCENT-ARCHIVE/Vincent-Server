@@ -54,7 +54,7 @@ public class BookmarkDataService {
             return  foundBookmark;
 
         } else {
-            throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
+            throw new ErrorHandler(ErrorStatus.BOOKMARK_NOT_FOUND);
         }
     }
 
