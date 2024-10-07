@@ -47,15 +47,8 @@ public class BookmarkDataService {
 
     public Bookmark findByMemberAndSocket(Member member, Socket socket) {
 
-        Optional<Bookmark> bookmark = bookmarkRepository.findByMemberAndSocket(member, socket);
-
-        if (bookmark.isPresent()) {
-            Bookmark foundBookmark = bookmark.get();
-            return  foundBookmark;
-
-        } else {
-            throw new ErrorHandler(ErrorStatus.BOOKMARK_NOT_FOUND);
-        }
+        return bookmarkRepository.findByMemberAndSocket(member, socket).orElseThrow(
+            () -> new ErrorHandler(ErrorStatus.BOOKMARK_NOT_FOUND));
     }
 
     public Page<Bookmark> findAllByMember(Member member, Integer page) {
