@@ -261,24 +261,19 @@ public class BuildingServiceTest {
     @Test
     void createSpace_성공() throws IOException {
         //given
-        MultipartFile image = Mockito.mock(MultipartFile.class);
-
         Long floorId = 1L;
         double xCoordinate = 10;
         double yCoordinate = 20;
         String name = "Space";
-        String uploadUrl = "https://s3.amazonaws.com/example.jpg";
         boolean isSocketExist = true;
 
         //when
         when(floorDataService.findById(floorId)).thenReturn(floor);
-        when(s3Service.upload(image, name)).thenReturn(uploadUrl);
 
         //then
         buildingService.createSpace(floorId, yCoordinate, xCoordinate, name, isSocketExist);
 
         verify(spaceDataService).save(any(Space.class));
-        verify(s3Service).upload(image, "Space");
     }
 
 
