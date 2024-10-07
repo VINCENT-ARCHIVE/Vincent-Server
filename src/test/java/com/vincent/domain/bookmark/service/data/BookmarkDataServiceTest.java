@@ -164,7 +164,7 @@ class BookmarkDataServiceTest {
             () ->  bookmarkDataService.findByMemberAndSocket(member, socket));
 
 
-        Assertions.assertEquals(thrown.getCode(), ErrorStatus.BOOKMARK_ALREADY_DELETED);
+        Assertions.assertEquals(thrown.getCode(), ErrorStatus.BOOKMARK_NOT_FOUND);
         verify(bookmarkRepository, times(1)).findByMemberAndSocket(member, socket);
     }
 
