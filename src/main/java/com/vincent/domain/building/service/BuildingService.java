@@ -83,10 +83,10 @@ public class BuildingService {
 
     @Transactional
     public void createSpace(
-        Long floorId, MultipartFile image, double yCoordinate, double xCoordinate, String name,
+        Long floorId, double yCoordinate, double xCoordinate, String name,
         boolean isSocketExist)
         throws IOException {
-        String uploadUrl = s3Service.upload(image, "Space");
+
         Floor floor = floorDataService.findById(floorId);
 
         Space space = Space.builder()
@@ -94,7 +94,6 @@ public class BuildingService {
             .name(name)
             .xCoordinate(xCoordinate)
             .yCoordinate(yCoordinate)
-            .image(uploadUrl)
             .isSocketExist(isSocketExist)
             .build();
 
