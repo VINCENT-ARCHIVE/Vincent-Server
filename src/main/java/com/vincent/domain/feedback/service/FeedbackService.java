@@ -1,11 +1,9 @@
 package com.vincent.domain.feedback.service;
 
-import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.feedback.entity.Feedback;
-import com.vincent.domain.feedback.repository.FeedbackRepository;
+import com.vincent.domain.feedback.service.data.FeedbackDataService;
 import com.vincent.domain.member.entity.Member;
-import com.vincent.domain.member.repository.MemberRepository;
-import com.vincent.exception.handler.ErrorHandler;
+import com.vincent.domain.member.service.data.MemberDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,22 +12,20 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FeedbackService {
 
-    private final FeedbackRepository feedbackRepository;
-
-    private final MemberRepository memberRepository;
+    private final FeedbackDataService feedbackDataService;
+    private final MemberDataService memberDataService;
 
     @Transactional
     public void addFeedback(String contents, Long memberId) {
 
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new ErrorHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberDataService.findById(memberId);
 
         Feedback feedback = Feedback.builder()
             .content(contents)
             .member(member)
             .build();
 
-        feedbackRepository.save(feedback);
+        feedbackDataService.save(feedback);
     }
 
 }

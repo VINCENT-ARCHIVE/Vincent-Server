@@ -68,7 +68,7 @@ public class BuildingResponseDto {
     public static class FloorInfo {
 
         String buildingName;
-        Integer floors;
+        Long floors;
         Integer currentFloor;
         String floorImage;
         List<SpaceInfoProjection> spaceInfoList;
@@ -79,37 +79,37 @@ public class BuildingResponseDto {
 
 
 
-    public interface FloorInfoProjection {
-        String getBuildingName();
 
-        Integer getFloors();
 
-        Integer getLevel();
-
-        String getImage();
-    }
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SpaceInfo {
+    public static class FloorInfoProjection {
 
-        String spaceName;
-        Double xCoordinate;
-        Double yCoordinate;
-        Boolean socketExistence;
+
+        private String buildingName;
+        private Long floors;
+        private Integer currentFloor;
+        private String floorImage;
+
     }
 
-    @JsonPropertyOrder({"spaceName", "xCoordinate", "yCoordinate", "isSocketExist"})
-    public interface SpaceInfoProjection {
-        String getSpaceName();
 
-        Double getxCoordinate();
 
-        Double getyCoordinate();
 
-        Boolean getIsSocketExist();
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SpaceInfoProjection {
+
+        private String spaceName;
+        private Double xCoordinate;
+        private Double yCoordinate;
+        private Boolean socketExistence;
+
     }
 
 

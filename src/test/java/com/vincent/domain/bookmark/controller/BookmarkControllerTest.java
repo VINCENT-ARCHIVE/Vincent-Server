@@ -49,12 +49,12 @@ public class BookmarkControllerTest {
     public void 북마크_성공() {
         // given
         Long socketId = 1L;
-        BookmarkService.BookmarkResult bookmarkResult = new BookmarkService.BookmarkResult(
-            socketId);
+        Long bookmarkId = 1L;
+
 
         //when
         when(bookmarkService.bookmark(socketId, principalDetails.getMemberId())).thenReturn(
-            bookmarkResult);
+            bookmarkId);
 
         // then
         ApiResponse<Bookmark> response = bookmarkController.bookmark(socketId, authentication);
@@ -64,7 +64,7 @@ public class BookmarkControllerTest {
 
         Assertions.assertThat(response.getIsSuccess()).isTrue();
         Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");
-        Assertions.assertThat(result.getBookmarkId()).isEqualTo(bookmarkResult.getBookmarkId());
+        Assertions.assertThat(result.getBookmarkId()).isEqualTo(bookmarkId);
     }
 
     @Test

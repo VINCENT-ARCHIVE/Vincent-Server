@@ -27,40 +27,26 @@ public class LoggingFilter extends OncePerRequestFilter {
             return;
         }
         MDC.put("traceId", UUID.randomUUID().toString());
+        long startTime = System.currentTimeMillis();
         Long memberId = extractMemberId();
+        String method = request.getMethod();               // HTTP 메서드 (GET, POST 등)
+        String endpoint = request.getRequestURI();         // 요청한 URI
+        String ip = request.getRemoteAddr();               // 요청을 보낸 IP 주소
+
         if (memberId != null) {
             MDC.put("memberId", memberId.toString());
         } else {
             MDC.put("memberId", "anonymous");  // 또는 "unknown" 등으로 설정 가능
         }
-        if (isAsyncDispatch(request)) {
-            filterChain.doFilter(request, response);
-        } else {
-            doFilterWrapped(new RequestWrapper(request), new ResponseWrapper(response),
-                filterChain);
-        }
-        MDC.clear();
-    }
-
-    protected void doFilterWrapped(RequestWrapper request, ContentCachingResponseWrapper response,
-        FilterChain filterChain) throws ServletException, IOException {
         try {
-            logRequest(request);
             filterChain.doFilter(request, response);
         } finally {
-            logResponse(response);
-            response.copyBodyToResponse();
+            int statusCode = response.getStatus();
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            logRequestResponse(statusCode, memberId, method, endpoint, duration, ip);
+            MDC.clear();  // MDC 정리
         }
-    }
-
-    private static void logRequest(RequestWrapper request) {
-        RequestLogInfo httpLogInfo = new RequestLogInfo(request);
-        log.info(httpLogInfo.toJson());
-    }
-
-    private static void logResponse(ContentCachingResponseWrapper response) throws IOException {
-        ResponseLogInfo httpLogInfo = new ResponseLogInfo(response);
-        log.info(httpLogInfo.toJson());
     }
 
     private static Long extractMemberId() {
@@ -72,16 +58,25 @@ public class LoggingFilter extends OncePerRequestFilter {
             if (principal instanceof PrincipalDetails) {
                 PrincipalDetails principalDetails = (PrincipalDetails) principal;
                 return principalDetails.getMemberId();
-            } else if (principal instanceof String && principal.equals("anonymousUser")) {
-                // 인증되지 않은 사용자
-                System.out.println("인증되지 않은 사용자입니다.");
-                return null;  // 인증되지 않은 경우 처리 (예: null 또는 기본값 반환)
             } else {
-                // 다른 예상하지 못한 타입 처리
-                System.out.println("예상하지 못한 Principal 타입: " + principal.getClass().getName());
                 return null;
             }
         }
         return null;
+    }
+
+    private void logRequestResponse(int statusCode, Long memberId, String method, String endpoint, long duration, String ip) {
+        String logMessage = String.format(
+            "traceId=%s, memberId=%s, method=%s, endpoint=%s, statusCode=%d, requestTime=%dms, ip=%s",
+            MDC.get("traceId"), memberId, method, endpoint, statusCode, duration, ip
+        );
+
+        if (statusCode >= 200 && statusCode < 300) {
+            log.info(logMessage);
+        } else if (statusCode >= 400 && statusCode < 500) {
+            log.warn(logMessage);
+        } else if (statusCode >= 500) {
+            log.error(logMessage);
+        }
     }
 }
