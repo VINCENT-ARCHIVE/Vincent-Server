@@ -6,6 +6,7 @@ import com.vincent.domain.bookmark.repository.BookmarkRepository;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.exception.handler.ErrorHandler;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +43,12 @@ public class BookmarkDataService {
             throw new ErrorHandler(ErrorStatus.BOOKMARK_ALREADY_DELETED);
         }
 
+    }
+
+    public Bookmark findByMemberAndSocket(Member member, Socket socket) {
+
+        return bookmarkRepository.findByMemberAndSocket(member, socket).orElseThrow(
+            () -> new ErrorHandler(ErrorStatus.BOOKMARK_NOT_FOUND));
     }
 
     public Page<Bookmark> findAllByMember(Member member, Integer page) {

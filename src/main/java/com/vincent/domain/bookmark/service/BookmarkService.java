@@ -35,7 +35,8 @@ public class BookmarkService {
         Member member = memberDataService.findById(memberId);
         Socket socket = socketDataService.findById(socketId);
         bookmarkDataService.isBookmarkDeleted(socket, member);
-        bookmarkDataService.delete(Bookmark.builder().member(member).socket(socket).build());
+        Bookmark bookmark = bookmarkDataService.findByMemberAndSocket(member, socket);
+        bookmarkDataService.delete(bookmark);
     }
 
     public Page<Bookmark> findBookmarkList(Long memberId, Integer page) {

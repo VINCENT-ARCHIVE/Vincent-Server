@@ -12,6 +12,7 @@ import com.vincent.domain.member.entity.Member;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.exception.handler.ErrorHandler;
 import java.util.Arrays;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -130,6 +131,41 @@ class BookmarkDataServiceTest {
         // then
         bookmarkDataService.isBookmarkDeleted(socket, member);
         verify(bookmarkRepository, times(1)).existsBySocketAndMember(socket, member);
+    }
+
+    @Test
+    void findByMemberAndSocket_성공() {
+        // given
+        Member member = Member.builder().id(1L).build();
+        Socket socket = Socket.builder().id(1L).build();
+        Bookmark bookmark = Bookmark.builder().member(member).socket(socket).build();
+
+        // when
+        when(bookmarkRepository.findByMemberAndSocket(member, socket)).thenReturn(Optional.of(bookmark));
+
+        // then
+        Bookmark result = bookmarkDataService.findByMemberAndSocket(member, socket);
+
+        Assertions.assertEquals(bookmark, result);
+        verify(bookmarkRepository, times(1)).findByMemberAndSocket(member, socket);
+    }
+
+    @Test
+    void findByMemberAndSocket_실패_해당북마크없음() {
+        // given
+        Member member = Member.builder().id(1L).build();
+        Socket socket = Socket.builder().id(1L).build();
+
+        // when
+        when(bookmarkRepository.findByMemberAndSocket(member, socket)).thenReturn(Optional.empty());
+
+        // then
+        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class,
+            () ->  bookmarkDataService.findByMemberAndSocket(member, socket));
+
+
+        Assertions.assertEquals(thrown.getCode(), ErrorStatus.BOOKMARK_NOT_FOUND);
+        verify(bookmarkRepository, times(1)).findByMemberAndSocket(member, socket);
     }
 
     @Test

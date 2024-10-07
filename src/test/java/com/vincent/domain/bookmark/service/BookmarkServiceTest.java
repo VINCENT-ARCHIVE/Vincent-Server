@@ -68,10 +68,16 @@ public class BookmarkServiceTest {
         Member member = Member.builder().id(1L).build();
         Socket socket = Socket.builder().id(1L).build();
 
+        Bookmark bookmark = Bookmark.builder()
+            .member(member)
+            .socket(socket)
+            .build();
+
         //when
         when(memberDataService.findById(memberId)).thenReturn(member);
         when(socketDataService.findById(socketId)).thenReturn(socket);
         doNothing().when(bookmarkDataService).isBookmarkDeleted(socket,member);
+        when(bookmarkDataService.findByMemberAndSocket(member, socket)).thenReturn(bookmark);
         doNothing().when(bookmarkDataService).delete(any(Bookmark.class));
 
         //then
@@ -81,6 +87,7 @@ public class BookmarkServiceTest {
         verify(memberDataService, times(1)).findById(memberId);
         verify(socketDataService, times(1)).findById(socketId);
         verify(bookmarkDataService, times(1)).isBookmarkDeleted(socket, member);
+        verify(bookmarkDataService, times(1)).findByMemberAndSocket(member, socket);
 
     }
 
