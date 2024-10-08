@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import com.vincent.config.aws.s3.S3Service;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
@@ -237,6 +238,24 @@ public class BuildingServiceTest {
         assertThat(result.getFloors()).isEqualTo(5);
         assertThat(result.getCurrentFloor()).isEqualTo(2);
         assertThat(result.getFloorImage()).isEqualTo("floorImage.jpg");
+    }
+
+    @Test
+    public void 층조회_getFloorWithSocketList_성공() {
+        // given
+        Long buildingId = 1L;
+        List<FloorWithSocket> expectedFloorWithSocketList = List.of(new FloorWithSocket(/* 필요한 필드값 입력 */));
+
+        // Mock 객체 반환값 설정
+        when(floorDataService.findFloorWithSocketByBuildingId(buildingId)).thenReturn(expectedFloorWithSocketList);
+
+        // when
+        List<FloorWithSocket> result = buildingService.getFloorWithSocketList(buildingId);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(expectedFloorWithSocketList);
+        verify(floorDataService, times(1)).findFloorWithSocketByBuildingId(buildingId); // 메서드 호출 확인
     }
 
 

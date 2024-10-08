@@ -15,6 +15,7 @@ import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingInfo;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingLocationList;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
@@ -47,6 +48,9 @@ public class BuildingControllerTest {
     private Floor floor;
     private Space space;
     private FloorInfoProjection floorInfoProjection;
+
+    @Mock
+    private FloorWithSocket floorWithSocket;
 
     private SpaceInfoProjection spaceInfoProjection;
 
@@ -234,6 +238,7 @@ public class BuildingControllerTest {
         Integer level = 1;
 
         List<SpaceInfoProjection> spaceInfoProjectionList = List.of(spaceInfoProjection);
+        List<FloorWithSocket> floorWithSocketList = List.of(floorWithSocket);
 
         //when
         when(buildingService.getFloorInfo(buildingId, level)).thenReturn(floorInfoProjection);
@@ -243,7 +248,7 @@ public class BuildingControllerTest {
             buildingId, level);
         BuildingResponseDto.FloorInfo result = response.getResult();
         BuildingResponseDto.FloorInfo expected = BuildingConverter.toFloorInfoListResponse(
-            floorInfoProjection, spaceInfoProjectionList);
+            floorInfoProjection, floorWithSocketList, spaceInfoProjectionList);
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");

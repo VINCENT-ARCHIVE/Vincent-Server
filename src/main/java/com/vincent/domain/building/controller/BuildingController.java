@@ -2,6 +2,8 @@ package com.vincent.domain.building.controller;
 
 import com.vincent.apipayload.ApiResponse;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfo;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
@@ -97,9 +99,11 @@ public class BuildingController {
         @RequestParam("buildingId") Long buildingId,
         @RequestParam("level") Integer level) {
         FloorInfoProjection floorInfoProjection = buildingService.getFloorInfo(buildingId, level);
+        List<FloorWithSocket> floorWithSocketList = buildingService.getFloorWithSocketList(buildingId);
         List<SpaceInfoProjection> spaceInfoProjectionList = buildingService.getSpaceInfoList(buildingId, level);
         return  ApiResponse.onSuccess((
-            BuildingConverter.toFloorInfoListResponse(floorInfoProjection, spaceInfoProjectionList)));
+            BuildingConverter.toFloorInfoListResponse(
+                floorInfoProjection, floorWithSocketList, spaceInfoProjectionList)));
 
 
     }
