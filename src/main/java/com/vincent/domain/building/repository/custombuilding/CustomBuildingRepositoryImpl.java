@@ -3,6 +3,7 @@ package com.vincent.domain.building.repository.custombuilding;
 import com.vincent.domain.building.entity.Building;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,6 +17,10 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 
     @Override
     public Page<Building> findByNameContainingOrderBySimilarity(String keyword, PageRequest pageRequest) {
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageRequest, 0);
+        }
 
         String jpql = "SELECT b FROM Building b WHERE b.name LIKE CONCAT('%', :keyword, '%') "
             + "ORDER BY CASE "
