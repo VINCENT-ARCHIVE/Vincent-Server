@@ -110,7 +110,8 @@ public class BuildingController {
         List<FloorWithSocketProjection> floorWithSocketList = buildingService.getFloorList(buildingId);
         List<SpaceInfoProjection> spaceInfoProjectionList = buildingService.getSpaceInfoList(buildingId, level);
         return  ApiResponse.onSuccess((
-            BuildingConverter.toFloorInfoListResponse(floorInfoProjection, floorWithSocketList, spaceInfoProjectionList)));
+            BuildingConverter.toFloorInfoListResponse(
+                floorInfoProjection, floorWithSocketList, spaceInfoProjectionList)));
 
 
     }
