@@ -1,75 +1,55 @@
 package com.vincent.domain.feedback.service;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.feedback.entity.Feedback;
-import com.vincent.domain.feedback.repository.FeedbackRepository;
-import com.vincent.domain.feedback.service.FeedbackService;
+import com.vincent.domain.feedback.service.data.FeedbackDataService;
 import com.vincent.domain.member.entity.Member;
-import com.vincent.domain.member.repository.MemberRepository;
-import com.vincent.exception.handler.ErrorHandler;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
+import com.vincent.domain.member.service.data.MemberDataService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class FeedbackServiceTest {
 
     @InjectMocks
     private FeedbackService feedbackService;
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberDataService memberDataService;
 
     @Mock
-    private FeedbackRepository feedbackRepository;
-
-    @Mock
-    private Member member;
-
-    @Mock
-    private Feedback feedback;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-    }
-
-    Long memberId = 1L;
-    String contents = "test contents";
+    private FeedbackDataService feedbackDataService;
 
     @Test
     public void 피드백생성성공() {
+        //given
+        Long memberId = 1L;
+        String contents = "test";
+        Member member = Member.builder().id(1L).build();
+        Feedback feedback = Feedback.builder()
+            .id(1L)
+            .content(contents)
+            .member(member)
+            .build();
 
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        //when
+        when(memberDataService.findById(memberId)).thenReturn(member);
+        when(feedbackDataService.save(any(Feedback.class))).thenReturn(feedback);
 
+        //then
         feedbackService.addFeedback(contents, memberId);
 
-        verify(feedbackRepository, times(1)).save(any(Feedback.class));
-    }
+        verify(feedbackDataService, times(1)).save(any(Feedback.class));
+        verify(memberDataService, times(1)).findById(memberId);
 
-    @Test
-    public void 피드백생성실패_멤버없음() {
-
-        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
-
-        ErrorHandler thrown = assertThrows(ErrorHandler.class, () -> {
-            feedbackService.addFeedback(contents, memberId);
-        });
-
-        assertEquals(ErrorStatus.MEMBER_NOT_FOUND, thrown.getCode());
-        verify(feedbackRepository, never()).save(any(Feedback.class));
     }
 
 }

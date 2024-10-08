@@ -7,7 +7,6 @@ import com.vincent.domain.building.controller.dto.BuildingRequestDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingInfo;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
-import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocketProjection;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
@@ -55,12 +54,12 @@ public class BuildingConverter {
     }
 
     public static BuildingResponseDto.FloorInfo toFloorInfoListResponse(
-        FloorInfoProjection a, List<FloorWithSocketProjection> c, List<SpaceInfoProjection> b) {
+        FloorInfoProjection a, List<FloorWithSocket> c, List<SpaceInfoProjection> b) {
         return BuildingResponseDto.FloorInfo.builder()
             .buildingName(a.getBuildingName())
             .floors(a.getFloors())
-            .currentFloor(a.getLevel())
-            .floorImage(a.getImage())
+            .currentFloor(a.getCurrentFloor())
+            .floorImage(a.getFloorImage())
             .floorWithSocketList(c)
             .spaceInfoList(b).build();
 

@@ -1,8 +1,6 @@
 package com.vincent.config.aws.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.exception.handler.ErrorHandler;
@@ -54,6 +52,15 @@ public class S3Service {
         return uploadImageUrl;
     }
 
+    public void uploadLog(String logPath, String keyName) {
+        File file = new File(logPath);
+        if (file.exists()) {
+            amazonS3Client.putObject(new PutObjectRequest(bucket, keyName, file));
+        } else {
+            System.out.println("파일을 찾을 수 없습니다: " + logPath);
+        }
+    }
+
     public String findByUrl(String url) {
         return amazonS3Client.getUrl(bucket, url).toString();
     }
@@ -63,7 +70,7 @@ public class S3Service {
         amazonS3Client.deleteObject(bucket, path);
     }
 
-    public Optional<File> convert(MultipartFile file) throws IOException {
+    private Optional<File> convert(MultipartFile file) throws IOException {
         File convertFile = new File(
             System.getProperty("user.dir") + "/" + file.getOriginalFilename());
         if (convertFile.createNewFile()) {

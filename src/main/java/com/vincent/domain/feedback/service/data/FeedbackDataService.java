@@ -8,9 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class FeedbackDataService {
+
     private final FeedbackRepository feedbackRepository;
 
-    public Feedback save (Feedback feedback) {
+    public Feedback save(Feedback feedback) {
         return feedbackRepository.save(feedback);
     }
 }

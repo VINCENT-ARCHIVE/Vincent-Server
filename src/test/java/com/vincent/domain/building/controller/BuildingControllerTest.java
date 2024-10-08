@@ -3,63 +3,36 @@ package com.vincent.domain.building.controller;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincent.apipayload.ApiResponse;
-import com.vincent.apipayload.status.ErrorStatus;
-import com.vincent.domain.building.controller.BuildingController;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingInfo;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingLocationList;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
-import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfo;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.service.BuildingService;
-import com.vincent.domain.socket.entity.Socket;
-import com.vincent.exception.handler.ErrorHandler;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +48,9 @@ public class BuildingControllerTest {
     private Floor floor;
     private Space space;
     private FloorInfoProjection floorInfoProjection;
+
+    @Mock
+    private FloorWithSocket floorWithSocket;
 
     private SpaceInfoProjection spaceInfoProjection;
 
@@ -102,49 +78,21 @@ public class BuildingControllerTest {
             .build();
 
 
-        floorInfoProjection = new FloorInfoProjection() {
-            @Override
-            public String getBuildingName() {
-                return "Building 1";
-            }
+        floorInfoProjection = FloorInfoProjection.builder()
+            .buildingName("Building_1")
+            .floors(2L)
+            .currentFloor(1)
+            .floorImage("floor_image")
+            .build();
 
-            @Override
-            public Integer getFloors() {
-                return 2;
-            }
 
-            @Override
-            public Integer getLevel() {
-                return 1;
-            }
+        spaceInfoProjection = SpaceInfoProjection.builder()
+            .spaceName("Space_1")
+            .xCoordinate(10.0)
+            .yCoordinate(20.0)
+            .socketExistence(true)
+            .build();
 
-            @Override
-            public String getImage() {
-                return "floor_image";
-            }
-        };
-
-        spaceInfoProjection = new SpaceInfoProjection() {
-            @Override
-            public String getSpaceName() {
-                return "Space 1";
-            }
-
-            @Override
-            public Double getxCoordinate() {
-                return 10.0;
-            }
-
-            @Override
-            public Double getyCoordinate() {
-                return 20.0;
-            }
-
-            @Override
-            public Boolean getIsSocketExist() {
-                return true;
-            }
-        };
 
     }
 
@@ -230,13 +178,13 @@ public class BuildingControllerTest {
         Long floorId = 1L;
         MultipartFile image = null;
         String name = "test";
-        double longitude = 10.0;
-        double latitude = 20.0;
+        double xCoordinate = 10.0;
+        double yCoordinate = 20.0;
         boolean isSocketExist = true;
 
         //when/then
-        ApiResponse<?> response = buildingController.createSpace(floorId, name, longitude, latitude, isSocketExist);
-        verify(buildingService).createSpace(floorId, longitude, latitude, name, isSocketExist);
+        ApiResponse<?> response = buildingController.createSpace(floorId, name, yCoordinate, xCoordinate, isSocketExist);
+        verify(buildingService).createSpace(floorId, yCoordinate, xCoordinate, name, isSocketExist);
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getIsSuccess()).isTrue();
     }
@@ -247,13 +195,13 @@ public class BuildingControllerTest {
         Long spaceId = 1L;
         MultipartFile image = null;
         String name = "test";
-        double longitude = 10.0;
-        double latitude = 20.0;
+        double xCoordinate = 10.0;
+        double yCoordinate = 20.0;
         int holes = 3;
 
         //when/then
-        ApiResponse<?> response = buildingController.createSocket(spaceId, image, name, longitude, latitude, holes);
-        verify(buildingService).createSocket(spaceId, image, longitude, latitude, name, holes);
+        ApiResponse<?> response = buildingController.createSocket(spaceId, image, name, yCoordinate, xCoordinate, holes);
+        verify(buildingService).createSocket(spaceId, image, yCoordinate, xCoordinate, name, holes);
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getIsSuccess()).isTrue();
     }
@@ -290,6 +238,7 @@ public class BuildingControllerTest {
         Integer level = 1;
 
         List<SpaceInfoProjection> spaceInfoProjectionList = List.of(spaceInfoProjection);
+        List<FloorWithSocket> floorWithSocketList = List.of(floorWithSocket);
 
         //when
         when(buildingService.getFloorInfo(buildingId, level)).thenReturn(floorInfoProjection);
@@ -299,7 +248,7 @@ public class BuildingControllerTest {
             buildingId, level);
         BuildingResponseDto.FloorInfo result = response.getResult();
         BuildingResponseDto.FloorInfo expected = BuildingConverter.toFloorInfoListResponse(
-            floorInfoProjection, spaceInfoProjectionList);
+            floorInfoProjection, floorWithSocketList, spaceInfoProjectionList);
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");
