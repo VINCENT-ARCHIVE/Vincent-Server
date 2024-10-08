@@ -1,6 +1,8 @@
 package com.vincent.domain.building.repository;
 
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocketProjection;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import java.util.List;
@@ -29,6 +31,16 @@ public interface FloorRepository extends JpaRepository<Floor, Long> {
     FloorInfoProjection findFloorInfoByBuildingIdAndLevel(
         @Param("buildingId") Long buildingId,
         @Param("level") int level
+    );
+
+    @Query("SELECT "
+        + "f.id AS floorId , "
+        + "f.level AS floorLevel "
+        + "FROM Floor f "
+        + "WHERE f.building.id = :buildingId "
+        + "ORDER BY f.level ASC")
+    List<FloorWithSocketProjection> findFloorWithSocketListByBuildingId(
+        @Param("buildingId") Long buildingId
     );
 
 

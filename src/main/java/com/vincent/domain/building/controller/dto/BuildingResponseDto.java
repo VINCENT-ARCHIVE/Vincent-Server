@@ -72,7 +72,21 @@ public class BuildingResponseDto {
         Integer currentFloor;
         String floorImage;
         List<SpaceInfoProjection> spaceInfoList;
+        List<FloorWithSocketProjection> floorWithSocketList;
 
+
+
+    }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FloorWithSocket {
+
+        Long floorId;
+        Integer floorLevel;
 
 
     }
@@ -87,6 +101,13 @@ public class BuildingResponseDto {
         Integer getLevel();
 
         String getImage();
+    }
+
+    public interface FloorWithSocketProjection {
+        Long getFloorId();
+
+        Integer getFloorLevel();
+
     }
 
     @Builder

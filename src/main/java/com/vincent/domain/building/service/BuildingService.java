@@ -4,6 +4,8 @@ import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.aws.s3.S3Service;
 import com.vincent.domain.building.controller.dto.BuildingRequestDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocketProjection;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
@@ -99,6 +101,10 @@ public class BuildingService {
 
     public FloorInfoProjection getFloorInfo(Long buildingId, int level) {
         return floorRepository.findFloorInfoByBuildingIdAndLevel(buildingId, level);
+    }
+
+    public List<FloorWithSocketProjection> getFloorList(Long buildingId) {
+        return floorRepository.findFloorWithSocketListByBuildingId(buildingId);
     }
 
 
