@@ -1,15 +1,18 @@
 package com.vincent.domain.building.service.data;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.repository.FloorRepository;
 import com.vincent.exception.handler.ErrorHandler;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -120,6 +123,24 @@ class FloorDataServiceTest {
         ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class,
             () -> floorDataService.findByBuildingAndLevel(building, level));
         Assertions.assertEquals(ErrorStatus.FLOOR_NOT_FOUND, thrown.getCode());
+    }
+
+    @Test
+    public void 건물로_소켓이_있는_층_찾기_성공() {
+        // given
+        Long buildingId = 1L;
+        List<FloorWithSocket> expectedFloorWithSocketList = List.of(new FloorWithSocket(/* 필요한 필드값 입력 */));
+
+        // Mock 객체 반환값 설정
+        when(floorRepository.findFloorWithSocketByBuildingId(buildingId)).thenReturn(expectedFloorWithSocketList);
+
+        // when
+        List<FloorWithSocket> result = floorDataService.findFloorWithSocketByBuildingId(buildingId);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(expectedFloorWithSocketList);
+        verify(floorRepository, times(1)).findFloorWithSocketByBuildingId(buildingId); // 메서드 호출 확인
     }
 }
 
