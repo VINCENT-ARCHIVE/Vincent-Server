@@ -1,6 +1,7 @@
 package com.vincent.domain.building.service;
 
 import com.vincent.config.aws.s3.S3Service;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
@@ -76,6 +77,11 @@ public class BuildingService {
     public FloorInfoProjection getFloorInfo(Long buildingId, int level) {
         return floorDataService.findFloorInfoByBuildingIdAndLevel(buildingId, level);
     }
+
+    public List<FloorWithSocket> getFloorList(Long buildingId) {
+        return floorDataService.findFloorListByBuildingId(buildingId);
+    }
+
 
     public List<SpaceInfoProjection> getSpaceInfoList(Long buildingId, int level) {
         return spaceDataService.getSpaceInfoList(buildingId, level);
