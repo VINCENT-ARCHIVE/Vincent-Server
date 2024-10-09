@@ -7,6 +7,7 @@ services:
     networks:
       - my_network
     environment:
+      - TZ=Asia/Seoul
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
       - DB_URL=${DB_URL}
