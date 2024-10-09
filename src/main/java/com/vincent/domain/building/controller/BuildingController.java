@@ -48,7 +48,7 @@ public class BuildingController {
     @Parameter(name = "page", description = "검색 목록의 페이지 번호(0부터 시작)")
     @GetMapping("/building/search")
     public ApiResponse<BuildingResponseDto.BuildingList> buildingList(
-        @RequestParam("keyword") String keyword,
+        @RequestParam(value = "keyword") String keyword,
         @RequestParam("page") Integer page) {
         Page<Building> buildingPage = buildingService.getBuildingSearch(keyword, page);
         return ApiResponse.onSuccess(BuildingConverter.toBuildingListResponse(buildingPage));
