@@ -40,6 +40,7 @@ public class BuildingService {
     }
 
     public Page<Building> getBuildingSearch(String keyword, Integer page) {
+        System.out.println("keyword: " + keyword);
         return buildingDataService.findAllByName(keyword, page);
     }
 

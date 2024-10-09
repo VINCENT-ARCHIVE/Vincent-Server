@@ -17,7 +17,7 @@ public class SwaggerConfig {
         Info info = new Info()
                 .title("Vincent")
                 .description("Vincent API 명세서")
-                .version("v1.0.1");
+                .version("v1.0.2");
 
         String jwtSchemeName = "JWT TOKEN";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);

@@ -18,6 +18,8 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
     @Override
     public Page<Building> findByNameContainingOrderBySimilarity(String keyword, PageRequest pageRequest) {
 
+        System.out.println("keyword: " + keyword);
+
         if (keyword == null || keyword.trim().isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageRequest, 0);
         }
