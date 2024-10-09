@@ -6,6 +6,7 @@ import com.vincent.domain.bookmark.converter.BookmarkConverter;
 import com.vincent.domain.building.controller.dto.BuildingRequestDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingInfo;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;
@@ -18,7 +19,19 @@ import org.springframework.data.domain.Page;
 
 public class BuildingConverter {
 
-    public static BuildingResponseDto.BuildingInfo toBuildingInfoResponse(Building result) {
+    public static BuildingResponseDto.BuildingAndFloorInfo toBuildingAndFloorInfoResponse(
+        Building result, List<FloorWithSocket> floorWithSocketList) {
+        return BuildingResponseDto.BuildingAndFloorInfo.builder()
+            .buildingId(result.getId())
+            .buildingName(result.getName())
+            .buildingImage(result.getImage())
+            .buildingAddress(result.getAddress())
+            .floorWithSocketList(floorWithSocketList)
+            .build();
+    }
+
+    public static BuildingResponseDto.BuildingInfo toBuildingInfoResponse(
+        Building result) {
         return BuildingResponseDto.BuildingInfo.builder()
             .buildingId(result.getId())
             .buildingName(result.getName())
@@ -54,6 +67,7 @@ public class BuildingConverter {
 
     public static BuildingResponseDto.FloorInfo toFloorInfoListResponse(
         FloorInfoProjection a, List<SpaceInfoProjection> b) {
+
         return BuildingResponseDto.FloorInfo.builder()
             .buildingName(a.getBuildingName())
             .floors(a.getFloors())

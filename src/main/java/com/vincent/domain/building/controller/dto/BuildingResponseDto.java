@@ -27,6 +27,19 @@ public class BuildingResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class BuildingAndFloorInfo {
+
+        Long buildingId;
+        String buildingName;
+        String buildingImage;
+        String buildingAddress;
+        List<FloorWithSocket> floorWithSocketList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class BuildingList {
 
         List<BuildingInfo> buildingInfos;
@@ -111,6 +124,35 @@ public class BuildingResponseDto {
         private Boolean socketExistence;
 
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FloorWithSocket {
+
+        private Long floorId;
+        private Integer floorLevel;
+
+    }
+
+    /*
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FloorInfoProjection2 {
+
+
+        private String buildingName;
+        private Long floors;
+        private Integer currentFloor;
+        private String floorImage;
+        List<A> aa;
+
+    }
+
+     */
 
 
 }

@@ -2,10 +2,12 @@ package com.vincent.domain.building.controller;
 
 import com.vincent.apipayload.ApiResponse;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
+import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.service.BuildingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,10 +37,11 @@ public class BuildingController {
     @Operation(summary = "건물의 정보 조회하기", description = "지도 상에서 건물 마크를 클릭했을 때 보여지는 정보를 제공함")
     @Parameter(name = "buildingId", description = "정보를 조회할 빌딩의 Id")
     @GetMapping("/building/{buildingId}")
-    public ApiResponse<BuildingResponseDto.BuildingInfo> buildingInfo(
+    public ApiResponse<BuildingResponseDto.BuildingAndFloorInfo> buildingInfo(
         @PathVariable("buildingId") Long buildingId) {
         Building result = buildingService.getBuildingInfo(buildingId);
-        return ApiResponse.onSuccess(BuildingConverter.toBuildingInfoResponse(result));
+        List<FloorWithSocket> floorWithSocketList = buildingService.getFloorWithSocketList(buildingId);
+        return ApiResponse.onSuccess(BuildingConverter.toBuildingAndFloorInfoResponse(result, floorWithSocketList));
     }
 
     @Operation(summary = "검색하기", description = "검색창에 입력한 키워드와 건물의 이름이 일치하는 순서대로 건물 목록을 조회함(한 페이지에 최대 10개씩)")
