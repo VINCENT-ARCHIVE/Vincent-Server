@@ -78,8 +78,8 @@ public class BuildingService {
         return floorDataService.findFloorInfoByBuildingIdAndLevel(buildingId, level);
     }
 
-    public List<FloorWithSocket> getFloorList(Long buildingId) {
-        return floorDataService.findFloorListByBuildingId(buildingId);
+    public List<FloorWithSocket> getFloorWithSocketList(Long buildingId) {
+        return floorDataService.findFloorWithSocketListByBuildingId(buildingId);
     }
 
 

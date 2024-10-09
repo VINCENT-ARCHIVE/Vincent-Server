@@ -32,7 +32,7 @@ public class CustomFloorRepositoryImpl implements CustomFloorRepository {
     }
 
     @Override
-    public List<FloorWithSocket> findFloorWithSocketByBuildingId(Long buildingId) {
+    public List<FloorWithSocket> findFloorWithSocketListByBuildingId(Long buildingId) {
 
         String jpql = "SELECT new com.vincent.domain.building.controller.dto.BuildingResponseDto$FloorWithSocket("
             + "f.id, "

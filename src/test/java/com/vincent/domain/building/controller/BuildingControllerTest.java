@@ -12,9 +12,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.vincent.apipayload.ApiResponse;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingAndFloorInfo;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingInfo;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingLocationList;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
@@ -47,6 +49,9 @@ public class BuildingControllerTest {
     private Floor floor;
     private Space space;
     private FloorInfoProjection floorInfoProjection;
+
+    @Mock
+    private FloorWithSocket floorWithSocket;
 
     private SpaceInfoProjection spaceInfoProjection;
 
@@ -97,14 +102,15 @@ public class BuildingControllerTest {
         //given
         Long buildingId = 1L;
 
+        List<FloorWithSocket> floorWithSocketList = List.of(floorWithSocket);
         //when
         when(buildingService.getBuildingInfo(eq(buildingId))).thenReturn(building);
 
         //then
-        ApiResponse<BuildingResponseDto.BuildingInfo> response = buildingController.buildingInfo(
+        ApiResponse<BuildingResponseDto.BuildingAndFloorInfo> response = buildingController.buildingInfo(
             buildingId);
-        BuildingResponseDto.BuildingInfo result = response.getResult();
-        BuildingInfo expected = BuildingConverter.toBuildingInfoResponse(building);
+        BuildingResponseDto.BuildingAndFloorInfo result = response.getResult();
+        BuildingAndFloorInfo expected = BuildingConverter.toBuildingAndFloorInfoResponse(building, floorWithSocketList);
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");

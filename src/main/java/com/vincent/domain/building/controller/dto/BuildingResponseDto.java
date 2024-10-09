@@ -27,6 +27,19 @@ public class BuildingResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class BuildingAndFloorInfo {
+
+        Long buildingId;
+        String buildingName;
+        String buildingImage;
+        String buildingAddress;
+        List<FloorWithSocket> floorWithSocketList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class BuildingList {
 
         List<BuildingInfo> buildingInfos;
@@ -72,7 +85,6 @@ public class BuildingResponseDto {
         Integer currentFloor;
         String floorImage;
         List<SpaceInfoProjection> spaceInfoList;
-        List<FloorWithSocket> floorWithSocketList;
 
 
 
