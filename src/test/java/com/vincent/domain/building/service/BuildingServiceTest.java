@@ -258,6 +258,7 @@ public class BuildingServiceTest {
     }
 
 
+
     @Test
     public void 층_조회_getSpaceInfoList_성공() {
         Long buildingId = 1L;

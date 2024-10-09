@@ -2,6 +2,10 @@ package com.vincent.domain.building.service;
 
 import com.vincent.config.aws.s3.S3Service;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
+import com.vincent.domain.building.controller.dto.BuildingRequestDto;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorWithSocket;
+import com.vincent.domain.building.converter.BuildingConverter;
 import com.vincent.domain.building.entity.Building;
 import com.vincent.domain.building.entity.Floor;
 import com.vincent.domain.building.entity.Space;

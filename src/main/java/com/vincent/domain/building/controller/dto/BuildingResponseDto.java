@@ -92,9 +92,6 @@ public class BuildingResponseDto {
 
 
 
-
-
-
     @Builder
     @Getter
     @NoArgsConstructor
@@ -125,16 +122,21 @@ public class BuildingResponseDto {
 
     }
 
+
     @Builder
     @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class FloorWithSocket {
 
-        private Long floorId;
-        private Integer floorLevel;
+        Long floorId;
+        Integer floorLevel;
+
 
     }
+
+
 
     /*
     @Builder
