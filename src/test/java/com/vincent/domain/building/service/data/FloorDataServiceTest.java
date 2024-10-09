@@ -139,5 +139,22 @@ class FloorDataServiceTest {
         assertThat(result).isEqualTo(expectedFloorWithSocketList);
         verify(floorRepository, times(1)).findFloorWithSocketListByBuildingId(buildingId); // 메서드 호출 확인
     }
+
+    @Test
+    public void 건물로_소켓이_있는_층_찾기_실패() {
+        // given
+        Long buildingId = 1L;
+        List<FloorWithSocket> emptyFloorWithSocketList = List.of(); // 빈 리스트
+
+        // 빈 리스트 반환 모킹
+        when(floorRepository.findFloorWithSocketListByBuildingId(buildingId)).thenReturn(emptyFloorWithSocketList);
+
+        // when
+        List<FloorWithSocket> result = floorDataService.findFloorWithSocketListByBuildingId(buildingId);
+
+        // then
+        assertThat(result).isNotNull();
+        verify(floorRepository, times(1)).findFloorWithSocketListByBuildingId(buildingId); // 메서드 호출 확인
+    }
 }
 
