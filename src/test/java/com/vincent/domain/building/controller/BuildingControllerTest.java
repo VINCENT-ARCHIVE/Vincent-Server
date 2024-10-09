@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.vincent.apipayload.ApiResponse;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto;
+import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingAndFloorInfo;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingInfo;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.BuildingLocationList;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.FloorInfoProjection;
@@ -101,14 +102,15 @@ public class BuildingControllerTest {
         //given
         Long buildingId = 1L;
 
+        List<FloorWithSocket> floorWithSocketList = List.of(floorWithSocket);
         //when
         when(buildingService.getBuildingInfo(eq(buildingId))).thenReturn(building);
 
         //then
-        ApiResponse<BuildingResponseDto.BuildingInfo> response = buildingController.buildingInfo(
+        ApiResponse<BuildingResponseDto.BuildingAndFloorInfo> response = buildingController.buildingInfo(
             buildingId);
-        BuildingResponseDto.BuildingInfo result = response.getResult();
-        BuildingInfo expected = BuildingConverter.toBuildingInfoResponse(building);
+        BuildingResponseDto.BuildingAndFloorInfo result = response.getResult();
+        BuildingAndFloorInfo expected = BuildingConverter.toBuildingAndFloorInfoResponse(building, floorWithSocketList);
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");
@@ -238,7 +240,6 @@ public class BuildingControllerTest {
         Integer level = 1;
 
         List<SpaceInfoProjection> spaceInfoProjectionList = List.of(spaceInfoProjection);
-        List<FloorWithSocket> floorWithSocketList = List.of(floorWithSocket);
 
         //when
         when(buildingService.getFloorInfo(buildingId, level)).thenReturn(floorInfoProjection);
@@ -248,7 +249,7 @@ public class BuildingControllerTest {
             buildingId, level);
         BuildingResponseDto.FloorInfo result = response.getResult();
         BuildingResponseDto.FloorInfo expected = BuildingConverter.toFloorInfoListResponse(
-            floorInfoProjection, floorWithSocketList, spaceInfoProjectionList);
+            floorInfoProjection, spaceInfoProjectionList);
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");

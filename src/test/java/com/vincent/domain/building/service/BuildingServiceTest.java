@@ -128,6 +128,23 @@ public class BuildingServiceTest {
 
         assertEquals(building, result);
         verify(buildingDataService, times(1)).findById(buildingId);
+
+
+    }
+
+    @Test
+    public void 건물정보조회_getFloorWithSocketList_성공() {
+        // given
+        Long buildingId = 1L;
+        List<FloorWithSocket> expectedFloorWithSocketList = List.of(new FloorWithSocket());
+        // Mock 객체 반환값 설정
+        when(floorDataService.findFloorWithSocketListByBuildingId(buildingId)).thenReturn(expectedFloorWithSocketList);
+        // when
+        List<FloorWithSocket> result = buildingService.getFloorWithSocketList(buildingId);
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(expectedFloorWithSocketList);
+        verify(floorDataService, times(1)).findFloorWithSocketListByBuildingId(buildingId); // 메서드 호출 확인
     }
 
 
@@ -240,23 +257,6 @@ public class BuildingServiceTest {
         assertThat(result.getFloorImage()).isEqualTo("floorImage.jpg");
     }
 
-    @Test
-    public void 층조회_getFloorWithSocketList_성공() {
-        // given
-        Long buildingId = 1L;
-        List<FloorWithSocket> expectedFloorWithSocketList = List.of(new FloorWithSocket(/* 필요한 필드값 입력 */));
-
-        // Mock 객체 반환값 설정
-        when(floorDataService.findFloorWithSocketByBuildingId(buildingId)).thenReturn(expectedFloorWithSocketList);
-
-        // when
-        List<FloorWithSocket> result = buildingService.getFloorWithSocketList(buildingId);
-
-        // then
-        assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(expectedFloorWithSocketList);
-        verify(floorDataService, times(1)).findFloorWithSocketByBuildingId(buildingId); // 메서드 호출 확인
-    }
 
 
     @Test

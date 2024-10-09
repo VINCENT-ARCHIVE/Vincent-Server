@@ -129,18 +129,32 @@ class FloorDataServiceTest {
     public void 건물로_소켓이_있는_층_찾기_성공() {
         // given
         Long buildingId = 1L;
-        List<FloorWithSocket> expectedFloorWithSocketList = List.of(new FloorWithSocket(/* 필요한 필드값 입력 */));
-
+        List<FloorWithSocket> expectedFloorWithSocketList = List.of(new FloorWithSocket());
         // Mock 객체 반환값 설정
-        when(floorRepository.findFloorWithSocketByBuildingId(buildingId)).thenReturn(expectedFloorWithSocketList);
-
+        when(floorRepository.findFloorWithSocketListByBuildingId(buildingId)).thenReturn(expectedFloorWithSocketList);
         // when
-        List<FloorWithSocket> result = floorDataService.findFloorWithSocketByBuildingId(buildingId);
-
+        List<FloorWithSocket> result = floorDataService.findFloorWithSocketListByBuildingId(buildingId);
         // then
         assertThat(result).isNotNull();
         assertThat(result).isEqualTo(expectedFloorWithSocketList);
-        verify(floorRepository, times(1)).findFloorWithSocketByBuildingId(buildingId); // 메서드 호출 확인
+        verify(floorRepository, times(1)).findFloorWithSocketListByBuildingId(buildingId); // 메서드 호출 확인
+    }
+
+    @Test
+    public void 건물로_소켓이_있는_층_찾기_실패() {
+        // given
+        Long buildingId = 1L;
+        List<FloorWithSocket> emptyFloorWithSocketList = List.of(); // 빈 리스트
+
+        // 빈 리스트 반환 모킹
+        when(floorRepository.findFloorWithSocketListByBuildingId(buildingId)).thenReturn(emptyFloorWithSocketList);
+
+        // when
+        List<FloorWithSocket> result = floorDataService.findFloorWithSocketListByBuildingId(buildingId);
+
+        // then
+        assertThat(result).isNotNull();
+        verify(floorRepository, times(1)).findFloorWithSocketListByBuildingId(buildingId); // 메서드 호출 확인
     }
 }
 

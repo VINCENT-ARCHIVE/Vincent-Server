@@ -19,9 +19,21 @@ import org.springframework.data.domain.Page;
 
 public class BuildingConverter {
 
-    public static BuildingResponseDto.BuildingInfo toBuildingInfoResponse(Building result) {
+    public static BuildingResponseDto.BuildingAndFloorInfo toBuildingAndFloorInfoResponse(
+        Building result, List<FloorWithSocket> floorWithSocketList) {
+        return BuildingResponseDto.BuildingAndFloorInfo.builder()
+            .buildingId(result.getId())
+            .buildingName(result.getName())
+            .buildingImage(result.getImage())
+            .buildingAddress(result.getAddress())
+            .floorWithSocketList(floorWithSocketList)
+            .build();
+    }
+
+    public static BuildingResponseDto.BuildingInfo toBuildingInfoResponse(
+        Building result) {
         return BuildingResponseDto.BuildingInfo.builder()
-            .buildingId(result.getId().intValue())
+            .buildingId(result.getId())
             .buildingName(result.getName())
             .buildingImage(result.getImage())
             .buildingAddress(result.getAddress())
@@ -54,13 +66,13 @@ public class BuildingConverter {
     }
 
     public static BuildingResponseDto.FloorInfo toFloorInfoListResponse(
-        FloorInfoProjection a, List<FloorWithSocket> c, List<SpaceInfoProjection> b) {
+        FloorInfoProjection a, List<SpaceInfoProjection> b) {
+
         return BuildingResponseDto.FloorInfo.builder()
             .buildingName(a.getBuildingName())
             .floors(a.getFloors())
             .currentFloor(a.getCurrentFloor())
             .floorImage(a.getFloorImage())
-            .floorWithSocketList(c)
             .spaceInfoList(b).build();
 
     }

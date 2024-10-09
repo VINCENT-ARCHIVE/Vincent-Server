@@ -8,6 +8,6 @@ public interface CustomFloorRepository {
 
     FloorInfoProjection findFloorInfoByBuildingIdAndLevel(Long buildingId, int level);
 
-    List<FloorWithSocket> findFloorWithSocketByBuildingId(Long buildingId);
+    List<FloorWithSocket>  findFloorWithSocketListByBuildingId(Long buildingId);
 
 }

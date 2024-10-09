@@ -30,8 +30,8 @@ public class FloorDataService {
         return floorRepository.findFloorInfoByBuildingIdAndLevel(buildingId, level);
     }
 
-    public List<FloorWithSocket> findFloorWithSocketByBuildingId(Long buildingId) {
-        return floorRepository.findFloorWithSocketByBuildingId(buildingId);
+    public List<FloorWithSocket> findFloorWithSocketListByBuildingId(Long buildingId) {
+        return floorRepository.findFloorWithSocketListByBuildingId(buildingId);
     }
 
     public Floor findByBuildingAndLevel(Building building, Integer level) {
