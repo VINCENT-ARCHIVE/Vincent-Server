@@ -1,5 +1,7 @@
 package com.vincent.domain.socket.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,10 +29,15 @@ public class SocketResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonPropertyOrder({"socketId", "xCoordinate", "yCoordinate"})
     public static class SocketLocation {
 
         Long socketId;
+
+        @JsonProperty("xcoordinate")
         Double xCoordinate;
+
+        @JsonProperty("ycoordinate")
         Double yCoordinate;
 
     }
