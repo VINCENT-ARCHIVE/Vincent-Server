@@ -114,6 +114,7 @@ public class BuildingResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonPropertyOrder({"spaceName", "socketExistence", "xCoordinate", "yCoordinate"})
     public static class SpaceInfoProjection {
 
 
