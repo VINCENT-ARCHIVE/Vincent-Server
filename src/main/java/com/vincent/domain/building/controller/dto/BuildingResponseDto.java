@@ -1,5 +1,6 @@
 package com.vincent.domain.building.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,9 +116,17 @@ public class BuildingResponseDto {
     @AllArgsConstructor
     public static class SpaceInfoProjection {
 
+
+        @JsonProperty("spaceName")
         private String spaceName;
+
+        @JsonProperty("xcoordinate")
         private Double xCoordinate;
+
+        @JsonProperty("ycoordinate")
         private Double yCoordinate;
+
+        @JsonProperty("socketExistence")
         private Boolean socketExistence;
 
     }
