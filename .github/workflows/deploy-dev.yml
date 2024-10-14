@@ -1,9 +1,8 @@
-name: Vincent CI/CD
+name: Vincent Develop CI/CD
 on:
   push:
     branches:
       - main
-      - release
 
 jobs:
   build:
@@ -49,30 +48,20 @@ jobs:
             REDIS_PORT=${{ secrets.REDIS_PORT }}
           tags: ${{ secrets.DOCKER_USERNAME }}/vincent:latest
 
-      - name: Build and push Docker image (release branch)
-        if: github.ref == 'refs/heads/release'
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          build-args: |
-            DB_URL=${{ secrets.DB_URL_RELEASE }}
-            DB_USERNAME=${{ secrets.DB_USERNAME_RELEASE }}
-            DB_PASS=${{ secrets.DB_PASS_RELEASE }}
-            JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET_RELEASE }}
-            BUCKET_NAME=${{ secrets.BUCKET_NAME_RELEASE }}
-            BUCKET_ACCESS_KEY=${{ secrets.BUCKET_ACCESS_KEY_RELEASE }}
-            BUCKET_SECRET_KEY=${{ secrets.BUCKET_SECRET_KEY_RELEASE }}
-            REDIS_HOST=${{ secrets.REDIS_HOST_RELEASE }}
-            REDIS_PORT=${{ secrets.REDIS_PORT_RELEASE }}
-          tags: ${{ secrets.DOCKER_USERNAME }}/vincent:latest
-
   deploy-main:
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: Copy Docker Compose file to EC2 (Main Server)
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: './docker-compose.yml'
+          target: '~/project/docker-compose.yml'
+
       - name: Docker Compose on EC2 (Main Server)
         uses: appleboy/ssh-action@master
         with:
@@ -81,24 +70,6 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd ~/project
-            ls -l
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/vincent:latest
-            sudo docker-compose up -d --no-deps --build springboot
-            sudo docker image prune -f
-
-  deploy-release:
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/release'
-    steps:
-      - name: Docker Compose on EC2 (Release Server)
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST_RELEASE }}
-          username: ubuntu
-          key: ${{ secrets.SERVER_SSH_KEY_RELEASE }}
-          script: |
-            cd ~/release_project
             ls -l
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/vincent:latest
             sudo docker-compose up -d --no-deps --build springboot
