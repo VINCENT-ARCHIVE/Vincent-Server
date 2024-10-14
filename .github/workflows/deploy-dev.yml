@@ -59,7 +59,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: './docker-compose.yml'
+          source: './docker-compose.dev.yml'
           target: '~/project/docker-compose.yml'
 
       - name: Docker Compose on EC2 (Main Server)
