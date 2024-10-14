@@ -53,6 +53,15 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: Copy Docker Compose file to EC2 (Main Server)
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: './docker-compose.yml'
+          target: '~/project/docker-compose.yml'
+
       - name: Docker Compose on EC2 (Main Server)
         uses: appleboy/ssh-action@master
         with:
