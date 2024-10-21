@@ -1,5 +1,6 @@
 package com.vincent.config.security.provider;
 
+import com.vincent.domain.member.entity.enums.SocialType;
 import com.vincent.exception.handler.JwtExpiredHandler;
 import com.vincent.exception.handler.JwtInvalidHandler;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -62,6 +63,15 @@ public class JwtProvider implements InitializingBean {
 
     public String createAccessToken(Long memberId, String email) {
         return Jwts.builder().claim("memberId", memberId).claim("email", email)
+            .claim("role", "user")
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + expireAccessMs))
+            .signWith(secretKey)
+            .compact();
+    }
+
+    public String createAccessToken(Long memberId, String email, SocialType socialType) {
+        return Jwts.builder().claim("memberId", memberId).claim("email", email).claim("socialType", socialType)
             .claim("role", "user")
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(new Date(System.currentTimeMillis() + expireAccessMs))
