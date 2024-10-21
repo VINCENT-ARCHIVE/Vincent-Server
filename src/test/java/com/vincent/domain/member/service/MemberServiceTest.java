@@ -2,6 +2,7 @@ package com.vincent.domain.member.service;
 
 import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
+import com.vincent.domain.member.entity.enums.SocialType;
 import com.vincent.domain.member.service.MemberService.LoginResult;
 import com.vincent.domain.member.service.MemberService.ReissueResult;
 import com.vincent.domain.member.service.data.MemberDataService;
@@ -39,6 +40,7 @@ class MemberServiceTest {
         Member member = Member.builder()
             .id(1L)
             .email("test@gmail.com")
+            .socialType(SocialType.KAKAO)
             .build();
         String email = "test@gmail.com";
         String accessToken = "access";
@@ -48,14 +50,14 @@ class MemberServiceTest {
             .build();
 
         //when
-        when(memberDataService.findByEmail(email)).thenReturn(Optional.of(member));
-        when(jwtProvider.createAccessToken(member.getId(), member.getEmail())).thenReturn(accessToken);
+        when(memberDataService.findByEmailAndSocialType(email, SocialType.KAKAO)).thenReturn(Optional.of(member));
+        when(jwtProvider.createAccessToken(member.getId(), member.getEmail(), member.getSocialType())).thenReturn(accessToken);
         when(redisService.generateRefreshToken(member)).thenReturn(refreshToken);
-        LoginResult result = memberService.login(email);
+        LoginResult result = memberService.login(email, SocialType.KAKAO);
 
         //then
-        verify(memberDataService, times(1)).findByEmail(email);
-        verify(jwtProvider, times(1)).createAccessToken(1L, "test@gmail.com");
+        verify(memberDataService, times(1)).findByEmailAndSocialType(email, SocialType.KAKAO);
+        verify(jwtProvider, times(1)).createAccessToken(1L, "test@gmail.com", SocialType.KAKAO);
         verify(redisService, times(1)).generateRefreshToken(member);
         Assertions.assertEquals(result.getAccessToken(), accessToken);
         Assertions.assertEquals(result.getRefreshToken(), refreshToken.getRefreshToken());
@@ -68,6 +70,7 @@ class MemberServiceTest {
         Member member = Member.builder()
             .id(1L)
             .email("test@gmail.com")
+            .socialType(SocialType.KAKAO)
             .build();
         String email = "test@gmail.com";
         String accessToken = "access";
@@ -77,16 +80,16 @@ class MemberServiceTest {
             .build();
 
         //when
-        when(memberDataService.findByEmail(email)).thenReturn(Optional.empty());
+        when(memberDataService.findByEmailAndSocialType(email, SocialType.KAKAO)).thenReturn(Optional.empty());
         when(memberDataService.save(any(Member.class))).thenReturn(member);
-        when(jwtProvider.createAccessToken(member.getId(), member.getEmail())).thenReturn(accessToken);
+        when(jwtProvider.createAccessToken(member.getId(), member.getEmail(), member.getSocialType())).thenReturn(accessToken);
         when(redisService.generateRefreshToken(member)).thenReturn(refreshToken);
-        LoginResult result = memberService.login(email);
+        LoginResult result = memberService.login(email, SocialType.KAKAO);
 
         //then
-        verify(memberDataService, times(1)).findByEmail(email);
+        verify(memberDataService, times(1)).findByEmailAndSocialType(email, SocialType.KAKAO);
         verify(memberDataService, times(1)).save(any(Member.class));
-        verify(jwtProvider, times(1)).createAccessToken(1L, "test@gmail.com");
+        verify(jwtProvider, times(1)).createAccessToken(1L, "test@gmail.com", SocialType.KAKAO);
         verify(redisService, times(1)).generateRefreshToken(member);
         Assertions.assertEquals(result.getAccessToken(), accessToken);
         Assertions.assertEquals(result.getRefreshToken(), refreshToken.getRefreshToken());

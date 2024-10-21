@@ -2,6 +2,7 @@ package com.vincent.domain.member.service;
 
 import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
+import com.vincent.domain.member.entity.enums.SocialType;
 import com.vincent.domain.member.service.data.MemberDataService;
 import com.vincent.config.redis.entity.RefreshToken;
 import com.vincent.config.redis.service.RedisService;
@@ -25,16 +26,17 @@ public class MemberService {
      * 사용자 로그인 AccessToken, refreshToken 반환
      */
     @Transactional
-    public LoginResult login(String email) {
-        Optional<Member> optionalMember = memberDataService.findByEmail(email);
+    public LoginResult login(String email, SocialType socialType) {
+        Optional<Member> optionalMember = memberDataService.findByEmailAndSocialType(email, socialType);
         Member member = optionalMember.orElseGet(() -> {
             Member newMember = Member.builder()
                     .email(email)
+                    .socialType(socialType)
                     .build();
             return memberDataService.save(newMember);
         });
 
-        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getEmail());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getEmail(), member.getSocialType());
         RefreshToken refreshToken = redisService.generateRefreshToken(member);
 
         return new LoginResult(accessToken, refreshToken.getRefreshToken());

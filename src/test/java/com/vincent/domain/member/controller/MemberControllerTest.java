@@ -3,6 +3,7 @@ package com.vincent.domain.member.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.member.controller.dto.MemberRequestDto;
+import com.vincent.domain.member.entity.enums.SocialType;
 import com.vincent.domain.member.service.MemberService;
 import com.vincent.domain.member.service.MemberService.ReissueResult;
 import com.vincent.exception.handler.ErrorHandler;
@@ -41,15 +42,38 @@ class MemberControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Test
-    @DisplayName("로그인")
-    public void 로그인() throws Exception {
+    @DisplayName("로그인_카카오")
+    public void 로그인_카카오() throws Exception {
         //given
-        MemberRequestDto.Login request = new MemberRequestDto.Login("test@gmail.com");
+        MemberRequestDto.Login request = new MemberRequestDto.Login("test@gmail.com", SocialType.KAKAO);
         MemberService.LoginResult result = new MemberService.LoginResult("accessToken",
             "refreshToken");
 
         //when
-        when(memberService.login(request.getEmail())).thenReturn(result);
+        when(memberService.login(request.getEmail(), request.getSocialType())).thenReturn(result);
+        ResultActions resultActions = mockMvc.perform(post("/v1/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$.isSuccess").value(true))
+            .andExpect(jsonPath("$.code").value("COMMON200"))
+            .andExpect(jsonPath("message").value("성공입니다"))
+            .andExpect(jsonPath("$.result.accessToken").value("accessToken"))
+            .andExpect(jsonPath("$.result.refreshToken").value("refreshToken"));
+    }
+
+    @Test
+    @DisplayName("로그인_애플")
+    public void 로그인_애플() throws Exception {
+        //given
+        MemberRequestDto.Login request = new MemberRequestDto.Login("test@gmail.com", SocialType.APPLE);
+        MemberService.LoginResult result = new MemberService.LoginResult("accessToken",
+            "refreshToken");
+
+        //when
+        when(memberService.login(request.getEmail(), request.getSocialType())).thenReturn(result);
         ResultActions resultActions = mockMvc.perform(post("/v1/login")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)));

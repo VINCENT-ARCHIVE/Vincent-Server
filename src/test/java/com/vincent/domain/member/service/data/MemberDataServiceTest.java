@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.member.entity.Member;
+import com.vincent.domain.member.entity.enums.SocialType;
 import com.vincent.domain.member.repository.MemberRepository;
 import com.vincent.exception.handler.ErrorHandler;
 import java.util.Optional;
@@ -39,6 +40,26 @@ class MemberDataServiceTest {
 
         //then
         Optional<Member> result = memberDataService.findByEmail(email);
+        Assertions.assertEquals(result.get(), member);
+    }
+
+    @Test
+    void 이메일과소셜로사용자찾기() {
+        //given
+        String email = "test@gmail.com";
+        SocialType socialType = SocialType.KAKAO;
+
+        Member member = Member.builder()
+            .id(1L)
+            .email("test@gmail.com")
+            .socialType(SocialType.KAKAO)
+            .build();
+
+        //when
+        when(memberRepository.findByEmailAndSocialType(email, socialType)).thenReturn(Optional.of(member));
+
+        //then
+        Optional<Member> result = memberDataService.findByEmailAndSocialType(email, socialType);
         Assertions.assertEquals(result.get(), member);
     }
 
