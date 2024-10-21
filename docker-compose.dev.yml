@@ -8,15 +8,15 @@ services:
       - my_network
     environment:
       - TZ=Asia/Seoul
-      - REDIS_HOST=${PROD_REDIS_HOST}
-      - REDIS_PORT=${PROD_REDIS_PORT}
-      - DB_URL=${PROD_DB_URL}
-      - DB_USERNAME=${PROD_DB_USERNAME}
-      - DB_PASS=${PROD_DB_PASS}
-      - JWT_TOKEN_SECRET=${PROD_JWT_TOKEN_SECRET}
-      - BUCKET_NAME=${PROD_BUCKET_NAME}
-      - BUCKET_ACCESS_KEY=${PROD_BUCKET_ACCESS_KEY}
-      - BUCKET_SECRET_KEY=${PROD_BUCKET_SECRET_KEY}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASS=${DB_PASS}
+      - JWT_TOKEN_SECRET=${JWT_TOKEN_SECRET}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - BUCKET_ACCESS_KEY=${BUCKET_ACCESS_KEY}
+      - BUCKET_SECRET_KEY=${BUCKET_SECRET_KEY}
     expose:
       - "8080"
     ports:

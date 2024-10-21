@@ -1,6 +1,7 @@
 package com.vincent.domain.member.entity;
 
 import com.vincent.domain.member.entity.enums.Gender;
+import com.vincent.domain.member.entity.enums.SocialType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -47,6 +48,9 @@ public class Member {
     private boolean withdraw;
 
     private LocalDateTime deletedAt;
+
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType;
 
     public void delete() {
         this.withdraw = true;

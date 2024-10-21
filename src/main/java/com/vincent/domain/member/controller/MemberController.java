@@ -30,7 +30,7 @@ public class MemberController {
     @Operation(summary = "로그인 하기")
     @PostMapping("/login")
     public ApiResponse<MemberResponseDto.Login> login(@RequestBody MemberRequestDto.Login request) {
-        LoginResult result = memberService.login(request.getEmail());
+        LoginResult result = memberService.login(request.getEmail(), request.getSocialType());
         return ApiResponse.onSuccess(
                 MemberConverter.toLoginResponse(result.getAccessToken(), result.getRefreshToken()));
     }

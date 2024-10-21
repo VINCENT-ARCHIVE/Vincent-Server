@@ -2,6 +2,7 @@ package com.vincent.domain.member.service.data;
 
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.member.entity.Member;
+import com.vincent.domain.member.entity.enums.SocialType;
 import com.vincent.domain.member.repository.MemberRepository;
 import com.vincent.exception.handler.ErrorHandler;
 import java.util.Optional;
@@ -16,6 +17,10 @@ public class MemberDataService {
 
     public Optional<Member> findByEmail(String email) {
         return memberRepository.findByEmail(email);
+    }
+
+    public Optional<Member> findByEmailAndSocialType(String email, SocialType socialType) {
+        return memberRepository.findByEmailAndSocialType(email, socialType);
     }
 
     public Member findById(Long id) {

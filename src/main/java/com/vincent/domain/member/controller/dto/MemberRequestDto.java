@@ -1,5 +1,6 @@
 package com.vincent.domain.member.controller.dto;
 
+import com.vincent.domain.member.entity.enums.SocialType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,8 +11,8 @@ public class MemberRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Login {
-
         private String email;
+        private SocialType socialType;
     }
 
     @Getter
