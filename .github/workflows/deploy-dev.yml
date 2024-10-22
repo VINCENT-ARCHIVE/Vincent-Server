@@ -69,7 +69,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            echo "DB_URL=${{ secrets.DB_URL }}" >> /home/ubuntu/project/.env
+            echo "DB_URL=${{ secrets.DB_URL }}" > /home/ubuntu/project/.env
             echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> /home/ubuntu/project/.env
             echo "DB_PASS=${{ secrets.DB_PASS }}" >> /home/ubuntu/project/.env
             echo "JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }}" >> /home/ubuntu/project/.env
