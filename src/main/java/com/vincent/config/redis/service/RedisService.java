@@ -41,7 +41,7 @@ public class RedisService {
      * 리프레시 토큰 재발급
      */
     public RefreshToken regenerateRefreshToken(Member member, RefreshToken refreshToken) {
-        refreshTokenRepository.delete(refreshToken);
+        this.delete(refreshToken);
         String newRefreshToken = jwtProvider.createRefreshToken(member.getId(), member.getEmail());
         return refreshTokenRepository.save(
             RefreshToken.builder()

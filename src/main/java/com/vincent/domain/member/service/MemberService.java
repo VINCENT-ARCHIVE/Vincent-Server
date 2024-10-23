@@ -54,7 +54,7 @@ public class MemberService {
 
         Member member = memberDataService.findById(refreshToken.getMemberId());
 
-        String newAccessToken = jwtProvider.createAccessToken(member.getId(), member.getEmail());
+        String newAccessToken = jwtProvider.createAccessToken(member.getId(), member.getEmail(), member.getSocialType());
         String newRefreshToken = redisService.regenerateRefreshToken(member, refreshToken)
                 .getRefreshToken();
 
