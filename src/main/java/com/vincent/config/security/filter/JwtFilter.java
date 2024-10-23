@@ -14,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,62 +28,70 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final static String[] URI_WHITE_LIST = {
+        "/v1/login",
+        "/v1/reissue"
+    };
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-            FilterChain filterChain)
-            throws ServletException, IOException {
-        System.out.println("request.getPathInfo() = " + request.getRequestURI());
+        FilterChain filterChain)
+        throws ServletException, IOException {
         String accessToken = jwtProvider.resolveToken(request);
         if (bypassTokenValidation(accessToken, request)) {
             filterChain.doFilter(request, response);
             return;
         }
         try {
-            jwtProvider.validateToken(accessToken);
-            Long memberId = jwtProvider.getMemberId(accessToken);
-            String email = jwtProvider.getEmail(accessToken);
-            SocialType socialType = SocialType.fromString(jwtProvider.getSocialType(accessToken));
-
-            Member member = Member.builder()
-                    .id(memberId)
-                    .email(email)
-                    .socialType(socialType)
-                    .build();
-
-            PrincipalDetails principalDetails = new PrincipalDetails(member);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    principalDetails,
-                    null,
-                    principalDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            processTokenValidation(accessToken, request);
         } catch (JwtExpiredHandler e) {
-            response.setContentType("application/json");
-            ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(
-                    ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED.getCode(),
-                    ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED.getMessage(),
-                    null
-            );
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(response.getOutputStream(), baseResponseDto);
+            writeErrorResponse(response, ErrorStatus.JWT_ACCESS_TOKEN_EXPIRED);
             return;
         } catch (JwtInvalidHandler e) {
-            response.setContentType("application/json");
-            ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(
-                    ErrorStatus.JWT_UNSUPPORTED_TOKEN.getCode(),
-                    ErrorStatus.JWT_UNSUPPORTED_TOKEN.getMessage(),
-                    null
-            );
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(response.getOutputStream(), baseResponseDto);
+            writeErrorResponse(response, ErrorStatus.JWT_UNSUPPORTED_TOKEN);
             return;
         }
         filterChain.doFilter(request, response);
     }
 
     private boolean bypassTokenValidation(String accessToken, HttpServletRequest request) {
-        return accessToken == null || request.getRequestURI().equals("/v1/login")
-                || request.getRequestURI().equals("/v1/reissue");
+        boolean isWhiteListed = Arrays.stream(URI_WHITE_LIST)
+            .anyMatch(uri -> uri.equals(request.getRequestURI()));
+        return accessToken == null || isWhiteListed;
     }
 
+    private void processTokenValidation(String accessToken, HttpServletRequest request) {
+        jwtProvider.validateToken(accessToken);
+        Long memberId = jwtProvider.getMemberId(accessToken);
+        String email = jwtProvider.getEmail(accessToken);
+        SocialType socialType = SocialType.fromString(jwtProvider.getSocialType(accessToken));
+
+        Member member = Member.builder()
+            .id(memberId)
+            .email(email)
+            .socialType(socialType)
+            .build();
+
+        setAuthentication(member);
+    }
+
+    private void setAuthentication(Member member) {
+        PrincipalDetails principalDetails = new PrincipalDetails(member);
+        Authentication authentication =
+            new UsernamePasswordAuthenticationToken(
+                principalDetails,
+                null,
+                principalDetails.getAuthorities()
+            );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private void writeErrorResponse(HttpServletResponse response, ErrorStatus errorStatus)
+        throws IOException {
+        response.setContentType("application/json");
+        ApiResponse<Object> apiResponse =
+            ApiResponse.onFailure(errorStatus);
+        objectMapper.writeValue(response.getOutputStream(), apiResponse);
+    }
 }
