@@ -3,6 +3,7 @@ package com.vincent.apipayload;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.apipayload.status.SuccessStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,5 +27,9 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
         return new ApiResponse<>(false, code, message, data);
+    }
+
+    public static <T> ApiResponse<T> onFailure(ErrorStatus errorStatus) {
+        return new ApiResponse<>(false, errorStatus.getCode(), errorStatus.getMessage(), null);
     }
 }

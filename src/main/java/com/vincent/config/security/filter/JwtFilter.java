@@ -6,6 +6,7 @@ import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.security.principal.PrincipalDetails;
 import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.Member;
+import com.vincent.domain.member.entity.enums.SocialType;
 import com.vincent.exception.handler.JwtExpiredHandler;
 import com.vincent.exception.handler.JwtInvalidHandler;
 import jakarta.servlet.FilterChain;
@@ -31,9 +32,9 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain)
             throws ServletException, IOException {
-
+        System.out.println("request.getPathInfo() = " + request.getRequestURI());
         String accessToken = jwtProvider.resolveToken(request);
-        if (accessToken == null) {
+        if (bypassTokenValidation(accessToken, request)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -41,9 +42,12 @@ public class JwtFilter extends OncePerRequestFilter {
             jwtProvider.validateToken(accessToken);
             Long memberId = jwtProvider.getMemberId(accessToken);
             String email = jwtProvider.getEmail(accessToken);
+            SocialType socialType = SocialType.fromString(jwtProvider.getSocialType(accessToken));
+
             Member member = Member.builder()
                     .id(memberId)
                     .email(email)
+                    .socialType(socialType)
                     .build();
 
             PrincipalDetails principalDetails = new PrincipalDetails(member);
@@ -75,4 +79,10 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
+    private boolean bypassTokenValidation(String accessToken, HttpServletRequest request) {
+        return accessToken == null || request.getRequestURI().equals("/v1/login")
+                || request.getRequestURI().equals("/v1/reissue");
+    }
+
 }
