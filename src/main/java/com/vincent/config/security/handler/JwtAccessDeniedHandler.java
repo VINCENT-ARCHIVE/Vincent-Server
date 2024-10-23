@@ -19,12 +19,9 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        log.error("JwtAccessDeniedHandler 실행");
+        log.error("JwtAccessDeniedHandler 실행", accessDeniedException.getMessage());
         response.setContentType("application/json");
-        ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(
-                ErrorStatus._UNAUTHORIZED.getCode(),
-                ErrorStatus._UNAUTHORIZED.getMessage(),
-                null);
+        ApiResponse<Object> baseResponseDto = ApiResponse.onFailure(ErrorStatus._UNAUTHORIZED);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(response.getOutputStream(), baseResponseDto);
     }

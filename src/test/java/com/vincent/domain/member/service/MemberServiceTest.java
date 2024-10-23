@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -50,8 +51,10 @@ class MemberServiceTest {
             .build();
 
         //when
-        when(memberDataService.findByEmailAndSocialType(email, SocialType.KAKAO)).thenReturn(Optional.of(member));
-        when(jwtProvider.createAccessToken(member.getId(), member.getEmail(), member.getSocialType())).thenReturn(accessToken);
+        when(memberDataService.findByEmailAndSocialType(email, SocialType.KAKAO)).thenReturn(
+            Optional.of(member));
+        when(jwtProvider.createAccessToken(member.getId(), member.getEmail(),
+            member.getSocialType())).thenReturn(accessToken);
         when(redisService.generateRefreshToken(member)).thenReturn(refreshToken);
         LoginResult result = memberService.login(email, SocialType.KAKAO);
 
@@ -65,7 +68,7 @@ class MemberServiceTest {
     }
 
     @Test
-    public void 로그인성공_회원가입(){
+    public void 로그인성공_회원가입() {
         //given
         Member member = Member.builder()
             .id(1L)
@@ -80,9 +83,11 @@ class MemberServiceTest {
             .build();
 
         //when
-        when(memberDataService.findByEmailAndSocialType(email, SocialType.KAKAO)).thenReturn(Optional.empty());
+        when(memberDataService.findByEmailAndSocialType(email, SocialType.KAKAO)).thenReturn(
+            Optional.empty());
         when(memberDataService.save(any(Member.class))).thenReturn(member);
-        when(jwtProvider.createAccessToken(member.getId(), member.getEmail(), member.getSocialType())).thenReturn(accessToken);
+        when(jwtProvider.createAccessToken(member.getId(), member.getEmail(),
+            member.getSocialType())).thenReturn(accessToken);
         when(redisService.generateRefreshToken(member)).thenReturn(refreshToken);
         LoginResult result = memberService.login(email, SocialType.KAKAO);
 
@@ -103,6 +108,7 @@ class MemberServiceTest {
         Member member = Member.builder()
             .id(1L)
             .email("test@gmail.com")
+            .socialType(SocialType.KAKAO)
             .build();
         RefreshToken refreshToken = RefreshToken.builder()
             .memberId(member.getId())
@@ -113,19 +119,20 @@ class MemberServiceTest {
             .refreshToken("refresh2")
             .build();
 
-
         //when
         doNothing().when(jwtProvider).validateToken(token);
         when(jwtProvider.getMemberId(token)).thenReturn(1L);
         when(redisService.findByMemberId(1L)).thenReturn(refreshToken);
         when(memberDataService.findById(1L)).thenReturn(member);
-        when(jwtProvider.createAccessToken(member.getId(), member.getEmail())).thenReturn("token2");
-        when(redisService.regenerateRefreshToken(member,refreshToken)).thenReturn(refreshToken2);
+        when(jwtProvider.createAccessToken(member.getId(), member.getEmail(),
+            member.getSocialType())).thenReturn("token2");
+        when(redisService.regenerateRefreshToken(member, refreshToken)).thenReturn(refreshToken2);
         ReissueResult result = memberService.reissue(token);
 
         //then
-        verify(jwtProvider,times(1)).getMemberId(token);
-        verify(jwtProvider, times(1)).createAccessToken(member.getId(), member.getEmail());
+        verify(jwtProvider, times(1)).getMemberId(token);
+        verify(jwtProvider, times(1)).createAccessToken(member.getId(), member.getEmail(),
+            member.getSocialType());
         verify(redisService, times(1)).regenerateRefreshToken(member, refreshToken);
         Assertions.assertEquals(result.getAccessToken(), newToken);
         Assertions.assertEquals(result.getRefreshToken(), refreshToken2.getRefreshToken());
@@ -148,7 +155,7 @@ class MemberServiceTest {
         //then
         verify(jwtProvider, times(1)).getMemberId(refreshToken);
         verify(redisService, times(1)).exists(memberId);
-        verify(redisService,times(1)).delete(memberId);
+        verify(redisService, times(1)).delete(memberId);
         verify(redisService, times(1)).blacklist(accessToken);
     }
 
@@ -172,7 +179,7 @@ class MemberServiceTest {
     }
 
     @Test
-    public void 회원탈퇴(){
+    public void 회원탈퇴() {
         //given
         Long memberId = 1L;
         Member member = Member.builder()
@@ -189,7 +196,6 @@ class MemberServiceTest {
         Assertions.assertEquals(member.isWithdraw(), true);
 
     }
-
 
 //
 //    @Test

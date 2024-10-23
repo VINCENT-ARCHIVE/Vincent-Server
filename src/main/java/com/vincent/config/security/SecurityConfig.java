@@ -75,7 +75,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated())
             .addFilterBefore(new JwtFilter(jwtProvider),
                 UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(new BlackListFilter(redisService, jwtProvider),
+            .addFilterAt(new BlackListFilter(redisService, jwtProvider),
                 UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

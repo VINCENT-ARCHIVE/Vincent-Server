@@ -24,7 +24,7 @@ public class JwtProvider implements InitializingBean {
     @Value("${jwt.token.secret}")
     private String secret;
     private static SecretKey secretKey;
-    private static final Long expireAccessMs = 1000L * 60 * 60; //30분
+    private static final Long expireAccessMs = 1000L * 60 * 15; //15분
 
     private static final Long expireRefreshMs = 1000L * 60 * 60 * 24 * 7;  //7일
 
@@ -48,6 +48,11 @@ public class JwtProvider implements InitializingBean {
     public String getRole(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
             .get("role", String.class);
+    }
+
+    public String getSocialType(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
+            .get("socialType", String.class);
     }
 
     public Boolean isExpired(String token) {
