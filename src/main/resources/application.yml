@@ -33,3 +33,5 @@ management:
           - metrics
           - shutdown
           - prometheus
+server:
+  forward-headers-strategy: native

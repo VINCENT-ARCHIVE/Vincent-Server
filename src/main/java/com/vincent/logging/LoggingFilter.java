@@ -1,6 +1,8 @@
 package com.vincent.logging;
 
 import com.vincent.config.security.principal.PrincipalDetails;
+import com.vincent.logs.entity.ApiLogs;
+import com.vincent.logs.repository.ApiLogsRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -18,6 +21,9 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Slf4j
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private ApiLogsRepository apiLogsRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -31,7 +37,7 @@ public class LoggingFilter extends OncePerRequestFilter {
         Long memberId = extractMemberId();
         String method = request.getMethod();               // HTTP 메서드 (GET, POST 등)
         String endpoint = request.getRequestURI();         // 요청한 URI
-        String ip = request.getRemoteAddr();               // 요청을 보낸 IP 주소
+        String ip = getClientIp(request);       // 요청을 보낸 IP 주소
 
         if (memberId != null) {
             MDC.put("memberId", memberId.toString());
@@ -54,7 +60,6 @@ public class LoggingFilter extends OncePerRequestFilter {
         if (authentication != null) {
             Object principal = authentication.getPrincipal();
 
-            // Principal이 PrincipalDetails 타입인지 확인
             if (principal instanceof PrincipalDetails) {
                 PrincipalDetails principalDetails = (PrincipalDetails) principal;
                 return principalDetails.getMemberId();
@@ -73,10 +78,29 @@ public class LoggingFilter extends OncePerRequestFilter {
 
         if (statusCode >= 200 && statusCode < 300) {
             log.info(logMessage);
+            saveApiLogs("INFO", logMessage);
         } else if (statusCode >= 400 && statusCode < 500) {
             log.warn(logMessage);
+            saveApiLogs("WARN", logMessage);
         } else if (statusCode >= 500) {
             log.error(logMessage);
+            saveApiLogs("ERROR", logMessage);
         }
+    }
+
+    private void saveApiLogs(String level, String message) {
+        System.out.println(message);
+        apiLogsRepository.save(ApiLogs.builder()
+            .level(level)
+            .message(message)
+            .build());
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ipAddress = request.getHeader("X-Forwarded-For");
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        }
+        return ipAddress.split(",")[0].trim();  // 복수의 IP가 있을 경우 첫 번째 IP 추출
     }
 }
