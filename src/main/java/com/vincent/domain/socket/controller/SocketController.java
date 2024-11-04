@@ -53,4 +53,14 @@ public class SocketController {
 
     }
 
+    @Operation(summary = "콘센트 존재 장소 조회하기", description = "콘센트Id로 콘센트가 존재하는 건물의 Id와 층을 조회함")
+    @GetMapping("/socket/place")
+    public ApiResponse<SocketResponseDto.SocketPlace> getSocketPlace(
+        @RequestParam("socketId") Long socketId) {
+        return ApiResponse.onSuccess((
+            SocketConverter.toSocketPlace(socketService.getSocketPlace(socketId))));
+
+
+    }
+
 }

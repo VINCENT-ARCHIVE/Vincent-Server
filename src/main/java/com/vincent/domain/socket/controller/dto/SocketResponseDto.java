@@ -52,4 +52,14 @@ public class SocketResponseDto {
 
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SocketPlace {
+
+        Long buildingId;
+        Integer level;
+    }
+
 }
