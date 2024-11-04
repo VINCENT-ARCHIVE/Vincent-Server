@@ -33,7 +33,7 @@
     <maxFlushTime>1000</maxFlushTime>
   </appender>
 
-  <!-- Root Logger -->
+  <!-- Root Logger with DB, STDOUT, and QUERY_FILE_ASYNC appenders -->
   <root level="info">
     <appender-ref ref="STDOUT" />
     <appender-ref ref="QUERY_FILE_ASYNC" />
@@ -44,17 +44,5 @@
     <appender-ref ref="FILE" />
   </logger>
 
-  <!-- USER_REQUEST_RESPONSE_FILE Appender for user-requests.log -->
-  <appender name="USER_REQUEST_RESPONSE_FILE" class="ch.qos.logback.core.FileAppender">
-    <file>${LOGS_ABSOLUTE_PATH}/user-requests.log</file>
-    <encoder>
-      <pattern>${FILE_LOG_PATTERN}</pattern>
-    </encoder>
-  </appender>
-
-  <!-- Logger for com.vincent.logging -->
-  <logger name="com.vincent.logging" level="info" additivity="false">
-    <appender-ref ref="USER_REQUEST_RESPONSE_FILE" />
-  </logger>
-
+  <!-- 기존 USER_REQUEST_RESPONSE_FILE Appender와 com.vincent.logging Logger 제거 -->
 </configuration>

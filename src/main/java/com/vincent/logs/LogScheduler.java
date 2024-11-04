@@ -11,17 +11,17 @@ import org.springframework.stereotype.Service;
 public class LogScheduler {
     private final LogService logService;
 
-    @Scheduled(cron = "0 3 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void triggerLogRolling() {
         logService.rollLogs();
     }
 
-    @Scheduled(cron = "0 4 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void calculateDailyActiveUsers() {
         logService.calculateDailyUsers();
     }
 
-    @Scheduled(cron = "0 4 0 * * *")
+    @Scheduled(cron = "0 1 0 * * *")
     public void saveDailyLogs() {
         logService.uploadLogs();
     }

@@ -1,5 +1,7 @@
 package com.vincent.domain.socket.converter;
 
+import com.vincent.domain.building.entity.Floor;
+import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.socket.controller.dto.SocketResponseDto;
 import com.vincent.domain.socket.entity.Socket;
 import java.util.List;
@@ -31,6 +33,13 @@ public class SocketConverter {
             .map(SocketConverter::toSocketLocation).collect(Collectors.toList());
         return SocketResponseDto.SocketLocationList.builder()
             .locationList(socketLocationList)
+            .build();
+    }
+
+    public static SocketResponseDto.SocketPlace toSocketPlace(SocketResponseDto.SocketPlace socketPlace) {
+        return SocketResponseDto.SocketPlace.builder()
+            .buildingId(socketPlace.getBuildingId())
+            .level(socketPlace.getLevel())
             .build();
     }
 
