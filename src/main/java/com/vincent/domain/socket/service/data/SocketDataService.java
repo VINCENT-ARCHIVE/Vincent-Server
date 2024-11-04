@@ -30,7 +30,9 @@ public class SocketDataService {
     }
 
     public SocketResponseDto.SocketPlace findSocketPlaceBySocketId(Long socketId) {
-        return socketRepository.findSocketPlaceBySocketId(socketId);
+        return socketRepository.findById(socketId)
+            .map(socket -> socketRepository.findSocketPlaceBySocketId(socketId))
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
     }
 
 }
