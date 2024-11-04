@@ -9,6 +9,8 @@ import com.vincent.domain.building.entity.Space;
 import com.vincent.domain.building.service.data.BuildingDataService;
 import com.vincent.domain.building.service.data.FloorDataService;
 import com.vincent.domain.building.service.data.SpaceDataService;
+import com.vincent.domain.socket.controller.dto.SocketResponseDto;
+import com.vincent.domain.socket.controller.dto.SocketResponseDto.SocketPlace;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.service.data.SocketDataService;
 import java.util.Collections;
@@ -85,5 +87,24 @@ public class SocketServiceTest {
         verify(floorDataService).findByBuildingAndLevel(building, level);
         verify(spaceDataService).findAllByFloor(floor);
         verify(socketDataService).findAllBySpace(space);
+    }
+
+    @Test
+    void 소켓장소조회_성공() {
+
+        //given
+        Long socketId = 1L;
+        SocketResponseDto.SocketPlace socketPlace;
+        socketPlace = SocketPlace.builder().buildingId(1L).level(1).build();
+
+        //when
+        when(socketDataService.findSocketPlaceBySocketId(socketId)).thenReturn(socketPlace);
+
+        //then
+        SocketPlace result = socketService.getSocketPlace(socketId);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(socketPlace, result);
+        verify(socketDataService).findSocketPlaceBySocketId(socketId);
     }
 }
