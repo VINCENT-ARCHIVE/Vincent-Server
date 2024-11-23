@@ -32,6 +32,11 @@ public class LoggingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        String uri = request.getRequestURI();
+        if (isSwaggerRequest(uri)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         MDC.put("traceId", UUID.randomUUID().toString());
         long startTime = System.currentTimeMillis();
         Long memberId = extractMemberId();
@@ -89,11 +94,25 @@ public class LoggingFilter extends OncePerRequestFilter {
     }
 
     private void saveApiLogs(String level, String message) {
-        System.out.println(message);
-        apiLogsRepository.save(ApiLogs.builder()
+        String[] parts = message.split(", ");
+        String traceId = extractValue(parts[0], "traceId");
+        String memberId = extractValue(parts[1], "memberId");
+        String method = extractValue(parts[2], "method");
+        String endpoint = extractValue(parts[3], "endpoint");
+        String statusCode = extractValue(parts[4], "statusCode");
+        String requestTime = extractValue(parts[5], "requestTime");
+        String ip = extractValue(parts[6], "ip");
+        ApiLogs apiLog = ApiLogs.builder()
             .level(level)
-            .message(message)
-            .build());
+            .traceId(traceId)
+            .memberId("null".equals(memberId) ? null : memberId)
+            .method(method)
+            .endpoint(endpoint)
+            .statusCode(statusCode)
+            .requestTime(requestTime)
+            .ip(ip)
+            .build();
+        apiLogsRepository.save(apiLog);
     }
 
     private String getClientIp(HttpServletRequest request) {
@@ -102,5 +121,13 @@ public class LoggingFilter extends OncePerRequestFilter {
             ipAddress = request.getRemoteAddr();
         }
         return ipAddress.split(",")[0].trim();  // 복수의 IP가 있을 경우 첫 번째 IP 추출
+    }
+
+    private boolean isSwaggerRequest(String uri) {
+        return uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs");
+    }
+
+    private String extractValue(String part, String key) {
+        return part.split("=")[1].trim();
     }
 }

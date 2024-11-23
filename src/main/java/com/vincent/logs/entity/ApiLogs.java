@@ -28,7 +28,19 @@ public class ApiLogs {
 
     private String level;
 
-    private String message;
+    private String traceId;
+
+    private String memberId;
+
+    private String method;
+
+    private String endpoint;
+
+    private String statusCode;
+
+    private String requestTime;
+
+    private String ip;
 
     @CreatedDate
     @Column(updatable = false)
