@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
@@ -53,18 +54,11 @@ public class LogService {
         List<ApiLogs> apiLogs = apiLogsRepository.findByCreatedAtBetween(
             startOfYesterday, endOfYesterday);
 
-        Pattern pattern = Pattern.compile("memberId=(\\d+)");
-        Set<Long> uniqueMemberIds = new HashSet<>();
+        Set<String> uniqueMemberIds = apiLogs.stream()
+            .map(ApiLogs::getMemberId)   // memberId 필드만 추출
+            .filter(memberId -> memberId != null && !memberId.isEmpty()) // null 또는 빈 값 필터링
+            .collect(Collectors.toSet()); // 중복 제거
 
-        // 각 로그에서 memberId 추출 및 집합에 추가
-        apiLogs.stream().forEach(log -> {
-            String message = log.getMessage();
-            Matcher matcher = pattern.matcher(message);
-            if (matcher.find()) {
-                Long memberId = Long.parseLong(matcher.group(1));
-                uniqueMemberIds.add(memberId);
-            }
-        });
 
         DailyActiveUsers dailyActiveUsers = DailyActiveUsers.builder()
             .date(LocalDate.now().minusDays(1))
