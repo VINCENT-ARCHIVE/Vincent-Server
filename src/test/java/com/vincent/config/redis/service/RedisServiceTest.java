@@ -28,6 +28,7 @@ import org.springframework.data.redis.core.ValueOperations;
 
 @ExtendWith(MockitoExtension.class)
 class RedisServiceTest {
+
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
 
@@ -163,7 +164,8 @@ class RedisServiceTest {
         redisService.blacklist(accessToken);
 
         // then
-        verify(valueOperations, times(1)).set(eq(accessToken), eq("logout"), eq(expireAccessMs), eq(TimeUnit.MILLISECONDS));
+        verify(valueOperations, times(1)).set(eq(accessToken), eq("logout"), eq(expireAccessMs),
+            eq(TimeUnit.MILLISECONDS));
     }
 
     @Test

@@ -1,5 +1,6 @@
-package com.vincent.config.security.provider;
+package com.vincent.domain.member;
 
+import com.vincent.config.security.provider.JwtProvider;
 import com.vincent.domain.member.entity.enums.SocialType;
 import com.vincent.exception.handler.JwtExpiredHandler;
 import com.vincent.exception.handler.JwtInvalidHandler;
@@ -10,69 +11,36 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
+public class TestJwtProvider extends JwtProvider {
 
-@Component
-public class JwtProvider implements InitializingBean {
+    private static final String TEST_SECRET = "bG1HZ2VuRElBT2hUS2pzSkFDdnY5elNFU0JKQUVVNjc=";
+    private static final SecretKey secretKey = Keys.hmacShaKeyFor(
+        Decoders.BASE64.decode(TEST_SECRET));
+    private static final Long expireAccessMs = 1000L * 60 * 15; // 15분
+    private static final Long expireRefreshMs = 1000L * 60 * 60 * 24 * 7; // 7일
 
-    @Value("${jwt.token.secret}")
-    private String secret;
-    private static SecretKey secretKey;
-    private static final Long expireAccessMs = 1000L * 60 * 15; //15분
-
-    private static final Long expireRefreshMs = 1000L * 60 * 60 * 24 * 7;  //7일
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        secretKey = Keys.hmacShaKeyFor(keyBytes);
+    public TestJwtProvider() {
+        super();
     }
 
+    @Override
     public Long getMemberId(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
             .get("memberId", Long.class);
     }
 
-    public String getEmail(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
-            .get("email", String.class);
-    }
-
-    public String getRole(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
-            .get("role", String.class);
-    }
-
-    public String getSocialType(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
-            .get("socialType", String.class);
-    }
-
-    public Boolean isExpired(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
-            .getExpiration().before(new Date());
-    }
-
+    @Override
     public Long getExpireAccessMs(String accessToken) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken)
             .getPayload()
             .getExpiration().getTime();
     }
 
-    public String createAccessToken(Long memberId, String email) {
-        return Jwts.builder().claim("memberId", memberId).claim("email", email)
-            .claim("role", "user")
-            .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expireAccessMs))
-            .signWith(secretKey)
-            .compact();
-    }
-
+    @Override
     public String createAccessToken(Long memberId, String email, SocialType socialType) {
         return Jwts.builder().claim("memberId", memberId).claim("email", email)
             .claim("socialType", socialType)
@@ -83,13 +51,7 @@ public class JwtProvider implements InitializingBean {
             .compact();
     }
 
-    public String createAccessToken(String email) {
-        return Jwts.builder().claim("email", email).issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expireAccessMs))
-            .signWith(secretKey)
-            .compact();
-    }
-
+    @Override
     public String createRefreshToken(Long memberId, String email) {
         return Jwts.builder().claim("memberId", memberId).claim("email", email)
             .issuedAt(new Date(System.currentTimeMillis()))
@@ -98,13 +60,7 @@ public class JwtProvider implements InitializingBean {
             .compact();
     }
 
-    public String createRefreshToken(String email) {
-        return Jwts.builder().claim("email", email).issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expireRefreshMs))
-            .signWith(secretKey)
-            .compact();
-    }
-
+    @Override
     public void validateToken(String token) {
         try {
             Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
@@ -117,6 +73,7 @@ public class JwtProvider implements InitializingBean {
         }
     }
 
+    @Override
     public String resolveToken(HttpServletRequest httpServletRequest) {
         String bearerToken = httpServletRequest.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -124,5 +81,4 @@ public class JwtProvider implements InitializingBean {
         }
         return null;
     }
-
 }
