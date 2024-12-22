@@ -31,15 +31,7 @@ public class SocketService {
 
     public List<Socket> getSocketList(Long buildingId, int level) {
 
-        Building building = buildingDataService.findById(buildingId);
-        Floor floor = floorDataService.findByBuildingAndLevel(building, level);
-        List<Space> spaces = spaceDataService.findAllByFloor(floor);
-
-        return spaces.stream()
-            .map(space -> socketDataService.findAllBySpace(space))
-            .flatMap(sockets -> sockets.stream())
-            .collect(Collectors.toList());
-
+        return socketDataService.findSocketListByBuildingIdAndLevel(buildingId, level);
     }
 
     public SocketResponseDto.SocketPlace getSocketPlace(Long socketId) {

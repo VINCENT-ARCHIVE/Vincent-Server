@@ -3,6 +3,7 @@ package com.vincent.domain.socket.repository.customsocket;
 import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
 import com.vincent.domain.building.repository.customspace.CustomSpaceRepository;
 import com.vincent.domain.socket.controller.dto.SocketResponseDto.SocketPlace;
+import com.vincent.domain.socket.entity.Socket;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
@@ -31,4 +32,19 @@ public class CustomSocketRepositoryImpl implements CustomSocketRepository {
     }
 
 
+    @Override
+    public List<Socket> findSocketListByBuildingIdAndLevel(Long buildingId, Integer level) {
+
+        String jpql = "SELECT socket "
+            + "FROM Socket socket "
+            + "JOIN socket.space space "
+            + "JOIN space.floor floor "
+            + "JOIN floor.building building "
+            + "WHERE building.id = :buildingId AND floor.level = :level";
+
+        return entityManager.createQuery(jpql, Socket.class)
+            .setParameter("buildingId", buildingId)
+            .setParameter("level", level)
+            .getResultList();
+    }
 }

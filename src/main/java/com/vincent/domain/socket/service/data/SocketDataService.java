@@ -35,4 +35,8 @@ public class SocketDataService {
             .orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
     }
 
+    public List<Socket> findSocketListByBuildingIdAndLevel(Long buildingId, Integer level) {
+        return socketRepository.findSocketListByBuildingIdAndLevel(buildingId, level);
+    }
+
 }
