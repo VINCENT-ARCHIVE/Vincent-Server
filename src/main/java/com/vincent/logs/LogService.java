@@ -1,12 +1,12 @@
 package com.vincent.logs;
 
-import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import com.vincent.config.aws.s3.S3Service;
 import com.vincent.logs.entity.ApiLogs;
 import com.vincent.logs.entity.DailyActiveUsers;
+import com.vincent.logs.entity.MonthlyActiveUsers;
 import com.vincent.logs.repository.ApiLogsRepository;
 import com.vincent.logs.repository.DailyActiveUsersRepository;
+import com.vincent.logs.repository.MonthlyActiveUsersRepository;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,34 +18,29 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class LogService {
-
     private final LogConfig logConfig;
     private final LogProcessor logProcessor;
     private final DailyActiveUsersRepository dailyActiveUsersRepository;
     private final S3Service s3Service;
     private final ApiLogsRepository apiLogsRepository;
+    private final MonthlyActiveUsersRepository monthlyActiveUsersRepository;
 
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd");
 
 
     public void calculateDailyUsers() {
-        System.out.println("logConfig = ");
         LocalDateTime startOfYesterday = LocalDateTime.now(ZoneId.systemDefault()).minusDays(1)
             .with(LocalTime.MIN);
         LocalDateTime endOfYesterday = LocalDateTime.now(ZoneId.systemDefault()).minusDays(1)
@@ -100,6 +95,31 @@ public class LogService {
         } else {
             log.warn("파일이 존재하지 않거나 빈 파일입니다: {}", sourceFilePath);
         }
+    }
+
+    public void calculateMonthlyUsers() {
+        LocalDate now = LocalDate.now();
+        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = now.withDayOfMonth(now.lengthOfMonth());
+
+        LocalDateTime startOfMonth = firstDayOfMonth.atStartOfDay();
+        LocalDateTime endOfMonth = lastDayOfMonth.atTime(LocalTime.MAX);
+
+        List<ApiLogs> apiLogs = apiLogsRepository.findByCreatedAtBetween(startOfMonth, endOfMonth);
+
+        Set<String> uniqueMemberIds = apiLogs.stream()
+            .map(apiLog -> apiLog.getMemberId())
+            .filter(memberId -> memberId != null && !memberId.isEmpty())
+            .collect(Collectors.toSet());
+
+        MonthlyActiveUsers monthlyActiveUsers = MonthlyActiveUsers.builder()
+            .activeUsers(uniqueMemberIds.size())
+            .year(firstDayOfMonth.getYear())
+            .month(firstDayOfMonth.getMonthValue())
+            .build();
+
+        monthlyActiveUsersRepository.save(monthlyActiveUsers);
+
     }
 
 }
