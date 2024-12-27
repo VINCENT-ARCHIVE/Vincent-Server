@@ -26,4 +26,9 @@ public class LogScheduler {
         logService.uploadLogs();
     }
 
+    @Scheduled(cron = "0 0 0 1 * *")
+    public void calculateMonthlyActiveUsers() {
+        logService.calculateMonthlyUsers();
+    }
+
 }
