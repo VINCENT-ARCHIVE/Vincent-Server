@@ -21,9 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class SocketService {
 
     private final SocketDataService socketDataService;
-    private final BuildingDataService buildingDataService;
-    private final FloorDataService floorDataService;
-    private final SpaceDataService spaceDataService;
 
     public Socket getSocketInfo(Long socketId) {
         return socketDataService.findById(socketId);
