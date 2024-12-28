@@ -27,15 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class SocketServiceTest {
 
     @Mock
-    private FloorDataService floorDataService;
-
-    @Mock
-    private SpaceDataService spaceDataService;
-
-    @Mock
-    private BuildingDataService buildingDataService;
-
-    @Mock
     private SocketDataService socketDataService;
 
     @InjectMocks
