@@ -13,6 +13,7 @@ import com.vincent.domain.socket.controller.dto.SocketResponseDto;
 import com.vincent.domain.socket.controller.dto.SocketResponseDto.SocketPlace;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.service.data.SocketDataService;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -24,15 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class SocketServiceTest {
-
-    @Mock
-    private FloorDataService floorDataService;
-
-    @Mock
-    private SpaceDataService spaceDataService;
-
-    @Mock
-    private BuildingDataService buildingDataService;
 
     @Mock
     private SocketDataService socketDataService;
@@ -63,30 +55,25 @@ public class SocketServiceTest {
         //given
         Long buildingId = 1L;
         int level = 2;
-        Building building = Building.builder().id(1L).build();
-        Floor floor = Floor.builder().id(1L).level(2).building(building).build();
-        Space space = Space.builder().id(1L).floor(floor).build();
-        Socket socket = Socket.builder().id(1L).space(space).build();
-        List<Space> spaces = Collections.singletonList(space);
-        List<Socket> sockets = Collections.singletonList(socket);
+
+        Building building = Building.builder().id(buildingId).build();
+        Floor floor = Floor.builder().id(1L).level(level).building(building).build();
+        Space space1 = Space.builder().id(1L).floor(floor).build();
+        Space space2 = Space.builder().id(2L).floor(floor).build();
+        Socket socket1 = Socket.builder().id(1L).space(space1).build();
+        Socket socket2 = Socket.builder().id(2L).space(space2).build();
+        List<Socket> expectedSockets = Arrays.asList(socket1, socket2);
 
         //when
-        when(buildingDataService.findById(buildingId)).thenReturn(building);
-        when(floorDataService.findByBuildingAndLevel(building, level)).thenReturn(floor);
-        when(spaceDataService.findAllByFloor(floor)).thenReturn(spaces);
-        when(socketDataService.findAllBySpace(space)).thenReturn(sockets);
+        when(socketDataService.findSocketListByBuildingIdAndLevel(
+            buildingId, level)).thenReturn(expectedSockets);
 
         //then
         List<Socket> result = socketService.getSocketList(buildingId, level);
 
         Assertions.assertNotNull(result);
         Assertions.assertFalse(result.isEmpty());
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(socket, result.get(0));
-        verify(buildingDataService).findById(buildingId);
-        verify(floorDataService).findByBuildingAndLevel(building, level);
-        verify(spaceDataService).findAllByFloor(floor);
-        verify(socketDataService).findAllBySpace(space);
+        Assertions.assertEquals(expectedSockets, result);
     }
 
     @Test
