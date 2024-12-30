@@ -8,6 +8,7 @@ import com.vincent.domain.socket.controller.dto.SocketResponseDto.SocketPlace;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.repository.SocketRepository;
 import com.vincent.exception.handler.ErrorHandler;
+import io.jsonwebtoken.security.Jwks.OP;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,26 +37,20 @@ public class TestSocketRepository implements SocketRepository {
     }
 
     @Override
-    public SocketPlace findSocketPlaceBySocketId(Long socketId) {
-        Socket socket = sockets.stream()
+    public Optional<Socket> findSocketPlaceBySocketId(Long socketId) {
+       return sockets.stream()
             .filter(s -> s.getId().equals(socketId))
-            .findFirst()
-            .orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND)); // Socket이 없을 경우 예외
-
-        Space space = Optional.ofNullable(socket.getSpace())
-            .orElseThrow(() -> new ErrorHandler(ErrorStatus.SPACE_NOT_FOUND)); // Space가 없을 경우 예외
-
-        Floor floor = Optional.ofNullable(space.getFloor())
-            .orElseThrow(() -> new ErrorHandler(ErrorStatus.FLOOR_NOT_FOUND)); // Floor가 없을 경우 예외
-
-        Building building = Optional.ofNullable(floor.getBuilding())
-            .orElseThrow(() -> new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND)); // Building이 없을 경우 예외
-
-        // 모든 데이터가 유효한 경우 DTO 생성
-        return SocketPlace.builder()
-            .buildingId(building.getId())
-            .level(floor.getLevel())
-            .build();
+            .findFirst();
+//        Space space = Optional.ofNullable(socket.getSpace())
+//            .orElseThrow(() -> new ErrorHandler(ErrorStatus.SPACE_NOT_FOUND)); // Space가 없을 경우 예외
+//
+//        Floor floor = Optional.ofNullable(space.getFloor())
+//            .orElseThrow(() -> new ErrorHandler(ErrorStatus.FLOOR_NOT_FOUND)); // Floor가 없을 경우 예외
+//
+//        Building building = Optional.ofNullable(floor.getBuilding())
+//            .orElseThrow(() -> new ErrorHandler(ErrorStatus.BUILDING_NOT_FOUND)); // Building이 없을 경우 예외
+//
+//        return socket;
     }
 
 
