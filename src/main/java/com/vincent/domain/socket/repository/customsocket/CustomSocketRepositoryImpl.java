@@ -1,12 +1,10 @@
 package com.vincent.domain.socket.repository.customsocket;
 
-import com.vincent.domain.building.controller.dto.BuildingResponseDto.SpaceInfoProjection;
-import com.vincent.domain.building.repository.customspace.CustomSpaceRepository;
-import com.vincent.domain.socket.controller.dto.SocketResponseDto.SocketPlace;
 import com.vincent.domain.socket.entity.Socket;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Optional;
 
 public class CustomSocketRepositoryImpl implements CustomSocketRepository {
 
@@ -15,20 +13,17 @@ public class CustomSocketRepositoryImpl implements CustomSocketRepository {
     private EntityManager entityManager;
 
     @Override
-    public SocketPlace findSocketPlaceBySocketId(Long socketId) {
-
-        String jpql = "SELECT new com.vincent.domain.socket.controller.dto.SocketResponseDto$SocketPlace("
-            + "building.id, "
-            + "floor.level ) "
-            + "FROM Socket socket "
+    public Optional<Socket> findSocketPlaceBySocketId(Long socketId) {
+        String jpql = "SELECT socket FROM Socket socket "
             + "JOIN socket.space space "
             + "JOIN space.floor floor "
             + "JOIN floor.building building "
             + "WHERE socket.id = :socketId";
 
-        return entityManager.createQuery(jpql, SocketPlace.class)
+        List<Socket> sockets = entityManager.createQuery(jpql, Socket.class)
             .setParameter("socketId", socketId)
-            .getSingleResult();
+            .getResultList();
+        return sockets.stream().findFirst();
     }
 
 
