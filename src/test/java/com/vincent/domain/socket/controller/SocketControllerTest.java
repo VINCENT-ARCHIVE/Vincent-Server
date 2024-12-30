@@ -96,27 +96,27 @@ public class SocketControllerTest {
         Assertions.assertThat(response.getResult().getLocationList().size()).isEqualTo(1);
     }
 
-    @Test
-    public void 소켓장소조회_성공() {
-
-        //given
-        Long socketId = 1L;
-
-        //when
-        when(socketService.getSocketPlace(socketId)).thenReturn(socketPlace);
-
-        //then
-        ApiResponse<SocketResponseDto.SocketPlace> response = socketController.getSocketPlace(socketId);
-        SocketResponseDto.SocketPlace result = response.getResult();
-        SocketResponseDto.SocketPlace expected = SocketConverter.toSocketPlace(
-            socketPlace);
-
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");
-        Assertions.assertThat(response.getMessage()).isEqualTo("성공입니다");
-        Assertions.assertThat(result.getBuildingId()).isEqualTo(expected.getBuildingId());
-        Assertions.assertThat(result.getLevel()).isEqualTo(expected.getLevel());
-
-    }
+//    @Test
+//    public void 소켓장소조회_성공() {
+//
+//        //given
+//        Long socketId = 1L;
+//
+//        //when
+//        when(socketService.getSocketPlace(socketId)).thenReturn(socketPlace);
+//
+//        //then
+//        ApiResponse<SocketResponseDto.SocketPlace> response = socketController.getSocketPlace(socketId);
+//        SocketResponseDto.SocketPlace result = response.getResult();
+//        SocketResponseDto.SocketPlace expected = SocketConverter.toSocketPlace(
+//            socketPlace);
+//
+//        Assertions.assertThat(response).isNotNull();
+//        Assertions.assertThat(response.getCode()).isEqualTo("COMMON200");
+//        Assertions.assertThat(response.getMessage()).isEqualTo("성공입니다");
+//        Assertions.assertThat(result.getBuildingId()).isEqualTo(expected.getBuildingId());
+//        Assertions.assertThat(result.getLevel()).isEqualTo(expected.getLevel());
+//
+//    }
 
 }

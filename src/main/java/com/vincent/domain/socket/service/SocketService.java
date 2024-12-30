@@ -7,6 +7,7 @@ import com.vincent.domain.building.service.data.BuildingDataService;
 import com.vincent.domain.building.service.data.FloorDataService;
 import com.vincent.domain.building.service.data.SpaceDataService;
 import com.vincent.domain.socket.controller.dto.SocketResponseDto;
+import com.vincent.domain.socket.controller.dto.SocketResponseDto.SocketPlace;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.service.data.SocketDataService;
 import java.util.List;
@@ -31,8 +32,7 @@ public class SocketService {
         return socketDataService.findSocketListByBuildingIdAndLevel(buildingId, level);
     }
 
-    public SocketResponseDto.SocketPlace getSocketPlace(Long socketId) {
-
+    public Socket getSocketPlace(Long socketId) {
         return socketDataService.findSocketPlaceBySocketId(socketId);
     }
 
