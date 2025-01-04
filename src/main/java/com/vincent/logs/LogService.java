@@ -99,8 +99,8 @@ public class LogService {
 
     public void calculateMonthlyUsers() {
         LocalDate now = LocalDate.now();
-        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
-        LocalDate lastDayOfMonth = now.withDayOfMonth(now.lengthOfMonth());
+        LocalDate firstDayOfMonth = now.minusMonths(1).withDayOfMonth(1);
+        LocalDate lastDayOfMonth = now.minusMonths(1).withDayOfMonth(now.lengthOfMonth());
 
         LocalDateTime startOfMonth = firstDayOfMonth.atStartOfDay();
         LocalDateTime endOfMonth = lastDayOfMonth.atTime(LocalTime.MAX);
