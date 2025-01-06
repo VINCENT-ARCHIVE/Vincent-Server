@@ -37,6 +37,13 @@ public class TestSocketRepository implements SocketRepository {
     }
 
     @Override
+    public Optional<Socket> findByName(String name) {
+        return sockets.stream()
+            .filter(s -> s.getName().equals(name))
+            .findFirst();
+    }
+
+    @Override
     public Optional<Socket> findSocketPlaceBySocketId(Long socketId) {
        return sockets.stream()
             .filter(s -> s.getId().equals(socketId))

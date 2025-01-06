@@ -188,6 +188,30 @@ class SocketDataServiceTest {
         Assertions.assertTrue(result.contains(socket2)); // socket2 포함 여부 확인
     }
 
+    @Test
+    void 소켓_식별번호_조회_성공() {
+        //given
+        String uniqueId = "name";
+        Socket socket = Socket.builder().id(1L).name("name").build();
+        socketRepository.save(socket);
 
+        //when
+        Socket result = socketDataService.findByUniqueId(uniqueId);
+
+        //then
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(result.getName(), uniqueId);
+    }
+
+    @Test
+    void 소켓_식별번호_조회_실패() {
+        //given
+        String uniqueId = "name";
+
+        //when & then
+        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class,
+            () -> socketDataService.findByUniqueId(uniqueId));
+        Assertions.assertEquals(thrown.getCode(), ErrorStatus.SOCKET_NOT_FOUND);
+    }
 
 }
