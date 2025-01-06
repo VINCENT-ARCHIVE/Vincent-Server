@@ -26,8 +26,8 @@ public class BuildingDataService {
     }
 
     public List<Building> findAllByLocation(Double longitude, Double latitude) {
-        final double longitudeRange = 0.0007092929741;
-        final double latitudeRange = 0.00146597950179;
+        final double longitudeRange = 0.0010137091125;
+        final double latitudeRange = 0.00221130994643;
 
         double longitudeLower = longitude - longitudeRange;
         double longitudeUpper = longitude + longitudeRange;

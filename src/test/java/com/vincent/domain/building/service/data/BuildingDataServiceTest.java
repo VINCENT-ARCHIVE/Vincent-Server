@@ -78,8 +78,8 @@ class BuildingDataServiceTest {
         // given
         Building building = Building.builder().id(1L).build();
         List<Building> buildingList = Arrays.asList(building);
-        double longitudeRange = 0.0007092929741;
-        double latitudeRange = 0.00146597950179;
+        double longitudeRange = 0.0010137091125;
+        double latitudeRange = 0.00221130994643;
         double longitudeLower = LONGITUDE - longitudeRange;
         double longitudeUpper = LONGITUDE + longitudeRange;
         double latitudeLower = LATITUDE - latitudeRange;
