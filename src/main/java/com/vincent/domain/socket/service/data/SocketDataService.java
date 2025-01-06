@@ -20,6 +20,11 @@ public class SocketDataService {
             .orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
     }
 
+    public Socket findByUniqueId(String id) {
+        return socketRepository.findByName(id)
+            .orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
+    }
+
     public List<Socket> findAllBySpace(Space space) {
         return socketRepository.findAllBySpace(space);
     }
