@@ -36,10 +36,10 @@ public class SocketConverter {
             .build();
     }
 
-    public static SocketResponseDto.SocketPlace toSocketPlace(SocketResponseDto.SocketPlace socketPlace) {
+    public static SocketResponseDto.SocketPlace toSocketPlace(Socket socket) {
         return SocketResponseDto.SocketPlace.builder()
-            .buildingId(socketPlace.getBuildingId())
-            .level(socketPlace.getLevel())
+            .buildingId(socket.getSpace().getFloor().getBuilding().getId())
+            .level(socket.getSpace().getFloor().getLevel())
             .build();
     }
 

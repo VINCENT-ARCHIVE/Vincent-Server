@@ -2,7 +2,6 @@ package com.vincent.domain.socket.service.data;
 
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.building.entity.Space;
-import com.vincent.domain.socket.controller.dto.SocketResponseDto;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.repository.SocketRepository;
 import com.vincent.exception.handler.ErrorHandler;
@@ -29,10 +28,14 @@ public class SocketDataService {
         return socketRepository.save(socket);
     }
 
-    public SocketResponseDto.SocketPlace findSocketPlaceBySocketId(Long socketId) {
-        return socketRepository.findById(socketId)
-            .map(socket -> socketRepository.findSocketPlaceBySocketId(socketId))
+    public Socket findSocketPlaceBySocketId(Long socketId) {
+        return socketRepository.findSocketPlaceBySocketId(socketId)
             .orElseThrow(() -> new ErrorHandler(ErrorStatus.SOCKET_NOT_FOUND));
+
+    }
+
+    public List<Socket> findSocketListByBuildingIdAndLevel(Long buildingId, Integer level) {
+        return socketRepository.findSocketListByBuildingIdAndLevel(buildingId, level);
     }
 
 }
