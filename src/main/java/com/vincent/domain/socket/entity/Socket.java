@@ -49,5 +49,8 @@ public class Socket {
     @Column(nullable = false, length = 20)
     private String name;
 
+    @Column(name = "isUsing")
+    private Boolean isUsing;
+
 
 }
