@@ -307,7 +307,7 @@ public class BuildingServiceTest {
         when(s3Service.upload(image, "Socket")).thenReturn(mockUploadUrl);
 
 
-        buildingService.createSocket(1L, image, 123.45, 543.21, "Test Socket", 3);
+        buildingService.createSocket(1L, image, 123.45, 543.21, "Test Socket", 3, true);
 
 
         verify(spaceDataService).findById(1L);

@@ -133,9 +133,10 @@ public class BuildingController {
         @RequestParam("name") String name,
         @RequestParam("yCoordinate") double yCoordinate,
         @RequestParam("xCoordinate") double xCoordinate,
-        @RequestParam("holes") int holes)
+        @RequestParam("holes") int holes,
+        @RequestParam("isUsing") Boolean isSocketUsing)
         throws IOException {
-        buildingService.createSocket(spaceId, image, yCoordinate, xCoordinate, name, holes);
+        buildingService.createSocket(spaceId, image, yCoordinate, xCoordinate, name, holes, isSocketUsing);
         return ApiResponse.onSuccess(null);
     }
 

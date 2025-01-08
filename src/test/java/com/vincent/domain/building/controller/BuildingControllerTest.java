@@ -200,10 +200,11 @@ public class BuildingControllerTest {
         double xCoordinate = 10.0;
         double yCoordinate = 20.0;
         int holes = 3;
+        Boolean isSocketUsing = true;
 
         //when/then
-        ApiResponse<?> response = buildingController.createSocket(spaceId, image, name, yCoordinate, xCoordinate, holes);
-        verify(buildingService).createSocket(spaceId, image, yCoordinate, xCoordinate, name, holes);
+        ApiResponse<?> response = buildingController.createSocket(spaceId, image, name, yCoordinate, xCoordinate, holes, isSocketUsing);
+        verify(buildingService).createSocket(spaceId, image, yCoordinate, xCoordinate, name, holes, isSocketUsing);
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getIsSuccess()).isTrue();
     }
