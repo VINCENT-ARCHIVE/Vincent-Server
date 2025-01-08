@@ -52,5 +52,4 @@ public class Socket {
     @Column(name = "isUsing")
     private Boolean isUsing;
 
-
 }
