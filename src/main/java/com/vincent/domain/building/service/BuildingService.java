@@ -114,7 +114,7 @@ public class BuildingService {
     @Transactional
     public void createSocket(
         Long spaceId, MultipartFile image, double yCoordinate, double xCoordinate, String name,
-        int holes, Boolean isSocketUsing)
+        int holes)
         throws IOException {
         String uploadUrl = s3Service.upload(image, "Socket");
         Space space = spaceDataService.findById(spaceId);
@@ -128,7 +128,7 @@ public class BuildingService {
             .xCoordinate(xCoordinate)
             .image(uploadUrl)
             .holes(holes)
-            .isUsing(isSocketUsing)
+            .isUsing(false)
             .build();
 
         socketDataService.save(socket);
