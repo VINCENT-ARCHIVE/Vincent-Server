@@ -1,7 +1,6 @@
 package com.vincent.config.redis.service;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -11,27 +10,18 @@ import org.springframework.data.redis.connection.BitFieldSubCommands;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 public class TestRedisTemplate extends RedisTemplate<String, Object> {
 
+    public TestRedisTemplate() {
+        super();
+    }
 
     public ValueOperations<String, Object> opsForValue() {
         return new FakeValueOperations();
     }
 
     private final Map<String, Object> store = new HashMap<>();
-    private final Map<String, List<Object>> dataStore = new HashMap<>();
-
-    // 리스트 데이터 추가
-    public void addToList(String key, String value) {
-        dataStore.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
-    }
-
-    // 리스트 데이터 가져오기
-    public List<Object> getList(String key) {
-        return dataStore.get(key);
-    }
 
     public void set(String key, Object value, long timeout, TimeUnit unit) {
         store.put(key, value);
@@ -39,20 +29,17 @@ public class TestRedisTemplate extends RedisTemplate<String, Object> {
 
     // 키가 존재하는지 확인
     public Boolean hasKey(String key) {
-        return store.containsKey(key) || dataStore.containsKey(key);
+        return store.containsKey(key);
     }
 
     // 키 삭제 및 성공 여부 반환
     public Boolean delete(String key) {
-        boolean removedFromStore = store.remove(key) != null;
-        boolean removedFromListStore = dataStore.remove(key) != null;
-        return removedFromStore || removedFromListStore;
+        return store.remove(key) != null;
     }
 
     // 저장소를 비우는 메서드
     public void clear() {
         store.clear();
-        dataStore.clear();
     }
 
     // 저장소에 특정 키의 값을 반환하는 메서드 추가

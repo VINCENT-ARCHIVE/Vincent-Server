@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,18 +14,28 @@ import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.redis.entity.RefreshToken;
 import com.vincent.config.redis.repository.RefreshTokenRepository;
 import com.vincent.config.security.provider.JwtProvider;
+import com.vincent.domain.iot.entity.Iot;
+import com.vincent.domain.iot.service.data.IotDataService;
 import com.vincent.domain.member.entity.Member;
+import com.vincent.domain.socket.entity.Socket;
+import com.vincent.domain.socket.service.data.SocketDataService;
 import com.vincent.exception.handler.ErrorHandler;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RedisServiceTest {
@@ -38,8 +49,22 @@ class RedisServiceTest {
     @Mock
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Mock
+    private IotDataService iotDataService;
+
+    @Mock
+    private SocketDataService socketDataService;
+
+    @Mock
+    private ListOperations<String, Object> listOperations;
+
     @InjectMocks
     private RedisService redisService;
+
+    @BeforeEach
+    void setUp() {
+        lenient().when(redisTemplate.opsForList()).thenReturn(listOperations);
+    }
 
 
     @Test
@@ -225,6 +250,59 @@ class RedisServiceTest {
 
         //then
         Assertions.assertEquals(thrown.getCode(), ErrorStatus.ANOTHER_USER);
+    }
+
+    @Test
+    void 레디스에_IOT데이터_저장() {
+        // given
+        Long deviceId = 1L;
+        int isUsing = 1;
+
+        // when
+        redisService.saveIotData(deviceId, isUsing);
+
+        // then
+        verify(listOperations).rightPush("iot:" + deviceId, String.valueOf(isUsing));
+        verify(redisTemplate).expire(eq("iot:" + deviceId), any(Duration.class));
+    }
+
+    @Test
+    void 소켓_사용여부_업데이트_성공() {
+        // given
+        Long deviceId = 1L;
+        List<Object> redisData = new ArrayList<>();
+        for (int i = 0; i < 70; i++) {
+            redisData.add(i % 2 == 0 ? "0" : "1");
+        }
+
+        Socket socket = Socket.builder().id(1L).isUsing(false).build();
+        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
+
+        when(listOperations.range("iot:" + deviceId, 0, -1)).thenReturn(redisData);
+        when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
+        when(socketDataService.findById(socket.getId())).thenReturn(socket);
+
+        // when
+        boolean result = redisService.updateIsSocketUsing(deviceId);
+
+        // then
+        assertTrue(result);
+        verify(socketDataService).save(socket);
+        verify(redisTemplate).delete("iot:" + deviceId);
+    }
+
+    @Test
+    void 소켓_사용여부_업데이트_안됨_10분미달() {
+        // given
+        Long deviceId = 1L;
+        when(listOperations.range("iot:" + deviceId, 0, -1)).thenReturn(new ArrayList<>());
+
+        // when
+        boolean result = redisService.updateIsSocketUsing(deviceId);
+
+        // then
+        assertFalse(result);
+        verify(redisTemplate, never()).delete("iot:" + deviceId);
     }
 
 }

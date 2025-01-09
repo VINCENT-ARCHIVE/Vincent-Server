@@ -6,6 +6,7 @@ import com.vincent.domain.iot.entity.Iot;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Optional;
 
 public class CustomIotRepositoryImpl implements CustomIotRepository {
 
@@ -13,12 +14,14 @@ public class CustomIotRepositoryImpl implements CustomIotRepository {
     private EntityManager entityManager;
 
     @Override
-    public Iot findByDeviceId(Long deviceId) {
+    public Optional<Iot> findByDeviceId(Long deviceId) {
         String jpql = "SELECT a FROM Iot a WHERE a.deviceId = :deviceId";
 
-        return entityManager.createQuery(jpql, Iot.class)
+        List<Iot> resultList = entityManager.createQuery(jpql, Iot.class)
             .setParameter("deviceId", deviceId)
-            .getSingleResult();
+            .getResultList();
+
+        return resultList.stream().findFirst();
     }
 }
 

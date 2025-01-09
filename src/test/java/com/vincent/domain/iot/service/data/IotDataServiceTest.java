@@ -1,9 +1,11 @@
 package com.vincent.domain.iot.service.data;
 
+import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.domain.iot.TestIotRepository;
 import com.vincent.domain.iot.entity.Iot;
 import com.vincent.domain.iot.repository.IotRepository;
 import com.vincent.domain.socket.entity.Socket;
+import com.vincent.exception.handler.ErrorHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,5 +50,19 @@ public class IotDataServiceTest {
         Assertions.assertEquals(1L, targetIot.getDeviceId());
         Assertions.assertEquals("name", targetIot.getSocket().getName());
     }
+
+    @Test
+    void IOT장치_조회_실패_예외발생() {
+        // given
+        Long nonExistentDeviceId = 99L;
+
+        // when & then
+        ErrorHandler thrown = Assertions.assertThrows(ErrorHandler.class,
+            () -> iotDataService.findByDeviceId(nonExistentDeviceId));
+
+        Assertions.assertEquals(thrown.getCode(), ErrorStatus.IOT_NOT_FOUND);
+    }
+
+
 
 }

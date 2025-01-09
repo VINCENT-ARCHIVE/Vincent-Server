@@ -1,6 +1,7 @@
 package com.vincent.domain.iot.controller;
 
 import com.vincent.apipayload.ApiResponse;
+import com.vincent.config.redis.service.RedisService;
 import com.vincent.domain.iot.controller.dto.IotRequestDto;
 import com.vincent.domain.iot.service.IotService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1")
 public class IotController {
     private final IotService iotService;
+    private final RedisService redisService;
 
     @Operation(summary = "Iot 장치 등록하기", description = "IOT 장치의 고유 ID와 가리키는 대상(콘센트 ID) 정보를 입력")
     @PostMapping("/iot")
@@ -31,8 +33,8 @@ public class IotController {
     public ApiResponse<?> updateIsSocketUsing(
         @PathVariable("deviceId") Long deviceId,
         @RequestParam("isUsing") int isUsing) {
-        iotService.saveIotData(deviceId, isUsing);
-        boolean isUpdated = iotService.updateIsSocketUsing(deviceId);
+        redisService.saveIotData(deviceId, isUsing);
+        boolean isUpdated = redisService.updateIsSocketUsing(deviceId);
         return ApiResponse.onSuccess(isUpdated);
     }
 }

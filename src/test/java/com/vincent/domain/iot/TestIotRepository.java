@@ -17,13 +17,13 @@ public class TestIotRepository implements IotRepository {
     List<Iot> iots = new ArrayList<>();
 
     @Override
-    public Iot findByDeviceId(Long deviceId) {
-        // deviceId에 해당하는 Iot를 찾음
+    public Optional<Iot> findByDeviceId(Long deviceId) {
+        // deviceId에 해당하는 Iot를 Optional로 반환
         return iots.stream()
             .filter(iot -> iot.getDeviceId().equals(deviceId)) // deviceId가 같은 경우 필터링
-            .findFirst() // 첫 번째 결과 반환
-            .orElse(null); // 없으면 null 반환
+            .findFirst(); // 첫 번째 결과 반환
     }
+
     @Override
     public <S extends Iot> S save(S entity) {
         iots.add(entity);
