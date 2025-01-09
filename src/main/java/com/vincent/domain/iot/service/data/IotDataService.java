@@ -15,4 +15,8 @@ public class IotDataService {
         return iotRepository.save(iot);
     }
 
+    public Iot findByDeviceId(Long deviceId) {
+        return iotRepository.findByDeviceId(deviceId);
+    }
+
 }
