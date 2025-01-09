@@ -51,8 +51,6 @@ public class IotService {
             .map(state -> Integer.valueOf((String) state)) // String을 Integer로 변환
             .collect(Collectors.toList());
 
-
-
         // 0과 1 개수 계산
         long countZero = states.stream().filter(s -> s == 0).count();
         long countOne = states.size() - countZero;
@@ -60,11 +58,12 @@ public class IotService {
         // 업데이트할 상태 결정
         boolean isUsing = countOne > countZero;
 
-        // Consent 테이블 업데이트
-        Socket consentOpt = socketDataService.findById(deviceId);
+        // socket 테이블 업데이트
+        Iot targetIot = iotDataService.findByDeviceId(deviceId);
+        Socket targetSocket = socketDataService.findById(targetIot.getSocket().getId());
 
-        consentOpt.setIsUsing(isUsing);
-        socketDataService.save(consentOpt);
+        targetSocket.setIsUsing(isUsing);
+        socketDataService.save(targetSocket);
 
 
         // Redis 데이터 초기화 (처리 완료 후 삭제)

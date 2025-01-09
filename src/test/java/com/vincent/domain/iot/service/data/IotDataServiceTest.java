@@ -33,4 +33,20 @@ public class IotDataServiceTest {
 
     }
 
+    @Test
+    void IOT장치_조회_성공() {
+        // given
+        Socket socket = Socket.builder().id(1L).name("name").build();
+        Iot iot = Iot.builder().id(1L).deviceId(1L).socket(socket).build();
+        iotRepository.save(iot); // 저장
+
+        // when
+        Iot targetIot = iotDataService.findByDeviceId(1L);
+
+        // then
+        Assertions.assertNotNull(targetIot);
+        Assertions.assertEquals(1L, targetIot.getDeviceId());
+        Assertions.assertEquals("name", targetIot.getSocket().getName());
+    }
+
 }
