@@ -4,7 +4,12 @@ import com.vincent.domain.iot.entity.Iot;
 import com.vincent.domain.iot.service.data.IotDataService;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.service.data.SocketDataService;
+import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,5 +27,7 @@ public class IotService {
         Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
         return iotDataService.save(iot);
     }
+
+
 
 }
