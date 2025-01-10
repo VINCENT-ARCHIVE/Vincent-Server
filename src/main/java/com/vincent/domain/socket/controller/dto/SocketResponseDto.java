@@ -22,6 +22,7 @@ public class SocketResponseDto {
         String buildingName;
         String spaceName;
         Boolean isBookmarkExist;
+        Boolean isSocketUsing;
 
     }
 
@@ -29,7 +30,7 @@ public class SocketResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonPropertyOrder({"socketId", "xCoordinate", "yCoordinate"})
+    @JsonPropertyOrder({"socketId", "xCoordinate", "yCoordinate", "isSocketUsing"})
     public static class SocketLocation {
 
         Long socketId;
@@ -39,6 +40,8 @@ public class SocketResponseDto {
 
         @JsonProperty("ycoordinate")
         Double yCoordinate;
+
+        Boolean isSocketUsing;
 
     }
 

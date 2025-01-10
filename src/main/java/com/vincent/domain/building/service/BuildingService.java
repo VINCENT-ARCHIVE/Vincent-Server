@@ -128,6 +128,7 @@ public class BuildingService {
             .xCoordinate(xCoordinate)
             .image(uploadUrl)
             .holes(holes)
+            .isUsing(false)
             .build();
 
         socketDataService.save(socket);
