@@ -60,9 +60,6 @@ public class IotService {
         Socket targetSocket = socketDataService.findById(targetIot.getSocket().getId());
         targetSocket.setIsUsing(isUsing);
 
-        // ** 변경된 Socket을 저장 **
-        socketDataService.save(targetSocket);
-
         // Redis 데이터 초기화
         redisService.delete(redisKey);
 

@@ -68,10 +68,9 @@ class IotServiceTest {
         boolean result = iotService.updateIsSocketUsing(deviceId);
 
         // then
-        Assertions.assertTrue(result, "소켓 상태 업데이트가 성공해야 합니다.");
+        Assertions.assertTrue(result);
         verify(redisService, times(1)).getList(redisKey, 0, -1);
         verify(redisService, times(1)).delete(redisKey);
-        verify(socketDataService, times(1)).save(socket); // save 호출 확인
     }
 
 
@@ -115,11 +114,10 @@ class IotServiceTest {
         boolean result = iotService.updateIsSocketUsing(deviceId);
 
         // then
-        assertTrue(result, "소켓 상태 업데이트가 성공해야 합니다.");
-        assertFalse(socket.getIsUsing(), "소켓 상태가 false로 변경되어야 합니다.");
+        assertTrue(result);
+        assertFalse(socket.getIsUsing());
         verify(redisService, times(1)).getList(redisKey, 0, -1);
         verify(redisService, times(1)).delete(redisKey);
 
-        // 상태 변경을 직접 확인하므로 save 호출 검증 제거
     }
 }
