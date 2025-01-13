@@ -12,9 +12,7 @@ public class TestRedisService extends RedisService {
         super(
             new TestRefreshTokenRepository(),  // RefreshTokenRepository
             new TestRedisTemplate(),          // RedisTemplate
-            new TestJwtProvider(),            // JwtProvider
-            new IotDataService(new TestIotRepository()), // IotDataService
-            new SocketDataService(new TestSocketRepository()) // SocketDataService
+            new TestJwtProvider()            // JwtProvider
         );
     }
 }

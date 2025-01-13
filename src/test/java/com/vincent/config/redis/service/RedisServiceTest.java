@@ -50,12 +50,6 @@ class RedisServiceTest {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Mock
-    private IotDataService iotDataService;
-
-    @Mock
-    private SocketDataService socketDataService;
-
-    @Mock
     private ListOperations<String, Object> listOperations;
 
     @InjectMocks
@@ -253,56 +247,85 @@ class RedisServiceTest {
     }
 
     @Test
-    void 레디스에_IOT데이터_저장() {
-        // given
+    void 레디스리스트데이터가져오기() {
+        // Given
+        String key = "iot:1";
+        List<Object> expectedList = List.of("0", "1", "1");
+
+        // When
+        when(listOperations.range(key, 0, -1)).thenReturn(expectedList);
+
+        List<Object> result = redisService.getList(key, 0, -1);
+
+        // Then
+        Assertions.assertEquals(expectedList, result);
+    }
+
+    @Test
+    void 레디스리스트데이터추가() {
+        // Given
+        String key = "iot:1";
+        String value = "1";
+
+        // When
+        redisService.addToList(key, value);
+
+        // Then
+        verify(listOperations, times(1)).rightPush(key, value);
+    }
+
+    @Test
+    void 레디스TTL설정() {
+        // Given
+        String key = "iot:1";
+        Duration duration = Duration.ofMinutes(10);
+
+        // When
+        redisService.setExpire(key, duration);
+
+        // Then
+        verify(redisTemplate, times(1)).expire(eq(key), eq(duration));
+    }
+
+    @Test
+    void 레디스데이터삭제() {
+        // Given
+        String key = "iot:1";
+
+        // When
+        redisService.delete(key);
+
+        // Then
+        verify(redisTemplate, times(1)).delete(key);
+    }
+
+    @Test
+    void 레디스키존재확인() {
+        // Given
+        String key = "iot:1";
+
+        // When
+        when(redisTemplate.hasKey(key)).thenReturn(true);
+
+        boolean exists = redisService.hasKey(key);
+
+        // Then
+        Assertions.assertTrue(exists);
+        verify(redisTemplate, times(1)).hasKey(key);
+    }
+
+    @Test
+    void 레디스에IOT데이터저장() {
+        // Given
         Long deviceId = 1L;
+        String redisKey = "iot:" + deviceId;
         int isUsing = 1;
 
-        // when
+        // When
         redisService.saveIotData(deviceId, isUsing);
 
-        // then
-        verify(listOperations).rightPush("iot:" + deviceId, String.valueOf(isUsing));
-        verify(redisTemplate).expire(eq("iot:" + deviceId), any(Duration.class));
+        // Then
+        verify(listOperations, times(1)).rightPush(redisKey, String.valueOf(isUsing));
+        verify(redisTemplate, times(1)).expire(eq(redisKey), eq(Duration.ofMinutes(10)));
     }
-
-    @Test
-    void 소켓_사용여부_업데이트_성공() {
-        // given
-        Long deviceId = 1L;
-        List<Object> redisData = new ArrayList<>();
-        for (int i = 0; i < 70; i++) {
-            redisData.add(i % 2 == 0 ? "0" : "1");
-        }
-
-        Socket socket = Socket.builder().id(1L).isUsing(false).build();
-        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
-
-        when(listOperations.range("iot:" + deviceId, 0, -1)).thenReturn(redisData);
-        when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
-        when(socketDataService.findById(socket.getId())).thenReturn(socket);
-
-        // when
-        boolean result = redisService.updateIsSocketUsing(deviceId);
-
-        // then
-        assertTrue(result);
-        verify(socketDataService).save(socket);
-        verify(redisTemplate).delete("iot:" + deviceId);
-    }
-
-    @Test
-    void 소켓_사용여부_업데이트_안됨_10분미달() {
-        // given
-        Long deviceId = 1L;
-        when(listOperations.range("iot:" + deviceId, 0, -1)).thenReturn(new ArrayList<>());
-
-        // when
-        boolean result = redisService.updateIsSocketUsing(deviceId);
-
-        // then
-        assertFalse(result);
-        verify(redisTemplate, never()).delete("iot:" + deviceId);
-    }
-
 }
