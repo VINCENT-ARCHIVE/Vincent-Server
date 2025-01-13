@@ -34,7 +34,7 @@ public class IotController {
         @PathVariable("deviceId") Long deviceId,
         @RequestParam("isUsing") int isUsing) {
         redisService.saveIotData(deviceId, isUsing);
-        boolean isUpdated = redisService.updateIsSocketUsing(deviceId);
+        boolean isUpdated = iotService.updateIsSocketUsing(deviceId);
         return ApiResponse.onSuccess(isUpdated);
     }
 }

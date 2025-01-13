@@ -18,7 +18,7 @@ public class IotDataService {
     }
 
     public Iot findByDeviceId(Long deviceId) {
-        return iotRepository.findByDeviceId(deviceId)
+        return iotRepository.findIotByDeviceId(deviceId)
             .orElseThrow(() -> new ErrorHandler(ErrorStatus.IOT_NOT_FOUND));
     }
 
