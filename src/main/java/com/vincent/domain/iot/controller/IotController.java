@@ -2,7 +2,10 @@ package com.vincent.domain.iot.controller;
 
 import com.vincent.apipayload.ApiResponse;
 import com.vincent.config.redis.service.RedisService;
+import com.vincent.domain.iot.controller.converter.IotConverter;
 import com.vincent.domain.iot.controller.dto.IotRequestDto;
+import com.vincent.domain.iot.controller.dto.IotResponseDto;
+import com.vincent.domain.iot.controller.dto.IotResponseDto.IotDataTest;
 import com.vincent.domain.iot.service.IotService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +31,13 @@ public class IotController {
         return ApiResponse.onSuccess(null);
     }
 
-    @Operation(summary = "콘센트 사용 여부 변경 api", description = "IOT 장치가 보낸 사용 여부 정보로 콘센트 사용 여부를 변경함")
+    @Operation(summary = "콘센트 사용 여부 변경 하기", description = "IOT 장치가 보낸 사용 여부 정보로 콘센트 사용 여부를 변경함")
     @PatchMapping("/iot/{deviceId}")
-    public ApiResponse<?> updateIsSocketUsing(
+    public ApiResponse<IotResponseDto.IotDataTest> updateIsSocketUsing(
         @PathVariable("deviceId") Long deviceId,
         @RequestParam("isUsing") int isUsing) {
-        redisService.saveIotData(deviceId, isUsing);
-        boolean isUpdated = iotService.updateIsSocketUsing(deviceId);
-        return ApiResponse.onSuccess(isUpdated);
+        //redisService.saveIotData(deviceId, isUsing);
+        //boolean isUpdated = iotService.updateIsSocketUsing(deviceId);
+        return ApiResponse.onSuccess(IotConverter.toIotDataTest(deviceId, isUsing));
     }
 }
