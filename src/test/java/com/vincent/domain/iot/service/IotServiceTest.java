@@ -46,6 +46,31 @@ class IotServiceTest {
 
 
     @Test
+    void IOT장치_등록() {
+        //given
+        Long deviceId = 1L;
+        String socketId = "name";
+
+        Socket socket = Socket.builder().id(1L).name("name").build();
+        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
+
+        // Mocking
+        when(socketDataService.findByUniqueId(socketId)).thenReturn(socket);
+        when(iotDataService.save(any(Iot.class))).thenReturn(iot);
+
+        //when
+        Iot result = iotService.create(deviceId, socketId);
+
+        //then
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(deviceId, result.getDeviceId());
+        Assertions.assertEquals(socketId, result.getSocket().getName());
+
+        verify(socketDataService, times(1)).findByUniqueId(socketId);
+        verify(iotDataService, times(1)).save(any(Iot.class));
+    }
+
+    @Test
     void 소켓_사용여부_업데이트_성공() {
         // given
         Long deviceId = 1L;
