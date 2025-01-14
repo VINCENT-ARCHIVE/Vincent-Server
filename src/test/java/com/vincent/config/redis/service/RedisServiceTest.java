@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,18 +14,28 @@ import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.redis.entity.RefreshToken;
 import com.vincent.config.redis.repository.RefreshTokenRepository;
 import com.vincent.config.security.provider.JwtProvider;
+import com.vincent.domain.iot.entity.Iot;
+import com.vincent.domain.iot.service.data.IotDataService;
 import com.vincent.domain.member.entity.Member;
+import com.vincent.domain.socket.entity.Socket;
+import com.vincent.domain.socket.service.data.SocketDataService;
 import com.vincent.exception.handler.ErrorHandler;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RedisServiceTest {
@@ -38,8 +49,16 @@ class RedisServiceTest {
     @Mock
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Mock
+    private ListOperations<String, Object> listOperations;
+
     @InjectMocks
     private RedisService redisService;
+
+    @BeforeEach
+    void setUp() {
+        lenient().when(redisTemplate.opsForList()).thenReturn(listOperations);
+    }
 
 
     @Test
@@ -227,4 +246,86 @@ class RedisServiceTest {
         Assertions.assertEquals(thrown.getCode(), ErrorStatus.ANOTHER_USER);
     }
 
+    @Test
+    void 레디스리스트데이터가져오기() {
+        // Given
+        String key = "iot:1";
+        List<Object> expectedList = List.of("0", "1", "1");
+
+        // When
+        when(listOperations.range(key, 0, -1)).thenReturn(expectedList);
+
+        List<Object> result = redisService.getList(key, 0, -1);
+
+        // Then
+        Assertions.assertEquals(expectedList, result);
+    }
+
+    @Test
+    void 레디스리스트데이터추가() {
+        // Given
+        String key = "iot:1";
+        String value = "1";
+
+        // When
+        redisService.addToList(key, value);
+
+        // Then
+        verify(listOperations, times(1)).rightPush(key, value);
+    }
+
+    @Test
+    void 레디스TTL설정() {
+        // Given
+        String key = "iot:1";
+        Duration duration = Duration.ofMinutes(10);
+
+        // When
+        redisService.setExpire(key, duration);
+
+        // Then
+        verify(redisTemplate, times(1)).expire(eq(key), eq(duration));
+    }
+
+    @Test
+    void 레디스데이터삭제() {
+        // Given
+        String key = "iot:1";
+
+        // When
+        redisService.delete(key);
+
+        // Then
+        verify(redisTemplate, times(1)).delete(key);
+    }
+
+    @Test
+    void 레디스키존재확인() {
+        // Given
+        String key = "iot:1";
+
+        // When
+        when(redisTemplate.hasKey(key)).thenReturn(true);
+
+        boolean exists = redisService.hasKey(key);
+
+        // Then
+        Assertions.assertTrue(exists);
+        verify(redisTemplate, times(1)).hasKey(key);
+    }
+
+    @Test
+    void 레디스에IOT데이터저장() {
+        // Given
+        Long deviceId = 1L;
+        String redisKey = "iot:" + deviceId;
+        int isUsing = 1;
+
+        // When
+        redisService.saveIotData(deviceId, isUsing);
+
+        // Then
+        verify(listOperations, times(1)).rightPush(redisKey, String.valueOf(isUsing));
+        verify(redisTemplate, times(1)).expire(eq(redisKey), eq(Duration.ofMinutes(10)));
+    }
 }

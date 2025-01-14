@@ -17,6 +17,7 @@ public class SocketConverter {
             .buildingName(socketInfo.getSpace().getFloor().getBuilding().getName())
             .spaceName(socketInfo.getSpace().getName())
             .isBookmarkExist(isBookmarkExist)
+            .isSocketUsing(socketInfo.getIsUsing())
             .build();
     }
 
@@ -25,6 +26,7 @@ public class SocketConverter {
             .socketId(socket.getId())
             .xCoordinate(socket.getXCoordinate())
             .yCoordinate(socket.getYCoordinate())
+            .isSocketUsing(socket.getIsUsing())
             .build();
     }
 
