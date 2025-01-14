@@ -9,6 +9,7 @@ import com.vincent.domain.iot.controller.dto.IotResponseDto.IotDataTest;
 import com.vincent.domain.iot.service.IotService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,8 +32,9 @@ public class IotController {
         return ApiResponse.onSuccess(null);
     }
 
-    @Operation(summary = "콘센트 사용 여부 변경 하기", description = "IOT 장치가 보낸 사용 여부 정보로 콘센트 사용 여부를 변경함")
-    @PatchMapping("/iot/{deviceId}")
+    @Operation(summary = "Iot가 전송하는 데이터 조회하기",
+        description = "기존의 콘센트 사용 여부 변경 api에서 로직을 제외한 버전으로, Iot의 데이터 전송이 잘 되는지만 확인하는 용도")
+    @GetMapping("/iot/{deviceId}")
     public ApiResponse<IotResponseDto.IotDataTest> updateIsSocketUsing(
         @PathVariable("deviceId") Long deviceId,
         @RequestParam("isUsing") int isUsing) {
