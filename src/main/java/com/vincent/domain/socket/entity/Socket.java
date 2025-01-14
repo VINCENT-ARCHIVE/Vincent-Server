@@ -16,6 +16,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import lombok.Setter;
+
 
 
 @Entity
@@ -52,6 +54,7 @@ public class Socket {
 
     @Column(name = "isUsing")
     @ColumnDefault("false")
+    @Setter
     private Boolean isUsing;
 
 }

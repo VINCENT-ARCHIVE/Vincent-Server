@@ -3,7 +3,9 @@ package com.vincent.domain.iot;
 import com.vincent.domain.iot.entity.Iot;
 import com.vincent.domain.iot.repository.IotRepository;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import org.springframework.data.domain.Example;
@@ -15,6 +17,7 @@ import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuer
 public class TestIotRepository implements IotRepository {
 
     List<Iot> iots = new ArrayList<>();
+
 
     @Override
     public <S extends Iot> S save(S entity) {
@@ -166,5 +169,13 @@ public class TestIotRepository implements IotRepository {
     @Override
     public Page<Iot> findAll(Pageable pageable) {
         return null;
+    }
+
+    @Override
+    public Optional<Iot> findIotByDeviceId(Long deviceId) {
+        // List를 순회하며 deviceId를 검색
+        return iots.stream()
+            .filter(iot -> iot.getDeviceId().equals(deviceId))
+            .findFirst();
     }
 }

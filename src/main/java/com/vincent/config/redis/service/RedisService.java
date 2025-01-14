@@ -3,21 +3,36 @@ package com.vincent.config.redis.service;
 import com.vincent.apipayload.status.ErrorStatus;
 import com.vincent.config.redis.repository.RefreshTokenRepository;
 import com.vincent.config.security.provider.JwtProvider;
+import com.vincent.domain.iot.entity.Iot;
+import com.vincent.domain.iot.service.data.IotDataService;
 import com.vincent.domain.member.entity.Member;
 import com.vincent.config.redis.entity.RefreshToken;
+import com.vincent.domain.socket.entity.Socket;
+import com.vincent.domain.socket.service.data.SocketDataService;
 import com.vincent.exception.handler.ErrorHandler;
+import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class RedisService {
 
     private final RefreshTokenRepository refreshTokenRepository;
+
     private final RedisTemplate<String, Object> redisTemplate;
+
     private final JwtProvider jwtProvider;
+
+
+    private static final Duration TTL = Duration.ofMinutes(10);
+
 
     /**
      * 리프레시 토큰 발급
@@ -63,6 +78,13 @@ public class RedisService {
     }
 
     /**
+     * Redis 데이터 삭제
+     */
+    public void delete(String key) {
+        redisTemplate.delete(key);
+    }
+
+    /**
      * 액세스 토큰 블랙리스트 등록
      */
     public void blacklist(String accessToken) {
@@ -95,5 +117,46 @@ public class RedisService {
             throw new ErrorHandler(ErrorStatus.ANOTHER_USER);
         }
     }
+
+    /**
+     * Redis에서 리스트 데이터 가져오기
+     */
+    public List<Object> getList(String key, long start, long end) {
+        return redisTemplate.opsForList().range(key, start, end);
+    }
+
+    /**
+     * Redis 리스트 데이터 추가
+     */
+    public void addToList(String key, String value) {
+        redisTemplate.opsForList().rightPush(key, value);
+    }
+
+    /**
+     * Redis 키에 TTL 설정
+     */
+    public void setExpire(String key, Duration duration) {
+        redisTemplate.expire(key, duration);
+    }
+
+
+
+    /**
+     * Redis 키 존재 여부 확인
+     */
+    public boolean hasKey(String key) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
+    /**
+     * Redis에 IoT 데이터 저장
+     */
+    public void saveIotData(Long deviceId, int isUsing) {
+        String redisKey = "iot:" + deviceId;
+        addToList(redisKey, String.valueOf(isUsing));
+        setExpire(redisKey, TTL); // TTL 설정
+    }
+
+
 
 }

@@ -49,7 +49,10 @@ public enum ErrorStatus implements BaseCode {
     SPACE_NOT_FOUND(HttpStatus.NOT_FOUND, "SPACE4001", "공간 정보를 찾을 수 없습니다."),
 
     //이미지
-    IMAGE_CONVERT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE4001", "이미지 변환 중 에러가 발생했습니다.");
+    IMAGE_CONVERT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE4001", "이미지 변환 중 에러가 발생했습니다."),
+
+    //Iot
+    IOT_NOT_FOUND(HttpStatus.NOT_FOUND, "IOT4001", "IOT 정보를 찾을 수 없습니다");
 
     private final HttpStatus httpStatus;
     private final String code;
