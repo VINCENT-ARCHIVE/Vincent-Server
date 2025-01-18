@@ -26,6 +26,7 @@ public class Iot {
     @Column(name = "iot_id")
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private Long deviceId;
 
     @OneToOne

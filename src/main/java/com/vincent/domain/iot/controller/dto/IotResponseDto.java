@@ -14,6 +14,6 @@ public class IotResponseDto {
     public static class IotDataTest {
 
         Long deviceId;
-        int isUsing;
+        boolean isUsing;
     }
 }

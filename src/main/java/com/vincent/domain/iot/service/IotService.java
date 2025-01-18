@@ -34,39 +34,31 @@ public class IotService {
      * Redis에서 IoT 데이터 읽기 및 소켓 상태 업데이트
      */
     @Transactional
-    public boolean updateIsSocketUsing(Long deviceId) {
+    public boolean setSocketUsage(Long deviceId, int isUsing) {
         String redisKey = "iot:" + deviceId;
 
-        // Redis에서 데이터 읽기
-        List<Object> rawStates = redisService.getList(redisKey, 0, -1);
-        if (rawStates == null || rawStates.size() < 60) {
-            return false; // 10분 데이터가 누적되지 않음
+        if(redisService.hasKey(redisKey)) {
+            redisService.delete(redisKey);
         }
 
-        // String 데이터를 Integer로 변환
-        List<Integer> states = rawStates.stream()
-            .map(state -> Integer.valueOf((String) state))
-            .collect(Collectors.toList());
+        boolean isDeviceUsing = isUsing == 1;
 
-        // 0과 1 개수 계산
-        long countZero = states.stream().filter(s -> s == 0).count();
-        long countOne = states.size() - countZero;
+        Iot iot = iotDataService.findByDeviceId(deviceId);
 
-        // 업데이트할 상태 결정
-        boolean isUsing = countOne > countZero;
+        if(iot.getSocket().getIsUsing().equals(isDeviceUsing)) {
+            return true;
+        }
 
-        // socket 테이블 업데이트
-        Iot targetIot = iotDataService.findByDeviceId(deviceId);
-        Socket targetSocket = socketDataService.findById(targetIot.getSocket().getId());
-        targetSocket.setIsUsing(isUsing);
-
-        // Redis 데이터 초기화
-        redisService.delete(redisKey);
-
-        return true; // 업데이트 성공
+        redisService.addDeviceId(redisKey, isUsing);
+        redisService.setExpire(redisKey, Duration.ofMinutes(10));
+        return true;
     }
 
-
+    @Transactional
+    public void updateIsSocketUsing(Long deviceId) {
+        Iot iot = iotDataService.findByDeviceId(deviceId);
+        iot.getSocket().switchUsageStatus();
+    }
 
 
 }

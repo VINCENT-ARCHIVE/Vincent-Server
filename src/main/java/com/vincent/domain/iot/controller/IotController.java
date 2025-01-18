@@ -36,8 +36,7 @@ public class IotController {
     public ApiResponse<IotResponseDto.IotDataTest> updateIsSocketUsing(
         @PathVariable("deviceId") Long deviceId,
         @RequestParam("isUsing") int isUsing) {
-        //redisService.saveIotData(deviceId, isUsing);
-        //boolean isUpdated = iotService.updateIsSocketUsing(deviceId);
-        return ApiResponse.onSuccess(IotConverter.toIotDataTest(deviceId, isUsing));
+        boolean isUpdated = iotService.setSocketUsage(deviceId, isUsing);
+        return ApiResponse.onSuccess(IotConverter.toIotDataTest(deviceId, isUpdated));
     }
 }
