@@ -51,7 +51,7 @@ public class TestRedisTemplate extends RedisTemplate<String, Object> {
 
         @Override
         public void set(String key, Object value) {
-
+            store.put(key, value);
         }
 
         @Override

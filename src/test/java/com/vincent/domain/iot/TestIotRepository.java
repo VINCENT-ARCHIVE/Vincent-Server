@@ -18,6 +18,14 @@ public class TestIotRepository implements IotRepository {
 
     List<Iot> iots = new ArrayList<>();
 
+    @Override
+    public Optional<Iot> findIotByDeviceId(Long deviceId) {
+        // List를 순회하며 deviceId를 검색
+        return iots.stream()
+                .filter(iot -> iot.getDeviceId().equals(deviceId))
+                .findFirst();
+    }
+
 
     @Override
     public <S extends Iot> S save(S entity) {
@@ -169,13 +177,5 @@ public class TestIotRepository implements IotRepository {
     @Override
     public Page<Iot> findAll(Pageable pageable) {
         return null;
-    }
-
-    @Override
-    public Optional<Iot> findIotByDeviceId(Long deviceId) {
-        // List를 순회하며 deviceId를 검색
-        return iots.stream()
-            .filter(iot -> iot.getDeviceId().equals(deviceId))
-            .findFirst();
     }
 }

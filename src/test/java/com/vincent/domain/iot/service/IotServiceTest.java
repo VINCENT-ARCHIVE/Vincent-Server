@@ -71,78 +71,129 @@ class IotServiceTest {
     }
 
     @Test
-    void 소켓_사용여부_업데이트_성공() {
-        // given
+    void IoT_장치_값_저장_Redis에_값이_없음() {
+        //given
         Long deviceId = 1L;
-        String redisKey = "iot:" + deviceId;
-
-        // Redis 데이터 추가 (40개 0, 60개 1)
-        List<Object> redisData = new ArrayList<>();
-        for (int i = 0; i < 40; i++) redisData.add("0");
-        for (int i = 0; i < 60; i++) redisData.add("1");
-        when(redisService.getList(redisKey, 0, -1)).thenReturn(redisData);
-
-        // Mock된 Socket 및 Iot 생성
-        Socket socket = Socket.builder().id(1L).name("socket1").isUsing(false).build();
+        int isUsing = 1;
+        String redisKey = "iot:"+deviceId;
+        Socket socket = Socket.builder().id(1L).name("name").isUsing(false).build();
         Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
 
+        //when
+        when(redisService.hasKey(redisKey)).thenReturn(false);
         when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
-        when(socketDataService.findById(socket.getId())).thenReturn(socket);
+        boolean result = iotService.setSocketUsage(deviceId, isUsing);
 
-        // when
-        boolean result = iotService.updateIsSocketUsing(deviceId);
-
-        // then
+        //then
         Assertions.assertTrue(result);
-        verify(redisService, times(1)).getList(redisKey, 0, -1);
-        verify(redisService, times(1)).delete(redisKey);
-    }
-
-
-
-    @Test
-    void 소켓_사용여부_업데이트_실패_데이터부족() {
-        // given
-        Long deviceId = 2L;
-        String redisKey = "iot:" + deviceId;
-
-        when(redisService.getList(redisKey, 0, -1)).thenReturn(new ArrayList<>());
-
-        // when
-        boolean result = iotService.updateIsSocketUsing(deviceId);
-
-        // then
-        assertFalse(result);
-        verify(redisService, times(1)).getList(redisKey, 0, -1);
-        verify(redisService, never()).delete(redisKey);
     }
 
     @Test
-    void 소켓_사용여부_업데이트_성공_0이_더많은경우() {
-        // given
-        Long deviceId = 3L;
-        String redisKey = "iot:" + deviceId;
-
-        List<Object> redisData = new ArrayList<>();
-        for (int i = 0; i < 60; i++) redisData.add("0");
-        for (int i = 0; i < 40; i++) redisData.add("1");
-
-        when(redisService.getList(redisKey, 0, -1)).thenReturn(redisData);
-
-        Socket socket = Socket.builder().id(2L).name("socket2").isUsing(true).build();
+    void IoT_장치_값_저장_Redis에_값이_있음() {
+        //given
+        Long deviceId = 1L;
+        int isUsing = 1;
+        String redisKey = "iot:"+deviceId;
+        Socket socket = Socket.builder().id(1L).name("name").isUsing(false).build();
         Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
 
+        //when
+        when(redisService.hasKey(redisKey)).thenReturn(true);
         when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
-        when(socketDataService.findById(socket.getId())).thenReturn(socket);
+        boolean result = iotService.setSocketUsage(deviceId, isUsing);
 
-        // when
-        boolean result = iotService.updateIsSocketUsing(deviceId);
-
-        // then
-        assertTrue(result);
-        assertFalse(socket.getIsUsing());
-        verify(redisService, times(1)).getList(redisKey, 0, -1);
-        verify(redisService, times(1)).delete(redisKey);
-
+        //then
+        Assertions.assertTrue(result);
     }
+
+    @Test
+    void 소켓_사용여부_업데이트() {
+        //given
+        Long deviceId = 1L;
+        Socket socket = Socket.builder().id(1L).name("name").isUsing(false).build();
+        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
+
+        //when
+        when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
+        iotService.updateIsSocketUsing(deviceId);
+
+        //then
+        Assertions.assertTrue(iot.getSocket().getIsUsing());
+    }
+
+//    @Test
+//    void 소켓_사용여부_업데이트_성공() {
+//        // given
+//        Long deviceId = 1L;
+//        String redisKey = "iot:" + deviceId;
+//
+//        // Redis 데이터 추가 (40개 0, 60개 1)
+//        List<Object> redisData = new ArrayList<>();
+//        for (int i = 0; i < 40; i++) redisData.add("0");
+//        for (int i = 0; i < 60; i++) redisData.add("1");
+//        when(redisService.getList(redisKey, 0, -1)).thenReturn(redisData);
+//
+//        // Mock된 Socket 및 Iot 생성
+//        Socket socket = Socket.builder().id(1L).name("socket1").isUsing(false).build();
+//        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
+//
+//        when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
+//        when(socketDataService.findById(socket.getId())).thenReturn(socket);
+//
+//        // when
+//        boolean result = iotService.updateIsSocketUsing(deviceId);
+//
+//        // then
+//        Assertions.assertTrue(result);
+//        verify(redisService, times(1)).getList(redisKey, 0, -1);
+//        verify(redisService, times(1)).delete(redisKey);
+//    }
+//
+//
+//
+//    @Test
+//    void 소켓_사용여부_업데이트_실패_데이터부족() {
+//        // given
+//        Long deviceId = 2L;
+//        String redisKey = "iot:" + deviceId;
+//
+//        when(redisService.getList(redisKey, 0, -1)).thenReturn(new ArrayList<>());
+//
+//        // when
+//        boolean result = iotService.updateIsSocketUsing(deviceId);
+//
+//        // then
+//        assertFalse(result);
+//        verify(redisService, times(1)).getList(redisKey, 0, -1);
+//        verify(redisService, never()).delete(redisKey);
+//    }
+//
+//    @Test
+//    void 소켓_사용여부_업데이트_성공_0이_더많은경우() {
+//        // given
+//        Long deviceId = 3L;
+//        String redisKey = "iot:" + deviceId;
+//
+//        List<Object> redisData = new ArrayList<>();
+//        for (int i = 0; i < 60; i++) redisData.add("0");
+//        for (int i = 0; i < 40; i++) redisData.add("1");
+//
+//        when(redisService.getList(redisKey, 0, -1)).thenReturn(redisData);
+//
+//        Socket socket = Socket.builder().id(2L).name("socket2").isUsing(true).build();
+//        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
+//
+//        when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
+//        when(socketDataService.findById(socket.getId())).thenReturn(socket);
+//
+//        // when
+//        boolean result = iotService.updateIsSocketUsing(deviceId);
+//
+//        // then
+//        assertTrue(result);
+//        assertFalse(socket.getIsUsing());
+//        verify(redisService, times(1)).getList(redisKey, 0, -1);
+//        verify(redisService, times(1)).delete(redisKey);
+//
+//    }
 }
