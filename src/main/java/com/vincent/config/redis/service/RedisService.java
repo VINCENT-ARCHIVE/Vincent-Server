@@ -125,6 +125,10 @@ public class RedisService {
         return redisTemplate.opsForList().range(key, start, end);
     }
 
+    public void addDeviceId(String deviceId, Integer isUsing) {
+        redisTemplate.opsForValue().set(deviceId, String.valueOf(isUsing));
+    }
+
     /**
      * Redis 리스트 데이터 추가
      */
@@ -138,7 +142,6 @@ public class RedisService {
     public void setExpire(String key, Duration duration) {
         redisTemplate.expire(key, duration);
     }
-
 
 
     /**
