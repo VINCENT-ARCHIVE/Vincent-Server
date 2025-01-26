@@ -2,12 +2,16 @@ package com.vincent.domain.iot.service;
 
 import com.vincent.config.redis.service.RedisService;
 import com.vincent.domain.iot.entity.Iot;
+import com.vincent.domain.iot.entity.enums.MotionStatus;
 import com.vincent.domain.iot.service.data.IotDataService;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.service.data.SocketDataService;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,6 +25,7 @@ public class IotService {
     private final IotDataService iotDataService;
     private final SocketDataService socketDataService;
     private final RedisService redisService;
+//    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 
     @Transactional
@@ -30,34 +35,33 @@ public class IotService {
         return iotDataService.save(iot);
     }
 
+
     /**
-     * Redis에서 IoT 데이터 읽기 및 소켓 상태 업데이트
+     * IoT 데이터를 수신하고 소켓 상태 갱신
      */
     @Transactional
-    public boolean setSocketUsage(Long deviceId, int isUsing) {
-        String redisKey = "iot:" + deviceId;
-
-        if(redisService.hasKey(redisKey)) {
-            redisService.delete(redisKey);
-        }
-
-        boolean isDeviceUsing = isUsing == 1;
-
+    public void updateSocketStatus(Long deviceId, int motionStatus) {
         Iot iot = iotDataService.findByDeviceId(deviceId);
-
-        if(iot.getSocket().getIsUsing().equals(isDeviceUsing)) {
-            return true;
+        if (motionStatus == 1) {
+            redisService.updateDeviceStatus(deviceId, motionStatus);
+            iot.updateMotionStatus(MotionStatus.ACTIVE);
+            iot.getSocket().setIsUsing(true);
+        } else if (motionStatus == 0) {
+            iot.updateMotionStatus(MotionStatus.INACTIVE);
         }
-
-        redisService.addDeviceId(redisKey, isUsing);
-        redisService.setExpire(redisKey, Duration.ofMinutes(10));
-        return true;
     }
 
+    /**
+     * 소켓 상태를 변경
+     */
     @Transactional
-    public void updateIsSocketUsing(Long deviceId) {
+    public void updateSocketIsUsing(Long deviceId) {
         Iot iot = iotDataService.findByDeviceId(deviceId);
-        iot.getSocket().switchUsageStatus();
+        if(iot.getMotionStatus().equals(MotionStatus.INACTIVE)){
+            iot.getSocket().setIsUsing(false);
+        } else {
+            redisService.updateDeviceStatus(deviceId, 1);
+        }
     }
 
 

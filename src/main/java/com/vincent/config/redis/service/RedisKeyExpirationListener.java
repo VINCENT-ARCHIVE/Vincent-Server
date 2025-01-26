@@ -21,15 +21,16 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        String expiredKey = message.toString(); // 만료된 키 가져오기
+        String expiredKey = message.toString();
         handleExpiredKey(expiredKey);
-        log.info("{}상태 변경", expiredKey);
+        log.info("만료된 키: {}", expiredKey);
     }
 
     private void handleExpiredKey(String key) {
-        // 키에서 deviceId 추출
-        Long deviceId = Long.parseLong(key.split(":")[1]);
-        iotService.updateIsSocketUsing(deviceId);
+        if (key.startsWith("iot:")) {
+            Long deviceId = Long.parseLong(key.split(":")[1]);
+            iotService.updateSocketIsUsing(deviceId); // 만료된 경우 콘센트 상태 비활성화
+        }
     }
 
 }
