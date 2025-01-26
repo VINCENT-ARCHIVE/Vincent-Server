@@ -4,6 +4,7 @@ import com.vincent.config.redis.service.RedisService;
 import com.vincent.config.redis.service.TestRedisService;
 import com.vincent.domain.iot.TestIotRepository;
 import com.vincent.domain.iot.entity.Iot;
+import com.vincent.domain.iot.entity.enums.MotionStatus;
 import com.vincent.domain.iot.repository.IotRepository;
 import com.vincent.domain.iot.service.data.IotDataService;
 import com.vincent.domain.socket.TestSocketRepository;
@@ -28,24 +29,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 class IotServiceTest {
 
-    @InjectMocks
     private IotService iotService;
-
-    @Mock
     private RedisService redisService;
-
-    @Mock
     private IotDataService iotDataService;
-
-    @Mock
     private SocketDataService socketDataService;
+
+    private Iot iot;
+    private Socket socket;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        redisService = new TestRedisService();
+        iotDataService = new IotDataService(new TestIotRepository());
+        socketDataService = new SocketDataService(new TestSocketRepository());
+        iotService = new IotService(iotDataService, socketDataService, redisService);
     }
 
 
@@ -55,14 +54,12 @@ class IotServiceTest {
         //given
         Long deviceId = 1L;
         String socketId = "name";
-
-        Socket socket = Socket.builder().id(1L).name("name").build();
-        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
-
-        // Mocking
-        when(socketDataService.findByUniqueId(socketId)).thenReturn(socket);
-        when(iotDataService.save(any(Iot.class))).thenReturn(iot);
-
+        Socket socket = Socket.builder()
+                .id(1L)
+                .name("name")
+                .isUsing(false)
+                .build();
+        socketDataService.save(socket);
         //when
         Iot result = iotService.create(deviceId, socketId);
 
@@ -70,91 +67,104 @@ class IotServiceTest {
         Assertions.assertNotNull(result);
         Assertions.assertEquals(deviceId, result.getDeviceId());
         Assertions.assertEquals(socketId, result.getSocket().getName());
-
-        verify(socketDataService, times(1)).findByUniqueId(socketId);
-        verify(iotDataService, times(1)).save(any(Iot.class));
     }
 
     @Test
-    void IoT_상태_업데이트_움직임_있을때() {
-        // given
+    void IOT_상태갱신_움직임있음() {
+        // Given
         Long deviceId = 1L;
-        int motionStatus = 1;  // 움직임 있음
-        String redisKey = "iot:" + deviceId;
-        Socket socket = Socket.builder().id(1L).name("name").isUsing(false).build();
-        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
+        int motionStatus = 1;
+        Socket socket = Socket.builder()
+                .id(1L)
+                .name("name")
+                .isUsing(false)
+                .build();
+        Iot iot = Iot.builder()
+                .id(1L)
+                .deviceId(deviceId)
+                .socket(socket)
+                .motionStatus(MotionStatus.INACTIVE)
+                .build();
+        iotDataService.save(iot);
 
-        // Mocking
-        when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
-        when(redisService.isTTLExpired(redisKey)).thenReturn(true);
-
-        // when
+        //when
         iotService.updateSocketStatus(deviceId, motionStatus);
 
-        // then
-        Assertions.assertTrue(iot.getSocket().getIsUsing());
-
-        verify(redisService, times(1)).updateDeviceStatus(deviceId, motionStatus);
-        verify(iotDataService, times(1)).findByDeviceId(deviceId);
+        // Then
+        assertEquals(MotionStatus.ACTIVE, iot.getMotionStatus());
+        assertTrue(iot.getSocket().getIsUsing());
     }
 
-
     @Test
-    void IoT_상태_업데이트_움직임_없을때() throws InterruptedException {
-        // given
+    void IOT_상태갱신_움직임없음() {
+        // Given
         Long deviceId = 1L;
-        int motionStatus = 0;  // 움직임 없음
-        String redisKey = "iot:" + deviceId;
-        Socket socket = Socket.builder().id(1L).name("name").isUsing(true).build();
-        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
+        int motionStatus = 0;
+        Socket socket = Socket.builder()
+                .id(1L)
+                .name("name")
+                .isUsing(true)
+                .build();
+        Iot iot = Iot.builder()
+                .id(1L)
+                .deviceId(deviceId)
+                .socket(socket)
+                .motionStatus(MotionStatus.INACTIVE)
+                .build();
+        iotDataService.save(iot);
 
-        // 비동기 작업을 위한 스케줄러 모킹
-        doAnswer(invocation -> {
-            // 상태 업데이트가 이루어졌을 때 socket 상태 변경
-            iot.getSocket().setIsUsing(false);
-            return null;
-        }).when(iotService).updateSocketIsUsing(iot, false);  // updateSocketIsUsing 메서드 모킹
-
-        // when
-        when(redisService.isTTLExpired(redisKey)).thenReturn(true);
-        when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
-
+        //when
         iotService.updateSocketStatus(deviceId, motionStatus);
 
-        // then
-        assertFalse(iot.getSocket().getIsUsing());  // 상태가 'false'로 변경되었는지 확인
-    }
-
-
-
-
-    @Test
-    void 소켓_상태_변경_성공() {
-        // given
-        Long deviceId = 1L;
-        Socket socket = Socket.builder().id(1L).name("name").isUsing(false).build();
-        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
-
-        // when
-        when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
-        iotService.updateSocketIsUsing(iot, true);
-
-        // then
-        Assertions.assertTrue(iot.getSocket().getIsUsing());
+        // Then
+        assertEquals(MotionStatus.INACTIVE, iot.getMotionStatus());
     }
 
     @Test
-    void 소켓_상태_변경_실패() {
-        // given
+    void 소켓사용여부갱신_움직임없음() {
+        // Given
         Long deviceId = 1L;
-        Socket socket = Socket.builder().id(1L).name("name").isUsing(true).build();
-        Iot iot = Iot.builder().deviceId(deviceId).socket(socket).build();
+        Socket socket = Socket.builder()
+                .id(1L)
+                .name("name")
+                .isUsing(true)
+                .build();
+        Iot iot = Iot.builder()
+                .id(1L)
+                .deviceId(deviceId)
+                .socket(socket)
+                .motionStatus(MotionStatus.INACTIVE)
+                .build();
+        iotDataService.save(iot);
+        //when
+        iotService.updateSocketIsUsing(deviceId);
 
-        // when
-        when(iotDataService.findByDeviceId(deviceId)).thenReturn(iot);
-        iotService.updateSocketIsUsing(iot, true); // 상태가 이미 true이므로 변화 없음
-
-        // then
-        Assertions.assertTrue(iot.getSocket().getIsUsing());  // 상태 변화가 없으므로 여전히 true
+        // Then
+        assertFalse(iot.getSocket().getIsUsing());
     }
+
+    @Test
+    void 소켓사용여부갱신_움직임있음() {
+        // Given
+        Long deviceId = 1L;
+        Socket socket = Socket.builder()
+                .id(1L)
+                .name("name")
+                .isUsing(true)
+                .build();
+        Iot iot = Iot.builder()
+                .id(1L)
+                .deviceId(deviceId)
+                .socket(socket)
+                .motionStatus(MotionStatus.ACTIVE)
+                .build();
+        iotDataService.save(iot);
+
+        //when
+        iotService.updateSocketIsUsing(deviceId);
+
+        // Then
+        assertTrue(iot.getSocket().getIsUsing());
+    }
+
 }
