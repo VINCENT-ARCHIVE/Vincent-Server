@@ -172,7 +172,6 @@ public class RedisService {
         } else if (motionStatus == 0) {
             // 움직임 없음: 상태만 저장하고 TTL 유지
             redisTemplate.opsForValue().set(redisKey, "inactive");
-            redisTemplate.expire(redisKey, TTL);
         }
     }
 

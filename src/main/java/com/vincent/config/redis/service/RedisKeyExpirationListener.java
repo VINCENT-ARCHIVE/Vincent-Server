@@ -29,7 +29,7 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
     private void handleExpiredKey(String key) {
         if (key.startsWith("iot:")) {
             Long deviceId = Long.parseLong(key.split(":")[1]);
-            iotService.updateSocketStatus(deviceId, 0); // 만료된 경우 콘센트 상태 비활성화
+            iotService.updateSocketIsUsing(deviceId); // 만료된 경우 콘센트 상태 비활성화
         }
     }
 
