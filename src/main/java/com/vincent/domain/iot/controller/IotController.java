@@ -31,13 +31,13 @@ public class IotController {
         return ApiResponse.onSuccess(null);
     }
 
-    @Operation(summary = "콘센트 사용 여부 변경 하기", description = "IOT 장치가 보낸 사용 여부 정보로 콘센트 사용 여부를 변경함")
+    @Operation(summary = "콘센트 사용 여부 변경", description = "IoT 장치로부터 움직임 여부 값을 받아 콘센트 사용 여부를 변경합니다.")
     @PatchMapping("/iot/{deviceId}")
-    public ApiResponse<IotResponseDto.IotDataTest> updateIsSocketUsing(
+    public ApiResponse<?> updateSocketStatus(
         @PathVariable("deviceId") Long deviceId,
-        @RequestParam("isUsing") int isUsing) {
-        //redisService.saveIotData(deviceId, isUsing);
-        //boolean isUpdated = iotService.updateIsSocketUsing(deviceId);
-        return ApiResponse.onSuccess(IotConverter.toIotDataTest(deviceId, isUsing));
+        @RequestParam("motionStatus") int motionStatus) {
+        iotService.updateSocketStatus(deviceId, motionStatus);
+        return ApiResponse.onSuccess(null);
     }
+
 }

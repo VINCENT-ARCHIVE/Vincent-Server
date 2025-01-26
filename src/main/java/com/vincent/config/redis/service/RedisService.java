@@ -125,6 +125,10 @@ public class RedisService {
         return redisTemplate.opsForList().range(key, start, end);
     }
 
+    public void addDeviceId(String deviceId, Integer isUsing) {
+        redisTemplate.opsForValue().set(deviceId, String.valueOf(isUsing));
+    }
+
     /**
      * Redis 리스트 데이터 추가
      */
@@ -138,7 +142,6 @@ public class RedisService {
     public void setExpire(String key, Duration duration) {
         redisTemplate.expire(key, duration);
     }
-
 
 
     /**
@@ -155,6 +158,28 @@ public class RedisService {
         String redisKey = "iot:" + deviceId;
         addToList(redisKey, String.valueOf(isUsing));
         setExpire(redisKey, TTL); // TTL 설정
+    }
+
+    /**
+     * IoT 데이터를 기반으로 Redis에 상태 저장 및 TTL 갱신
+     */
+    public void updateDeviceStatus(Long deviceId, int motionStatus) {
+        String redisKey = "iot:" + deviceId;
+
+        if (motionStatus == 1) {
+            // 움직임 있음: TTL 연장
+            redisTemplate.opsForValue().set(redisKey, "active", TTL.toSeconds(), TimeUnit.SECONDS);
+        } else if (motionStatus == 0) {
+            // 움직임 없음: 상태만 저장하고 TTL 유지
+            redisTemplate.opsForValue().set(redisKey, "inactive");
+        }
+    }
+
+    /**
+     * Redis TTL 만료 여부 확인
+     */
+    public boolean isTTLExpired(String redisKey) {
+        return redisTemplate.opsForValue().get(redisKey) == null;
     }
 
 

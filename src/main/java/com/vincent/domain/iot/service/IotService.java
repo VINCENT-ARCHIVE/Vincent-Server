@@ -2,12 +2,16 @@ package com.vincent.domain.iot.service;
 
 import com.vincent.config.redis.service.RedisService;
 import com.vincent.domain.iot.entity.Iot;
+import com.vincent.domain.iot.entity.enums.MotionStatus;
 import com.vincent.domain.iot.service.data.IotDataService;
 import com.vincent.domain.socket.entity.Socket;
 import com.vincent.domain.socket.service.data.SocketDataService;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,6 +25,7 @@ public class IotService {
     private final IotDataService iotDataService;
     private final SocketDataService socketDataService;
     private final RedisService redisService;
+//    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 
     @Transactional
@@ -30,43 +35,34 @@ public class IotService {
         return iotDataService.save(iot);
     }
 
+
     /**
-     * Redis에서 IoT 데이터 읽기 및 소켓 상태 업데이트
+     * IoT 데이터를 수신하고 소켓 상태 갱신
      */
     @Transactional
-    public boolean updateIsSocketUsing(Long deviceId) {
-        String redisKey = "iot:" + deviceId;
-
-        // Redis에서 데이터 읽기
-        List<Object> rawStates = redisService.getList(redisKey, 0, -1);
-        if (rawStates == null || rawStates.size() < 60) {
-            return false; // 10분 데이터가 누적되지 않음
+    public void updateSocketStatus(Long deviceId, int motionStatus) {
+        Iot iot = iotDataService.findByDeviceId(deviceId);
+        if (motionStatus == 1) {
+            redisService.updateDeviceStatus(deviceId, motionStatus);
+            iot.updateMotionStatus(MotionStatus.ACTIVE);
+            iot.getSocket().setIsUsing(true);
+        } else if (motionStatus == 0) {
+            iot.updateMotionStatus(MotionStatus.INACTIVE);
         }
-
-        // String 데이터를 Integer로 변환
-        List<Integer> states = rawStates.stream()
-            .map(state -> Integer.valueOf((String) state))
-            .collect(Collectors.toList());
-
-        // 0과 1 개수 계산
-        long countZero = states.stream().filter(s -> s == 0).count();
-        long countOne = states.size() - countZero;
-
-        // 업데이트할 상태 결정
-        boolean isUsing = countOne > countZero;
-
-        // socket 테이블 업데이트
-        Iot targetIot = iotDataService.findByDeviceId(deviceId);
-        Socket targetSocket = socketDataService.findById(targetIot.getSocket().getId());
-        targetSocket.setIsUsing(isUsing);
-
-        // Redis 데이터 초기화
-        redisService.delete(redisKey);
-
-        return true; // 업데이트 성공
     }
 
-
+    /**
+     * 소켓 상태를 변경
+     */
+    @Transactional
+    public void updateSocketIsUsing(Long deviceId) {
+        Iot iot = iotDataService.findByDeviceId(deviceId);
+        if(iot.getMotionStatus().equals(MotionStatus.INACTIVE)){
+            iot.getSocket().setIsUsing(false);
+        } else {
+            redisService.updateDeviceStatus(deviceId, 1);
+        }
+    }
 
 
 }

@@ -258,7 +258,7 @@ class RedisServiceTest {
         List<Object> result = redisService.getList(key, 0, -1);
 
         // Then
-        Assertions.assertEquals(expectedList, result);
+        assertEquals(expectedList, result);
     }
 
     @Test
@@ -310,7 +310,7 @@ class RedisServiceTest {
         boolean exists = redisService.hasKey(key);
 
         // Then
-        Assertions.assertTrue(exists);
+        assertTrue(exists);
         verify(redisTemplate, times(1)).hasKey(key);
     }
 

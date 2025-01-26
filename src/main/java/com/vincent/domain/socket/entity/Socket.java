@@ -57,4 +57,8 @@ public class Socket {
     @Setter
     private Boolean isUsing;
 
+
+    public void switchUsageStatus(){
+        this.isUsing = !this.isUsing;
+    }
 }

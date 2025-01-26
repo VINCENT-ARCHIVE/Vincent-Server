@@ -70,7 +70,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler))
             .authorizeHttpRequests((request) -> request
-                .requestMatchers("/v1/login", "/v1/reissue").permitAll()
+                .requestMatchers("/v1/login", "/v1/reissue","/v1/iot", "/v1/iot/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(new JwtFilter(jwtProvider),
