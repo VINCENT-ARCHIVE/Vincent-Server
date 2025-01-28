@@ -33,7 +33,18 @@ public class Iot {
     @JoinColumn(name = "socket_id", nullable = false)
     private Socket socket;
 
-    public void updateMotionStatus(MotionStatus motionStatus) {
-        this.motionStatus = motionStatus;
+    public void activate() {
+        this.motionStatus = MotionStatus.ACTIVE;
+        this.socket.setIsUsing(true);
+    }
+
+    public void deactivate() {
+        this.motionStatus = MotionStatus.INACTIVE;
+    }
+
+    public void updateSocketStatus() {
+        if (motionStatus == MotionStatus.INACTIVE) {
+            this.socket.setIsUsing(false);
+        }
     }
 }

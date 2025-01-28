@@ -25,7 +25,6 @@ public class IotService {
     private final IotDataService iotDataService;
     private final SocketDataService socketDataService;
     private final RedisService redisService;
-//    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 
     @Transactional
@@ -44,10 +43,9 @@ public class IotService {
         Iot iot = iotDataService.findByDeviceId(deviceId);
         if (motionStatus == 1) {
             redisService.updateDeviceStatus(deviceId, motionStatus);
-            iot.updateMotionStatus(MotionStatus.ACTIVE);
-            iot.getSocket().setIsUsing(true);
+            iot.activate();
         } else if (motionStatus == 0) {
-            iot.updateMotionStatus(MotionStatus.INACTIVE);
+            iot.deactivate();
         }
     }
 
@@ -57,9 +55,8 @@ public class IotService {
     @Transactional
     public void updateSocketIsUsing(Long deviceId) {
         Iot iot = iotDataService.findByDeviceId(deviceId);
-        if(iot.getMotionStatus().equals(MotionStatus.INACTIVE)){
-            iot.getSocket().setIsUsing(false);
-        } else {
+        iot.updateSocketStatus();
+        if(iot.getMotionStatus().equals(MotionStatus.ACTIVE)){
             redisService.updateDeviceStatus(deviceId, 1);
         }
     }
